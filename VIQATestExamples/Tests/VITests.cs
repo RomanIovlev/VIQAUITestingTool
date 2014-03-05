@@ -31,7 +31,7 @@ namespace VITestsProject.Tests
             driver.Manage().Window.Maximize();
             driver.Manage().Timeouts().ImplicitlyWait(new TimeSpan(0, 0, 5));
             driver.Navigate().GoToUrl("http://market.yandex.ru/");
-            
+
             driver.FindElement(By.Id("search-input"))
                 .SendKeys("IPhone");
             driver.FindElement(By.XPath("//*[@class='b-head-search']//*[contains(text(),'Найти')]//..//..//input"))

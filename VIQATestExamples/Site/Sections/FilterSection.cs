@@ -21,18 +21,6 @@ namespace VITestsProject.Site.Sections
         [Name(Name = "Wi-fi"), Locate(ByXPath = "//*[@class='b-gurufilters']//*[contains(text(),'Wi-Fi')]//..//input")]
         public ICheckbox WiFiCheckbox = new Checkbox();
 
-        [Name(Name = "Wi-fi"), Locate(ByXPath = "//*[@class='wifi-checkbox']")]
-        public ICheckbox WiFiCheckbox1 = new Checkbox();
-
-        [Name(Name = "Wi-fi"), Locate(ByClassName = "wifi-checkbox")]
-        public Checkbox WiFiCheckbox2;
-
-        public ICheckbox WiFiCheckbox3
-            = new Checkbox("Wi-fi", "#wifi-checkbox");
-
-        public ICheckbox WiFiCheckbox4
-            = new Checkbox("Wi-fi", By.CssSelector("#wifi-checkbox"));
-
         public RadioButtons SensorScreenRadioButtons
         {
             get
