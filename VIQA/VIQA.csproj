@@ -70,6 +70,7 @@
     <Compile Include="Common\Interfaces\IAlerting.cs" />
     <Compile Include="Common\Interfaces\ILogger.cs" />
     <Compile Include="HtmlElements\BaseClasses\VIElementsList.cs" />
+    <Compile Include="HtmlElements\ComplexElements\DropDown.cs" />
     <Compile Include="HtmlElements\Interfaces\ICheckList.cs" />
     <Compile Include="HtmlElements\Interfaces\ISelector.cs" />
     <Compile Include="HtmlElements\Interfaces\ITextArea.cs" />
@@ -89,8 +90,6 @@
     <Compile Include="HtmlElements\SimpleElements\Checkbox.cs" />
     <Compile Include="HtmlElements\ComplexElements\CheckList.cs" />
     <Compile Include="HtmlElements\BaseClasses\ClickableElement.cs" />
-    <Compile Include="HtmlElements\ComplexElements\DataForm.cs" />
-    <Compile Include="HtmlElements\ComplexElements\DropDown.cs" />
     <Compile Include="HtmlElements\BaseClasses\VIElement.cs" />
     <Compile Include="HtmlElements\Interfaces\IClickable.cs" />
     <Compile Include="HtmlElements\Interfaces\ILabeled.cs" />

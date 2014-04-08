@@ -2,6 +2,7 @@
 using System.Threading;
 using OpenQA.Selenium;
 using VIQA.HtmlElements.Interfaces;
+using VIQA.SiteClasses;
 using Timer = VIQA.Common.Timer;
 
 namespace VIQA.HtmlElements
@@ -54,12 +55,12 @@ namespace VIQA.HtmlElements
                     ClickAction.Invoke();
                     clicked = true;
                     PreviousClickAction = ClickAction;
-                    Site.Logger.Event("Done");
+                    VISite.Logger.Event("Done");
                 }
                 catch
                 {
                     Thread.Sleep(Site.WebDriverTimeouts.RetryActionInMsec);
-                    Site.Logger.Event("Done Double Click");
+                    VISite.Logger.Event("Done Double Click");
                 }
         }
         

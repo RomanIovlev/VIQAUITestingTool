@@ -4,7 +4,7 @@ using System.Reflection;
 using OpenQA.Selenium;
 using VIQA.Common;
 using VIQA.HAttributes;
-using VIQA.HtmlElements.BaseClasses;
+using VIQA.HtmlElements;
 
 namespace VIQA.SiteClasses
 {
@@ -93,7 +93,7 @@ namespace VIQA.SiteClasses
 
         public void Open()
         {
-            Site.Logger.Event("Open page: " + Url);
+            VISite.Logger.Event("Open page: " + Url);
             Site.WebDriver.Navigate().GoToUrl(Url);
             Site.WindowHandle = WebDriver.WindowHandles.First();
             if (CheckUrl) DoUrlCheck();

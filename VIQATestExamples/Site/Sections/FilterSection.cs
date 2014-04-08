@@ -13,64 +13,44 @@ namespace VITestsProject.Site.Sections
     public class FilterSection : VIElement
     {
         [Name(Name = "Цена От"), Locate(ByXPath = "//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-0')]")]
-        public ITextArea TextFieldFrom = new TextField();
+        public readonly ITextArea TextFieldFrom = new TextField {
+            FillRule = ToFillRule<Filter>(filter => (filter.CostRange != null) ? (int?)filter.CostRange.From : null)
+        };
 
         [Name(Name = "Цена До"), Locate(ByXPath = "//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-1')]")]
-        public ITextArea TextFieldTo = new TextField();
+        public readonly ITextArea TextFieldTo = new TextField {
+            FillRule = ToFillRule<Filter>(filter => (filter.CostRange != null) ? (int?)filter.CostRange.To : null)
+        };
 
         [Name(Name = "Wi-fi"), Locate(ByXPath = "//*[@class='b-gurufilters']//*[contains(text(),'Wi-Fi')]//..//input")]
-        public ICheckbox WiFiCheckbox = new Checkbox();
+        public readonly ICheckbox WiFiCheckbox = new Checkbox {
+            FillRule = ToFillRule<Filter>(filter => filter.Wifi)
+        };
+        public readonly RadioButtons SensorScreenRadioButtons = new RadioButtons("Сенсорный экран",
+            By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']")) {
+                VIAction = (viElement, text, viAction) => {
+                    VISite.Logger.Event(viElement.DefaultLogMessage(text));
+                    if (!new VIElement("", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[contains(text(),'да')]")).IsDisplayed)
+                        new ClickableElement("Сенсорный экран", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//i")).Click();
+                    viAction.Invoke();
+                },
+                FillRule = ToFillRule<Filter>(filter => filter.SensorScreen)
+        };
 
-        public RadioButtons SensorScreenRadioButtons
-        {
-            get
-            {
-                return new RadioButtons("Сенсорный экран", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']"))
-                {
-                    VIAction = (viElement, text, viAction) => {
-                        viElement.Site.Logger.Event(viElement.DefaultLogMessage(text));
-                        if (!new VIElement("", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[contains(text(),'да')]")).IsDisplayed)
-                            new ClickableElement("Сенсорный экран", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//i")).Click();
-                        viAction.Invoke();
-                        }
-                };
-            }
-        }
-
-        public ICheckList ProcessorTypesChecklist
-        {
-            get
-            {
-                return new CheckList("Процессор", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//*[text()='{0} ']//..//input[@type='checkbox']"))
-                {
-                    VIAction = (viElement, text, viAction) => {
-                        viElement.Site.Logger.Event(viElement.DefaultLogMessage(text));
-                        if (!new Checkbox("'Процессор' Apple A4", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//*[contains(text(),'Apple A4')]")).IsDisplayed)
-                            new ClickableElement("Процессор",
-                                By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//i")).Click();
-                        viAction.Invoke();
-                        },
-                    GetListOfValuesFunc = driver =>
-                        driver.FindElements(By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//li//span"))
-                            .Select(el => el.Text.Contains("U8500") ? el.Text.Replace("U8500", " U8500") : el.Text).ToList()
-                };
-            }
-        }
-
-        public DataForm<Filter> ProductFilterForm
-        {
-            get
-            {
-                return
-                    new DataForm<Filter>("Фильтр продукта", new Dictionary<ISetValue, Func<Filter, object>> {
-                    { TextFieldFrom, _ => (_.CostRange != null) ? (int?)_.CostRange.From : null },
-                    { TextFieldTo, _ => (_.CostRange != null) ? (int?)_.CostRange.To : null },
-                    { WiFiCheckbox, _ => _.Wifi },
-                    { SensorScreenRadioButtons, _ => _.SensorScreen },
-                    { ProcessorTypesChecklist, _ => _.ProcessorTypes },
-                });
-            }
-        }
+        public readonly ICheckList ProcessorTypesChecklist = new CheckList("Процессор", 
+            By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//*[text()='{0} ']//..//input[@type='checkbox']")) {
+                VIAction = (viElement, text, viAction) => {
+                    VISite.Logger.Event(viElement.DefaultLogMessage(text));
+                    if (!new Checkbox("'Процессор' Apple A4", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//*[contains(text(),'Apple A4')]")).IsDisplayed)
+                        new ClickableElement("Процессор",
+                            By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//i")).Click();
+                    viAction.Invoke();
+                    },
+                GetListOfValuesFunc = driver =>
+                    driver.FindElements(By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//li//span"))
+                        .Select(el => el.Text.Contains("U8500") ? el.Text.Replace("U8500", " U8500") : el.Text).ToList(),
+                FillRule = ToFillRule<Filter>(filter => filter.ProcessorTypes)
+        };
 
         public IButton ShowResultsButton { get { return new Button("Показать", "input[value='Показать']"); } }
     }

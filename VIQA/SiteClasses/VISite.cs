@@ -18,8 +18,8 @@ namespace VIQA.SiteClasses
     {
         public BrowserType BrowserType;
         private IWebDriverTimeouts _webDriverTimeouts;
-        public ILogger Logger;
-        public IAlerting Alerting;
+        public static ILogger Logger;
+        public static IAlerting Alerting;
 
         public IWebDriverTimeouts WebDriverTimeouts {
             get { return _webDriverTimeouts ?? new DefaultWebDriverTimeouts(); }

@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading;
 using OpenQA.Selenium;
 using VIQA.Common;
-using VIQA.Common.Interfaces;
-using VIQA.HtmlElements.BaseClasses;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
 using Timer = VIQA.Common.Timer;
@@ -39,7 +37,6 @@ namespace VIQA.HtmlElements
         private VISite _site;
         private static VISite _defaultSite { set; get; }
         public VISite Site { set { _site = value; } get { return _site ?? _defaultSite; } }
-        public IAlerting Alerting { get { return Site.Alerting; } }
         public IWebDriverTimeouts Timeouts { get { return Site.WebDriverTimeouts; }}
 
         protected IWebElement WebElement;
@@ -93,8 +90,8 @@ namespace VIQA.HtmlElements
             if (webElements.Count == 1)
                 return WebElement = webElements.First();
             if (webElements.Any())
-                throw Alerting.ThrowError(string.Format("Found {0} {1} elements but expected. Please specify locator", webElements.Count, FullName));
-            throw Alerting.ThrowError((string.Format("Can't found element {0} by selector {1}. Please correct locator", FullName, Locator)));
+                throw VISite.Alerting.ThrowError(string.Format("Found {0} {1} elements but expected. Please specify locator", webElements.Count, FullName));
+            throw VISite.Alerting.ThrowError((string.Format("Can't found element {0} by selector {1}. Please correct locator", FullName, Locator)));
         }
 
         private ReadOnlyCollection<IWebElement> FoundElements;
@@ -137,14 +134,14 @@ namespace VIQA.HtmlElements
                 {
                     PreviousClickAction.Invoke();
                     WaitWebElement(timeout);
-                    Site.Logger.Event("Used Click Previous action");
+                    VISite.Logger.Event("Used Click Previous action");
                 } catch {WaitWebElement(0);}
             }
             ClearTempSettings();
             return CheckWebElementIsUnique(FoundElements);
         }
 
-        public VIElement() { DefaultNameFunc = () => _typeName + "with by selector" + Locator; }
+        public VIElement() { DefaultNameFunc = () => _typeName + " with by selector " + Locator; }
         public VIElement(string name) { Name = name; }
         public VIElement(string name, string cssSelector) : this(name) { Locator = By.CssSelector(cssSelector); }
         public VIElement(string name, By byLocator) : this(name) { Locator = byLocator; }
@@ -165,10 +162,10 @@ namespace VIQA.HtmlElements
                 return (text, viAction, logResult) =>
                 {
                     var logResultFunc = (Func<Object, string>)logResult.Invoke();
-                    Site.Logger.Event(DefaultLogMessage(text));
+                    VISite.Logger.Event(DefaultLogMessage(text));
                     var result = ((Func<Object>)viAction.Invoke()).Invoke();
                     if (logResultFunc != null)
-                        Site.Logger.Event(logResultFunc.Invoke(result));
+                        VISite.Logger.Event(logResultFunc.Invoke(result));
                     return result;
         }; } }
 
@@ -187,7 +184,7 @@ namespace VIQA.HtmlElements
         private Action<VIElement, string, Action> _defaultViAction
         {
             get { return (viElement, text, viAction) => {
-                viElement.Site.Logger.Event(viElement.DefaultLogMessage(text));
+                VISite.Logger.Event(viElement.DefaultLogMessage(text));
                 viAction.Invoke();
         }; } }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using OpenQA.Selenium;
@@ -164,8 +165,11 @@ namespace VITestsProject.Tests
             {
                 var _ = ProductPage.FilterSection;
 
-                _.ProductFilterForm.FillForm(filter);
-                _.ProductFilterForm.FillForm(ProductFilter);
+                _.FillForm(filter);
+                _.FillElements(new Dictionary<string, object>
+                {
+                    {_.ProcessorTypesChecklist.Name, ProductFilter.ProcessorTypes}
+                });
                 _.ShowResultsButton.Click();
             }
             CheckProduct(product);

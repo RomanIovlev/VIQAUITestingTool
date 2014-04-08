@@ -4,6 +4,7 @@ using System.Linq;
 using OpenQA.Selenium;
 using VIQA.Common;
 using VIQA.HtmlElements.Interfaces;
+using VIQA.SiteClasses;
 
 namespace VIQA.HtmlElements
 {
@@ -98,7 +99,7 @@ namespace VIQA.HtmlElements
                 if (valAsString != null) 
                     CheckOnly(valAsString);
                 else
-                    throw Alerting.ThrowError("Wrong Value type");
+                    throw VISite.Alerting.ThrowError("Wrong Value type");
             }
         }
     }

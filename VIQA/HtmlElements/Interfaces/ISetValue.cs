@@ -1,10 +1,10 @@
-﻿using VIQA.Common.Interfaces;
+﻿using System;
 
 namespace VIQA.HtmlElements.Interfaces
 {
     public interface ISetValue : IVIElement
     {
         void SetValue<T>(T value);
-        IAlerting Alerting { get; }
+        Func<Object, Object> FillRule { set; get; }
     }
 }
