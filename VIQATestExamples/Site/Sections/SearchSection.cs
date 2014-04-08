@@ -1,11 +1,10 @@
 ﻿using VIQA.HAttributes;
 using VIQA.HtmlElements;
 using VIQA.HtmlElements.Interfaces;
-using VIQA.SiteClasses;
 
 namespace VITestsProject.Site.Sections
 {
-    public class SearchSection : VISection
+    public class SearchSection : VIElement
     {
         [Name(Name = "Поле Поиска")]
         [Locate(ById = "search-input")]

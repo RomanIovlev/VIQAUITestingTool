@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using VIQA.HtmlElements.Interfaces;
 
 namespace VIQA.HtmlElements
@@ -13,10 +12,10 @@ namespace VIQA.HtmlElements
 
         protected override string _typeName { get { return "TextArea"; } }
 
-        public TextArea(string name = "") : base(name) { }
+        public TextArea() { }
+        public TextArea(string name) : base(name) { }
         public TextArea(string name, string cssSelector) : base(name, cssSelector) { }
-        public TextArea(string name, By byLocator, List<By> byContext = null) : base(name, byLocator, byContext) { }
-        public TextArea(By byLocator, List<By> byContext = null) : base(byLocator, byContext) { }
+        public TextArea(string name, By byLocator) : base(name, byLocator) { }
         public TextArea(string name, IWebElement webElement) : base(name, webElement) { }
         public TextArea(IWebElement webElement) : base(webElement) { }
         

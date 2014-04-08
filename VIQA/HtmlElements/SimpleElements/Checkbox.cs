@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using OpenQA.Selenium;
@@ -29,10 +28,10 @@ namespace VIQA.HtmlElements
 
         protected override string _typeName { get { return "Checkbox"; } }
 
-        public Checkbox(string name = "") : base(name) { }
+        public Checkbox() { }
+        public Checkbox(string name) : base(name) { }
         public Checkbox(string name, string cssSelector) : base(name, cssSelector) { }
-        public Checkbox(string name, By byLocator, List<By> byContext = null) : base(name, byLocator, byContext) { }
-        public Checkbox(By byLocator, List<By> byContext = null) : base(byLocator, byContext) { }
+        public Checkbox(string name, By byLocator) : base(name, byLocator) { }
         public Checkbox(string name, IWebElement webElement) : base(name, webElement) { }
         public Checkbox(IWebElement webElement) : base(webElement) { }
         public Checkbox(string name, ElementId id)

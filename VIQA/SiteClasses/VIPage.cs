@@ -4,10 +4,11 @@ using System.Reflection;
 using OpenQA.Selenium;
 using VIQA.Common;
 using VIQA.HAttributes;
+using VIQA.HtmlElements.BaseClasses;
 
 namespace VIQA.SiteClasses
 {
-    public class VIPage : VISection
+    public class VIPage : VIElementsList
     {
         private string _url;
         public string Url
@@ -29,34 +30,28 @@ namespace VIQA.SiteClasses
 
         public bool CheckTitle { get; set; }
 
-        private new By RootLocator;
-
-        public VIPage() { }
-
-        public new VIPage InitFromAttr(FieldInfo pageField, VISection parentSection)
+        public VIPage() 
         {
-            var page = (VIPage) base.InitFromAttr(pageField, parentSection);
-            page.DefaultNameFunc = () => string.Format("Page with Title: '{0}', Url: '{1}'", Title ?? "", Url ?? "");
-            var pageAttr = pageField.GetCustomAttribute<PageAttribute>(false);
+            DefaultNameFunc = () => string.Format("Page with Title: '{0}', Url: '{1}'", Title ?? "", Url ?? "");
+            var pageAttr = GetType().GetCustomAttribute<PageAttribute>(false);
 
             if (pageAttr == null)
             {
-                page.Url = "";
-                page.Title = "";
-                page.CheckUrl = false;
-                page.CheckTitle = false;
+                Url = "";
+                Title = "";
+                CheckUrl = false;
+                CheckTitle = false;
             }
             else
             {
-                page.Url = pageAttr.Url;
-                page.Title = pageAttr.Title;
-                page.CheckUrl = pageAttr.CheckUrl;
-                page.CheckTitle = pageAttr.CheckTitle;
+                Url = pageAttr.Url;
+                Title = pageAttr.Title;
+                CheckUrl = pageAttr.CheckUrl;
+                CheckTitle = pageAttr.CheckTitle;
             }
-            page.FillMetaFromClass();
-            return page;
+            FillMetaFromClass();         
         }
-
+        
         public VIPage(string name, string url = null, string title = null, bool checkUrl = true, bool checkTitle = true, VISite site = null)
         {
             DefaultNameFunc = () => string.Format("Page with Title: '{0}', Url: '{1}'", Title ?? "", Url ?? "");
@@ -130,8 +125,7 @@ namespace VIQA.SiteClasses
             var fields = _defaultSite.GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(_ => typeof(VIPage).IsAssignableFrom(_.FieldType));
             fields.ForEach(page => page.SetValue(site, 
-                ((VIPage) Activator.CreateInstance(page.FieldType))
-                    .InitFromAttr(page, null)));
+                Activator.CreateInstance(page.FieldType)));
         }
     }
 }

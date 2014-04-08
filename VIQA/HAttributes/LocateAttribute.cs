@@ -43,6 +43,11 @@ namespace VIQA.HAttributes
             return locates != null ? locates.GetLocator() : null;
         }
 
+        public static By GetLocator(Object obj)
+        {
+            var locates = obj.GetType().GetCustomAttribute<LocateAttribute>(false);
+            return locates != null ? locates.GetLocator() : null;
+        }
     }
 }
 

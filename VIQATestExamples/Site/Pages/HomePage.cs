@@ -4,7 +4,7 @@ using VITestsProject.Site.Sections;
 
 namespace VITestsProject.Site.Pages
 {
-    [Page(Title = "Яндекс.Маркет2", Url = "http://market.yandex.ru/2")]
+    [Page(Title = "Яндекс.Маркет", Url = "http://market.yandex.ru/")]
     public class HomePage : VIPage
     {
         [Name(Name = "Search section")]

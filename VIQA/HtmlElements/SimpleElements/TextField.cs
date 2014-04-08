@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using OpenQA.Selenium;
 using VIQA.HtmlElements.Interfaces;
 
@@ -16,10 +15,10 @@ namespace VIQA.HtmlElements
 
         public override Func<string> DefaultGetLabelFunc { get { return () => GetWebElement().GetAttribute("value"); } }
 
-        public TextField(string name = "") : base(name) { }
+        public TextField() { }
+        public TextField(string name) : base(name) { }
         public TextField(string name, string cssSelector) : base(name, cssSelector) { }
-        public TextField(string name, By byLocator, List<By> byContext = null) : base(name, byLocator, byContext) { }
-        public TextField(By byLocator, List<By> byContext = null) : base(byLocator, byContext) { }
+        public TextField(string name, By byLocator) : base(name, byLocator) { }
         public TextField(string name, IWebElement webElement) : base(name, webElement) { }
         public TextField(IWebElement webElement) : base(webElement) { }
         

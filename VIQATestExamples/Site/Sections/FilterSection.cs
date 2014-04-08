@@ -10,7 +10,7 @@ using VITestsProject.Data;
 
 namespace VITestsProject.Site.Sections
 {
-    public class FilterSection : VISection
+    public class FilterSection : VIElement
     {
         [Name(Name = "Цена От"), Locate(ByXPath = "//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-0')]")]
         public ITextArea TextFieldFrom = new TextField();

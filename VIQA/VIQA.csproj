@@ -69,6 +69,7 @@
     <Compile Include="HAttributes\SiteAttribute.cs" />
     <Compile Include="Common\Interfaces\IAlerting.cs" />
     <Compile Include="Common\Interfaces\ILogger.cs" />
+    <Compile Include="HtmlElements\BaseClasses\VIElementsList.cs" />
     <Compile Include="HtmlElements\Interfaces\ICheckList.cs" />
     <Compile Include="HtmlElements\Interfaces\ISelector.cs" />
     <Compile Include="HtmlElements\Interfaces\ITextArea.cs" />
@@ -76,7 +77,6 @@
     <Compile Include="HtmlElements\Interfaces\ICheckbox.cs" />
     <Compile Include="HtmlElements\Interfaces\ILink.cs" />
     <Compile Include="HtmlElements\Interfaces\IVIElement.cs" />
-    <Compile Include="SiteClasses\VISection.cs" />
     <Compile Include="SiteClasses\VISite.cs" />
     <Compile Include="Common\ByExtension.cs" />
     <Compile Include="Common\DefaultWebDriverTimeouts.cs" />

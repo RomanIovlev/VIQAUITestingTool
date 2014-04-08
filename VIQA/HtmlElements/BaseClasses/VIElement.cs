@@ -1,57 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using OpenQA.Selenium;
 using VIQA.Common;
 using VIQA.Common.Interfaces;
-using VIQA.HAttributes;
+using VIQA.HtmlElements.BaseClasses;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
 using Timer = VIQA.Common.Timer;
 
 namespace VIQA.HtmlElements
 {
-    public class VIElement : IVIElement
+    public class VIElement : VIElementsList, IVIElement
     {
-        public static void Activate(VISection root, FieldInfo field )
-        {
-            var name = root.Name + ". " + NameAttribute.GetName(field);
-            var locator = LocateAttribute.GetLocator(field) ?? By.CssSelector("");
-            var additionalArrgs = root.Context.Any() ? new Object[] { name, locator, root.Context } : new Object[] { name, locator, null };
-            var fieldType = (!field.FieldType.IsAbstract) 
-                ? field.FieldType
-                : field.GetValue(root).GetType();
-            var a = Activator.CreateInstance(fieldType, additionalArrgs);
-            field.SetValue(root, a);
-        }
-        
-        private string _name;
-        public string Name { set { _name = value; } get { return _name ?? (_typeName + "with by selector" + Locator); } }
-
-        public List<By> Context;
         public ISearchContext SearchContext
         {
             get
             {
-                ISearchContext searchContext = WebDriver;
-                if (Context != null)
-                    foreach (var locator in Context)
-                    {
-                        var el = searchContext.FindElements(locator);
-                        if (el.Count() == 1)
-                            searchContext = el.First();
-                        else 
-                            return null;
-                    }
-                return searchContext;
+                if (Context == null)
+                    return WebDriver;
+                var elements = WebDriver.FindElements(Context);
+                return (elements.Count == 1) ? elements.First() : null;
             }
         }
 
-        private By _locator;
-        protected By Locator { 
+        public By Locator { 
             set { _locator = value; }
             get
             {
@@ -112,7 +86,7 @@ namespace VIQA.HtmlElements
         protected static Action PreviousClickAction = null;
         
         protected virtual string _typeName { get { return "Element type undefined"; } }
-        public string FullName { get { return (_name != null) ? (_typeName + " " + Name) : Name;} }
+        public string FullName { get { return (Name != null) ? (_typeName + " " + Name) : Name;} }
 
         private IWebElement CheckWebElementIsUnique(ReadOnlyCollection<IWebElement> webElements)
         {
@@ -170,10 +144,10 @@ namespace VIQA.HtmlElements
             return CheckWebElementIsUnique(FoundElements);
         }
 
-        public VIElement(string name = "") { Name = name; }
+        public VIElement() { DefaultNameFunc = () => _typeName + "with by selector" + Locator; }
+        public VIElement(string name) { Name = name; }
         public VIElement(string name, string cssSelector) : this(name) { Locator = By.CssSelector(cssSelector); }
-        public VIElement(string name, By byLocator, List<By> byContext = null) : this(name) { Locator = byLocator; Context = byContext; }
-        public VIElement(By byLocator, List<By> byContext = null) : this("", byLocator, byContext) { }
+        public VIElement(string name, By byLocator) : this(name) { Locator = byLocator; }
         public VIElement(string name, IWebElement webElement) : this(name) { WebElement = webElement; }
         public VIElement(IWebElement webElement) : this("", webElement) { }
 

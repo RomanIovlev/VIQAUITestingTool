@@ -43,7 +43,7 @@ namespace VIQA.HtmlElements
 
     public class RadioButton : ClickableElement
     {
-        public RadioButton(By bySelector, List<By> byLocators = null, string name = "") : base(name, bySelector, byLocators) { }
+        public RadioButton(By bySelector, string name = "") : base(name, bySelector) { }
         public RadioButton(string cssSelector, string name = "") : base(cssSelector, name) { }
     }
 }

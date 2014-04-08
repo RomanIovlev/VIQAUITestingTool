@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using OpenQA.Selenium;
 using VIQA.HtmlElements.Interfaces;
@@ -11,10 +10,10 @@ namespace VIQA.HtmlElements
     {
         protected override string _typeName { get { return "Clickable element"; } }
 
-        public ClickableElement(string name = "") : base(name) { }
+        public ClickableElement() { }
+        public ClickableElement(string name) : base(name) { }
         public ClickableElement(string name, string cssSelector) : base(name, cssSelector) { }
-        public ClickableElement(string name, By byLocator, List<By> byContext = null) : base(name, byLocator, byContext) { }
-        public ClickableElement(By byLocator, List<By> byContext = null) : base(byLocator, byContext) { }
+        public ClickableElement(string name, By byLocator) : base(name, byLocator) { }
         public ClickableElement(string name, IWebElement webElement) : base(name, webElement) { }
         public ClickableElement(IWebElement webElement) : base(webElement) { }
 

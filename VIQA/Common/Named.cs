@@ -6,7 +6,7 @@ namespace VIQA.Common
     {
         private string _name;
 
-        public Func<string> DefaultNameFunc = () => "";
+        protected Func<string> DefaultNameFunc = () => "";
 
         public string Name
         {
