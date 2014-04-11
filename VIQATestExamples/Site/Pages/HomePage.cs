@@ -11,10 +11,5 @@ namespace VITestsProject.Site.Pages
         [Locate(ByClassName = "b-head-search")]
         public static SearchSection SearchSection;
 
-        public static void SearchProduct(string productName)
-        {
-            SearchSection.SearchTextField.Input(productName);
-            SearchSection.SearchButton.Click();
-        }
     }
 }

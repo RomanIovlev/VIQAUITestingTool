@@ -96,6 +96,7 @@ namespace VIQA.SiteClasses
             VISite.Logger.Event("Open page: " + Url);
             Site.WebDriver.Navigate().GoToUrl(Url);
             Site.WindowHandle = WebDriver.WindowHandles.First();
+            Site.CashDropTimes ++;
             if (CheckUrl) DoUrlCheck();
             if (CheckTitle) DoTitleCheck();
         }

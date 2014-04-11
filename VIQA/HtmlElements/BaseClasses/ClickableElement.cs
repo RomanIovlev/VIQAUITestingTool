@@ -18,13 +18,8 @@ namespace VIQA.HtmlElements
         public ClickableElement(string name, IWebElement webElement) : base(name, webElement) { }
         public ClickableElement(IWebElement webElement) : base(webElement) { }
 
-        private Action _clickAction;
-        public Action ClickAction
-        {
-            set { _clickAction = value; }
-            get { return _clickAction ??
-                    (() => GetWebElement().Click()); }
-        }
+        public VIAction<Action<ClickableElement>> ClickAction = 
+            new VIAction<Action<ClickableElement>>(cl => cl.GetWebElement().Click());
 
         public void ClickOnInvisibleElement()
         {
@@ -37,12 +32,12 @@ namespace VIQA.HtmlElements
         
         public void Click()
         {
-            DoVIAction("Click",
-                () => {
-                    SmartClickAction();
-                    if (WithPageLoadAction)
-                        NextActionNeedWaitPageToLoad = true;
-                });
+            DoVIAction("Click", () => {
+                SmartClickAction();
+                if (!WithPageLoadAction) return;
+                NextActionNeedWaitPageToLoad = true;
+                Site.CashDropTimes ++;
+            });
         }
 
         private void SmartClickAction()
@@ -52,9 +47,10 @@ namespace VIQA.HtmlElements
             while (!clicked && !timer.TimeoutPassed(WaitTimeoutInSec * Site.WebDriverTimeouts.WaitWebElementInSec))
                 try
                 {
-                    ClickAction.Invoke();
+                    ClickAction.Action.Invoke(this);
                     clicked = true;
-                    PreviousClickAction = ClickAction;
+                    PreviousClickAction = 
+                        () => ClickAction.Action.Invoke(this);
                     VISite.Logger.Event("Done");
                 }
                 catch

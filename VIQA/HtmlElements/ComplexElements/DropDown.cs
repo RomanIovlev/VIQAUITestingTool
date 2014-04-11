@@ -6,7 +6,7 @@ using OpenQA.Selenium.Support.UI;
 
 namespace VIQA.HtmlElements
 {
-    public class DropDown : Selector
+    public class DropDown : Selector<ClickableText>
     {
         private readonly By _elemntLocator;
 

@@ -26,6 +26,9 @@ namespace VIQA.SiteClasses
             set { _webDriverTimeouts = value; }
         }
 
+        public int CashDropTimes = -1;
+        public bool UseCache = true;
+
         public string WindowHandle;
         private string _domain;
         public string Domain { 
@@ -68,6 +71,8 @@ namespace VIQA.SiteClasses
                     Domain = site.Domain;
                 if (isMain)
                     isMain = site.IsMain;
+                if (site.UseCache)
+                    UseCache = site.UseCache;
             }
             if (!isMain) return;
             VIElement.Init(this);

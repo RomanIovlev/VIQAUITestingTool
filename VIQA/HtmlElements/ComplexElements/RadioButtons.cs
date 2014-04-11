@@ -5,17 +5,18 @@ using VIQA.Common;
 
 namespace VIQA.HtmlElements
 {
-    public class RadioButtons : Selector
+    public class RadioButtons : Selector<RadioButton>
     {
+        public override string OptionTemplate { get { return "input[type=radio][id={0}]"; } }
         private const string LocatorTmpl = "input[type=radio][{0}={1}]";
         public static string CommonLocatorById(string id) { return string.Format(LocatorTmpl, "id", id); }
         public static string CommonLocatorByNamed(string id) { return string.Format(LocatorTmpl, "name", id); }
         public static string CommonLocatorByClassName(string id) { return string.Format(LocatorTmpl, "class", id); }
 
-        public override Action<string> DefaultSelectAction
-        {
-            get { return value => new RadioButton(GetNameByValue(value), CommonLocatorById(value)).Click(); }
-        }
+        //public override Action<string> DefaultSelectAction
+        //{
+        //    get { return value => new RadioButton(GetNameByValue(value), CommonLocatorById(value)).Click(); }
+        //}
 
         public override Func<string, bool> DefaultIsSelectedFunc
         {
@@ -35,7 +36,8 @@ namespace VIQA.HtmlElements
             Func<string, string> elementLabelFunc = null)
             : base(name, listOfValuesFunc, null, elementLabelFunc)
         {
-            SelectAction = val => new RadioButton(name: GetNameByValue(val), bySelector: locatorTemplate.SetLocatorTemplateValue(val)).Click();
+            //SelectAction = val => new RadioButton(name: GetNameByValue(val), bySelector: locatorTemplate.SetLocatorTemplateValue(val)).Click();
+            OptionTemplate = LocatorTmpl;
             IsSelectedFunc = val => new RadioButton(name: GetNameByValue(val), bySelector: locatorTemplate.SetLocatorTemplateValue(val)).GetWebElement().Selected;
         }
 

@@ -9,6 +9,8 @@ namespace VIQA.HtmlElements
 {
     public class Checkbox : ClickableText, ICheckbox
     {
+        public VIElement CheckSignElement;
+
         //<input type="checkbox" name="vehicle" value="Bike" id="bike">
         //<label for="bike">I have a bike<br></label>
         private const string LocatorTmpl = "input[type=checkbox][{0}={1}]";
@@ -31,15 +33,15 @@ namespace VIQA.HtmlElements
 
         public Checkbox() { }
         public Checkbox(string name) : base(name) { }
-        public Checkbox(string name, string cssSelector) : base(name, cssSelector) { }
-        public Checkbox(string name, By byLocator) : base(name, byLocator) { }
-        public Checkbox(string name, IWebElement webElement) : base(name, webElement) { }
-        public Checkbox(IWebElement webElement) : base(webElement) { }
-        public Checkbox(string name, ElementId id)
-            : base(name, By.CssSelector(CommonLocatorById(id.ToString())))
+        public Checkbox(string name, string cssSelector) : base(name, cssSelector) { CheckSignElement = new VIElement(name + " label", cssSelector); }
+        public Checkbox(string name, By byLocator) : base(name, byLocator) { CheckSignElement = new VIElement(name + " label", byLocator); }
+        public Checkbox(string name, IWebElement webElement) : base(name, webElement) { CheckSignElement = new VIElement(name + " label", webElement); }
+        public Checkbox(IWebElement webElement) : base(webElement) { CheckSignElement = new VIElement(webElement); }
+        
+        public Checkbox(string name, ElementId id) : base(name, By.CssSelector(CommonLocatorById(id.ToString())))
         {
-            GetLabelFunc = () => new TextElement(FullName + " label", CommonLabelLocator(id.ToString())).Label;
-            IsSelectedFunc = DefaultIsSelectedFunc;
+            //GetLabelFunc = txt => new TextElement(FullName + " label", CommonLabelLocator(id.ToString())).Label;
+            //IsSelectedFunc = DefaultIsSelectedFunc;
         }
 
         public void Check()

@@ -28,7 +28,7 @@ namespace VITestsProject.Site.Sections
         };
         public readonly RadioButtons SensorScreenRadioButtons = new RadioButtons("Сенсорный экран",
             By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']")) {
-                VIAction = (viElement, text, viAction) => {
+                DoViAction = (viElement, text, viAction) => {
                     VISite.Logger.Event(viElement.DefaultLogMessage(text));
                     if (!new VIElement("", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[contains(text(),'да')]")).IsDisplayed)
                         new ClickableElement("Сенсорный экран", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//i")).Click();
@@ -39,7 +39,7 @@ namespace VITestsProject.Site.Sections
 
         public readonly ICheckList ProcessorTypesChecklist = new CheckList("Процессор", 
             By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//*[text()='{0} ']//..//input[@type='checkbox']")) {
-                VIAction = (viElement, text, viAction) => {
+                DoViAction = (viElement, text, viAction) => {
                     VISite.Logger.Event(viElement.DefaultLogMessage(text));
                     if (!new Checkbox("'Процессор' Apple A4", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//*[contains(text(),'Apple A4')]")).IsDisplayed)
                         new ClickableElement("Процессор",

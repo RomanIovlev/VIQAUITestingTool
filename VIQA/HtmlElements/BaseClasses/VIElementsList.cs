@@ -30,6 +30,9 @@ namespace VIQA.HtmlElements
                 instance.Context = (Context != null)
                     ? new ByChained(Context, _locator)
                     : _locator;
+            var clickReloadsPage = viElement.GetCustomAttribute<ClickReloadsPageAttribute>(false);
+            if (clickReloadsPage != null)
+                instance.WithPageLoadAction = true;
             viElement.SetValue(this, instance);
         }
 
@@ -51,7 +54,7 @@ namespace VIQA.HtmlElements
         }
 
         private Dictionary<string, ISetValue> _setValueElements;
-        private Dictionary<string, ISetValue> SetValueElements
+        public Dictionary<string, ISetValue> SetValueElements
         {
             get { return _setValueElements ?? (_setValueElements = 
                 GetElements<ISetValue>().Select(_ => (ISetValue)_.GetValue(this)).ToDictionary(_ => _.Name, _ => _)); }

@@ -7,10 +7,12 @@ namespace VIQA.HAttributes
     public class SiteAttribute : Attribute
     {
         public string Domain { get; set; }
+        
+        public bool UseCache { get; set; }
 
         public bool IsMain { get; set; }
 
-        public SiteAttribute() { IsMain = true; }
+        public SiteAttribute() { IsMain = true; UseCache = true; }
 
         public static SiteAttribute Get(FieldInfo field)
         {

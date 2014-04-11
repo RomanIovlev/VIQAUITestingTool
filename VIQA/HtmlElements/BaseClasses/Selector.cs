@@ -7,19 +7,49 @@ using VIQA.HtmlElements.Interfaces;
 
 namespace VIQA.HtmlElements
 {
-    public class Selector : VIElement, ISelector
+    public class Selector<T> : ClickableText, ISelector
     {
+        public Dictionary<string, ClickableText> ElementsList;
+
+        public ClickableText GetOption(string name)
+        {
+            if (ElementsList.ContainsKey(name))
+                return ElementsList[name];
+            var option = new ClickableText("", string.Format("input[id={0}]", name));
+            ElementsList.Add(name, option);
+            return option;
+        }
+
+        public virtual string OptionTemplate { get { return "input[id={0}]"; } }
+
         public string GetNameByValue(string value) { return FullName + " with value " + value; }
 
-        public virtual Action<string> DefaultSelectAction { get { return 
-            value => new ClickableElement("", string.Format("input[id={0}]", value)).Click(); } }
+        public string ElementTemplateLocator;
+        
+        public Selector() { }
+        public Selector(string name) : base(name) { }
+        public Selector(string name, string cssSelector) : base(name, cssSelector) { }
+        public Selector(string name, By byLocator) : base(name, byLocator) { }
+        public Selector(string name, IWebElement webElement) : base(name, webElement) { }
+        public Selector(IWebElement webElement) : base(webElement) { }
 
-        private Action<string> _selectAction;
-        public Action<string> SelectAction
+
+        public Selector(string name, Func<IWebDriver, List<string>> listOfValuesFunc = null,
+            Action<Selector<T>, string> selectAction = null, Func<string, string> elementLabelFunc = null, Func<string, bool> isSelectedFunc = null)
+            : base(name)
         {
-            set { _selectAction = value; }
-            get { return _selectAction ?? DefaultSelectAction; }
+            if (listOfValuesFunc != null)
+                GetListOfValuesFunc = listOfValuesFunc;
+            if (selectAction != null)
+                SelectAction.Action = selectAction;
+            if (elementLabelFunc != null)
+                GetElementLabelFunc = elementLabelFunc;
+            if (isSelectedFunc != null)
+                IsSelectedFunc = isSelectedFunc;
         }
+
+        public VIAction<Action<Selector<T>, string>> SelectAction =
+            new VIAction<Action<Selector<T>, string>>((selector, name) => selector.GetOption(name).Click());
 
         public virtual Func<string, string> DefaultGetElementLabelFunc { get { return 
             value => new TextElement("", string.Format("label[for={0}]", value)).Label; } }
@@ -42,22 +72,7 @@ namespace VIQA.HtmlElements
         }
         
         public Func<IWebDriver, List<string>> GetListOfValuesFunc;
-
-        public Selector() { }
-
-        public Selector(string name, Func<IWebDriver, List<string>> listOfValuesFunc = null,
-            Action<string> selectAction = null, Func<string, string> elementLabelFunc = null, Func<string, bool> isSelectedFunc = null)
-            : base(name)
-        {
-            GetListOfValuesFunc = listOfValuesFunc;
-            if (selectAction != null)
-                SelectAction = selectAction;
-            if (elementLabelFunc != null)
-                GetElementLabelFunc = elementLabelFunc;
-            if (isSelectedFunc != null)
-                IsSelectedFunc = isSelectedFunc;
-        }
-
+        
         protected IEnumerable<string> GetAllValues { get { return GetListOfValuesFunc.Invoke(WebDriver); } } 
 
         public List<string> GetListOfValues()

@@ -8,7 +8,7 @@ using VIQA.SiteClasses;
 
 namespace VIQA.HtmlElements
 {
-    public class CheckList : Selector, ICheckList
+    public class CheckList : Selector<Checkbox> , ICheckList
     {
         public override Action<string> DefaultSelectAction
         {
@@ -29,7 +29,9 @@ namespace VIQA.HtmlElements
             Func<string, string> elementLabelFunc = null, Action<string> selectAction = null, Func<string, bool> isSelectedFunc = null)
             : base(name, listOfValuesFunc, selectAction, elementLabelFunc, isSelectedFunc)
         {
-            _checkBoxTmpl = val => new Checkbox(FullName + " option " + val, new ElementId(val)) { ClickAction = () => DefaultSelectAction.Invoke(val) };
+            _checkBoxTmpl = val => new Checkbox(FullName + " option " + val, new ElementId(val)) {
+                ClickAction = new VIAction<Action<ClickableElement>>(cl => DefaultSelectAction.Invoke(val))
+            };
         }
 
         public CheckList(string name, By locatorTemplate, Func<IWebDriver, List<string>> listOfValuesFunc = null, 

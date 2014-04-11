@@ -122,8 +122,22 @@ namespace VIQA.HtmlElements
             }
         }
 
+        public int CashDropTimes;
+
+        private void IsClearCashNeeded()
+        {
+            if (Site.UseCache) {
+                if (CashDropTimes == Site.CashDropTimes) return;
+                CashDropTimes = Site.CashDropTimes;
+            }
+            WebElement = null;
+        }
+
         public IWebElement GetWebElement()
         {
+            IsClearCashNeeded();
+            if (WebElement != null)
+                return WebElement;
             var timeout = WaitTimeoutInSec * 1000;
             if (WithPageLoadAction)
                 NextActionNeedWaitPageToLoad = true;
@@ -176,28 +190,33 @@ namespace VIQA.HtmlElements
             get { return _viActionR ?? _defaultViActionR; }
         }
 
+        protected T DoVIAction<T, T1>(string logActionText, Func<T1, T> viAction, Func<T, string> logResult = null)
+        {
+            return (T)VIActionR.Invoke(logActionText, () => viAction, () => logResult);
+        }
+
         protected T DoVIAction<T>(string logActionText, Func<T> viAction, Func<T, string> logResult = null)
         {
             return (T) VIActionR.Invoke(logActionText, () => viAction, () => logResult);
         }
 
-        private Action<VIElement, string, Action> _defaultViAction
+        private Action<VIElement, string, Action> _defaultDoViAction
         {
             get { return (viElement, text, viAction) => {
                 VISite.Logger.Event(viElement.DefaultLogMessage(text));
                 viAction.Invoke();
         }; } }
 
-        private Action<VIElement, string, Action> _viAction;
-        public Action<VIElement, string, Action> VIAction 
+        private Action<VIElement, string, Action> _doViAction;
+        public Action<VIElement, string, Action> DoViAction 
         {
-            set { _viAction = value; }
-            get { return _viAction ?? _defaultViAction; }
+            set { _doViAction = value; }
+            get { return _doViAction ?? _defaultDoViAction; }
         }
-
+        
         protected void DoVIAction(string logActionText, Action viAction)
         {
-            VIAction.Invoke(this, logActionText, viAction);
+            DoViAction.Invoke(this, logActionText, viAction);
         }
     }
 }

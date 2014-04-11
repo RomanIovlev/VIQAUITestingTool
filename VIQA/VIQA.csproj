@@ -63,6 +63,8 @@
     <Compile Include="Common\IWebLogger.cs" />
     <Compile Include="Common\Named.cs" />
     <Compile Include="Common\Timer.cs" />
+    <Compile Include="Common\VIAction.cs" />
+    <Compile Include="HAttributes\ClickReloadsPageAttribute.cs" />
     <Compile Include="HAttributes\LocateAttribute.cs" />
     <Compile Include="HAttributes\PageAttribute.cs" />
     <Compile Include="HAttributes\NameAttribute.cs" />

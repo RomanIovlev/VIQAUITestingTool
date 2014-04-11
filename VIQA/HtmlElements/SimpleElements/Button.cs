@@ -13,14 +13,12 @@ namespace VIQA.HtmlElements
 
         protected override string _typeName { get { return "Button"; } }
 
-        public Button() { }
-        public Button(string name) : base(name) { }
-        public Button(string name, string cssSelector) : base(name, cssSelector) { }
-        public Button(string name, By byLocator) : base(name, byLocator) { }
-        public Button(string name, IWebElement webElement) : base(name, webElement) { }
-        public Button(IWebElement webElement) : base(webElement) { }
-
-        public override Func<string> DefaultGetLabelFunc { get { return () => GetWebElement().GetAttribute("value"); } }
+        public Button() { GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value"); }
+        public Button(string name) : base(name) { GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value"); }
+        public Button(string name, string cssSelector) : base(name, cssSelector) { GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value"); }
+        public Button(string name, By byLocator) : base(name, byLocator) { GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value"); }
+        public Button(string name, IWebElement webElement) : base(name, webElement) { GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value"); }
+        public Button(IWebElement webElement) : base(webElement) { GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value"); }
 
     }
 }

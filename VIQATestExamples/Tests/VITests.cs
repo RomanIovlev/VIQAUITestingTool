@@ -9,6 +9,7 @@ using VIQA.SiteClasses;
 using VITestsProject.Data;
 using VITestsProject.Site;
 using VITestsProject.Site.Pages;
+using VITestsProject.Site.Sections;
 
 namespace VITestsProject.Tests
 {
@@ -24,6 +25,7 @@ namespace VITestsProject.Tests
 
         private static YandexMarketSite _yandexMarket;
         public static YandexMarketSite YandexMarket = new YandexMarketSite(BrowserType.Chrome);
+        public static SearchSection SearchSection = HomePage.SearchSection;
 
         [Test]
         public void BadSeleniumTestExample()
@@ -160,11 +162,9 @@ namespace VITestsProject.Tests
             [ValueSource("IPhoneFilters")] Filter filter)
         {
             YandexMarket.HomePage.Open();
-            HomePage.SearchProduct(filter.ShortSearchName);
-
+            SearchSection.SearchProduct(filter.ShortSearchName);
             {
                 var _ = ProductPage.FilterSection;
-
                 _.FillForm(filter);
                 _.FillElements(new Dictionary<string, object>
                 {
