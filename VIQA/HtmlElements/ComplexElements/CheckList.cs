@@ -10,47 +10,38 @@ namespace VIQA.HtmlElements
 {
     public class CheckList : Selector<Checkbox> , ICheckList
     {
-        public override Action<string> DefaultSelectAction
-        {
-            get { return value => _checkBoxTmpl.Invoke(value).Click(); }
-        }
-
-        public override Func<string, bool> DefaultIsSelectedFunc
-        {
-            get { return value => _checkBoxTmpl.Invoke(value).IsSelectedFunc.Invoke(); }
-        }
-
+        private const string CheckboxTemplate = "input[type=checkbox][id={0}]";
         protected override string _typeName { get { return "Checkboxes"; } }
         private readonly Func<string, Checkbox> _checkBoxTmpl;
 
         public CheckList() { }
-
-        public CheckList(string name, Func<IWebDriver, List<string>> listOfValuesFunc = null, 
-            Func<string, string> elementLabelFunc = null, Action<string> selectAction = null, Func<string, bool> isSelectedFunc = null)
-            : base(name, listOfValuesFunc, selectAction, elementLabelFunc, isSelectedFunc)
-        {
-            _checkBoxTmpl = val => new Checkbox(FullName + " option " + val, new ElementId(val)) {
-                ClickAction = new VIAction<Action<ClickableElement>>(cl => DefaultSelectAction.Invoke(val))
-            };
+        
+        public CheckList(string name, Checkbox checkboxTemplate) : base(name) {
+            ListElementTemplate = checkboxTemplate;
         }
 
-        public CheckList(string name, By locatorTemplate, Func<IWebDriver, List<string>> listOfValuesFunc = null, 
-            Func<string, string> elementLabelFunc = null)
-            : base(name, listOfValuesFunc, null, elementLabelFunc)
-        {
-            _checkBoxTmpl = val => new Checkbox(GetNameByValue(val), locatorTemplate.SetLocatorTemplateValue(val) );
-        }
+        public CheckList(string name, Func<IWebDriver, List<string>> listOfValuesFunc = null,
+            Action<Selector<Checkbox>, string> selectAction = null, Func<Selector<Checkbox>, string, string> elementLabelFunc = null,
+            Func<Selector<Checkbox>, string, bool> isSelectedFunc = null)
+            : base(name, listOfValuesFunc, selectAction, elementLabelFunc, isSelectedFunc) { }
+
+        public CheckList(string name, string cssSelector = CheckboxTemplate)
+            : base(name, cssSelector) { }
+
+
+        public CheckList(string name, By rootCssSelector, string cssOptionTemplateSelector = CheckboxTemplate)
+            : base(name, rootCssSelector, cssOptionTemplateSelector) { }
 
         public void CheckGroup(params string[] values)
         {
             DoVIAction("Check Group: " + values.Print(), 
-                () => values.ForEach(val => _checkBoxTmpl.Invoke(val).Check()));
+                () => values.ForEach(val => GetlistElement(val).Check()));
         }
 
         public void UncheckGroup(params string[] values)
         {
             DoVIAction("Uncheck Group: " + values.Print(),
-                () => values.ForEach(val => _checkBoxTmpl.Invoke(val).Uncheck()));
+                () => values.ForEach(val => GetlistElement(val).Uncheck()));
         }
 
         public void CheckOnly(params string[] values)

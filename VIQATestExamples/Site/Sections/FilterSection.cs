@@ -27,10 +27,11 @@ namespace VITestsProject.Site.Sections
             FillRule = ToFillRule<Filter>(filter => filter.Wifi)
         };
         public readonly RadioButtons SensorScreenRadioButtons = new RadioButtons("Сенсорный экран",
-            By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']")) {
+            new RadioButton(By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']"))) {
                 DoViAction = (viElement, text, viAction) => {
                     VISite.Logger.Event(viElement.DefaultLogMessage(text));
-                    if (!new VIElement("", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[contains(text(),'да')]")).IsDisplayed)
+                    if (!new VIElement("", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[contains(text(),'да'" +
+                                                    ")]")).IsDisplayed)
                         new ClickableElement("Сенсорный экран", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//i")).Click();
                     viAction.Invoke();
                 },
@@ -38,7 +39,7 @@ namespace VITestsProject.Site.Sections
         };
 
         public readonly ICheckList ProcessorTypesChecklist = new CheckList("Процессор", 
-            By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//*[text()='{0} ']//..//input[@type='checkbox']")) {
+            new Checkbox(By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//*[text()='{0} ']//..//input[@type='checkbox']"))) {
                 DoViAction = (viElement, text, viAction) => {
                     VISite.Logger.Event(viElement.DefaultLogMessage(text));
                     if (!new Checkbox("'Процессор' Apple A4", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//*[contains(text(),'Apple A4')]")).IsDisplayed)

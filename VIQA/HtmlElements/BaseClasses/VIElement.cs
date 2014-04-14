@@ -27,9 +27,9 @@ namespace VIQA.HtmlElements
             set { _locator = value; }
             get
             {
-                return string.IsNullOrEmpty(_templateId) 
+                return string.IsNullOrEmpty(TemplateId) 
                     ? _locator 
-                    : _locator.GetByFunc().Invoke(string.Format(_locator.GetByLocator(), _templateId));
+                    : _locator.GetByFunc().Invoke(string.Format(_locator.GetByLocator(), TemplateId));
             }
         }
 
@@ -45,11 +45,11 @@ namespace VIQA.HtmlElements
         
         #region Temp Settings
         private int? _waitTimeoutInSec = null;
-        private string _templateId;
+        public string TemplateId;
 
         private void ClearTempSettings()
         {
-            _templateId = null;
+            TemplateId = null;
             _waitTimeoutInSec = _defaultWaitTimeoutInSec;
         }
 
@@ -57,11 +57,6 @@ namespace VIQA.HtmlElements
         {
             _waitTimeoutInSec = timeoutInSec;
             return (T)this;
-        }
-        public VIElement UseAsTemplate(string id)
-        {
-            _templateId = id;
-            return this;
         }
 
         #endregion

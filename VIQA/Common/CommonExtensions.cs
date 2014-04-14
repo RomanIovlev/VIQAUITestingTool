@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VIQA.HtmlElements;
 
 namespace VIQA.Common
 {
@@ -23,6 +24,12 @@ namespace VIQA.Common
         public static string Print(this IEnumerable<string> list, string separator = ", ", string format = "{0}")
         {
             return (list != null) ? string.Join(separator, list.Select(el => string.Format(format, el))) : "";
+        }
+
+        public static T UseAsTemplate<T>(this T element, string id) where T : VIElement
+        {
+            element.TemplateId = id;
+            return element;
         }
     }
 }

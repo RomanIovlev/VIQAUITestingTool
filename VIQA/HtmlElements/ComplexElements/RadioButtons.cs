@@ -1,51 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using OpenQA.Selenium;
-using VIQA.Common;
 
 namespace VIQA.HtmlElements
 {
     public class RadioButtons : Selector<RadioButton>
     {
-        public override string OptionTemplate { get { return "input[type=radio][id={0}]"; } }
+        private const string RadioButtonTemplate = "input[type=radio][id={0}]";
         private const string LocatorTmpl = "input[type=radio][{0}={1}]";
         public static string CommonLocatorById(string id) { return string.Format(LocatorTmpl, "id", id); }
         public static string CommonLocatorByNamed(string id) { return string.Format(LocatorTmpl, "name", id); }
         public static string CommonLocatorByClassName(string id) { return string.Format(LocatorTmpl, "class", id); }
-
-        //public override Action<string> DefaultSelectAction
-        //{
-        //    get { return value => new RadioButton(GetNameByValue(value), CommonLocatorById(value)).Click(); }
-        //}
-
-        public override Func<string, bool> DefaultIsSelectedFunc
-        {
-            get { return value => new RadioButton(GetNameByValue(value), CommonLocatorById(value)).GetWebElement().Selected; }
-        }
-
+        
         protected override string _typeName { get { return "RadioButtons"; } }
 
         public RadioButtons() { }
-
-        public RadioButtons(string name, Func<IWebDriver, List<string>> listOfValuesFunc = null,
-            Func<string, string> elementLabelFunc = null, Action<string> selectAction = null, Func<string, bool> isSelectedFunc = null)
-            : base(name, listOfValuesFunc, selectAction, elementLabelFunc, isSelectedFunc)
-        { }
-
-        public RadioButtons(string name, By locatorTemplate, Func<IWebDriver, List<string>> listOfValuesFunc = null, 
-            Func<string, string> elementLabelFunc = null)
-            : base(name, listOfValuesFunc, null, elementLabelFunc)
-        {
-            //SelectAction = val => new RadioButton(name: GetNameByValue(val), bySelector: locatorTemplate.SetLocatorTemplateValue(val)).Click();
-            OptionTemplate = LocatorTmpl;
-            IsSelectedFunc = val => new RadioButton(name: GetNameByValue(val), bySelector: locatorTemplate.SetLocatorTemplateValue(val)).GetWebElement().Selected;
+        
+        public RadioButtons(string name, RadioButton radioTemplate) : base(name) {
+            ListElementTemplate = radioTemplate;
         }
 
+        public RadioButtons(string name, Func<IWebDriver, List<string>> listOfValuesFunc = null,
+            Action<Selector<RadioButton>, string> selectAction = null, Func<Selector<RadioButton>, string, string> elementLabelFunc = null,
+            Func<Selector<RadioButton>, string, bool> isSelectedFunc = null)
+            : base(name, listOfValuesFunc, selectAction, elementLabelFunc, isSelectedFunc) { }
+
+        public RadioButtons(string name, string cssSelector = RadioButtonTemplate)
+            : base(name, cssSelector) { }
+
+
+        public RadioButtons(string name, By rootCssSelector, string cssOptionTemplateSelector = RadioButtonTemplate)
+            : base(name, rootCssSelector, cssOptionTemplateSelector) { }
+        
     }
 
-    public class RadioButton : ClickableElement
+    public class RadioButton : ClickableText
     {
-        public RadioButton(By bySelector, string name = "") : base(name, bySelector) { }
-        public RadioButton(string cssSelector, string name = "") : base(cssSelector, name) { }
+        public RadioButton(string name, By bySelector) : base(name, bySelector) { }
+        public RadioButton(string name, string cssSelector) : base(cssSelector, name) { }
+        public RadioButton(By bySelector) : base("", bySelector) { }
     }
 }

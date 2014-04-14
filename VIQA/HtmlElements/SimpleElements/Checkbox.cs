@@ -13,10 +13,10 @@ namespace VIQA.HtmlElements
 
         //<input type="checkbox" name="vehicle" value="Bike" id="bike">
         //<label for="bike">I have a bike<br></label>
-        private const string LocatorTmpl = "input[type=checkbox][{0}={1}]";
-        public static string CommonLocatorById(string id) { return string.Format(LocatorTmpl, "id", id); }
-        public static string CommonLocatorByNamed(string id) { return string.Format(LocatorTmpl, "name", id); }
-        public static string CommonLocatorByClassName(string id) { return string.Format(LocatorTmpl, "class", id); }
+        private const string LocatorTmplate = "input[type=checkbox][{0}={1}]";
+        public static string CommonLocatorById(string id) { return string.Format(LocatorTmplate, "id", id); }
+        public static string CommonLocatorByNamed(string id) { return string.Format(LocatorTmplate, "name", id); }
+        public static string CommonLocatorByClassName(string id) { return string.Format(LocatorTmplate, "class", id); }
 
         public static string CommonLabelLocator(string id) { return string.Format("label[for='{0}']", id); }
 
@@ -33,8 +33,9 @@ namespace VIQA.HtmlElements
 
         public Checkbox() { }
         public Checkbox(string name) : base(name) { }
-        public Checkbox(string name, string cssSelector) : base(name, cssSelector) { CheckSignElement = new VIElement(name + " label", cssSelector); }
-        public Checkbox(string name, By byLocator) : base(name, byLocator) { CheckSignElement = new VIElement(name + " label", byLocator); }
+        public Checkbox(string name, By bySelector) : base(name, bySelector)  { CheckSignElement = new VIElement(name + " label", bySelector); }
+        public Checkbox(string name, string cssSelector) : base(cssSelector, name)  { CheckSignElement = new VIElement(name + " label", cssSelector); }
+        public Checkbox(By bySelector) : base("", bySelector) { CheckSignElement = new VIElement("", bySelector); }
         public Checkbox(string name, IWebElement webElement) : base(name, webElement) { CheckSignElement = new VIElement(name + " label", webElement); }
         public Checkbox(IWebElement webElement) : base(webElement) { CheckSignElement = new VIElement(webElement); }
         
@@ -43,6 +44,7 @@ namespace VIQA.HtmlElements
             //GetLabelFunc = txt => new TextElement(FullName + " label", CommonLabelLocator(id.ToString())).Label;
             //IsSelectedFunc = DefaultIsSelectedFunc;
         }
+
 
         public void Check()
         {
