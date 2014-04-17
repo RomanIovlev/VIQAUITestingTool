@@ -26,7 +26,7 @@ namespace VITestsProject.Tests
         private static YandexMarketSite _yandexMarket;
         public static YandexMarketSite YandexMarket = new YandexMarketSite(BrowserType.Chrome);
         public static SearchSection SearchSection = HomePage.SearchSection;
-
+        
         [Test]
         public void BadSeleniumTestExample()
         {
@@ -150,7 +150,7 @@ namespace VITestsProject.Tests
 
             CheckProduct(product);
         }
-
+        
         private static Filter ProductFilter
         {
             get { return new Filter { ProcessorTypes = new[] { "Apple A6", "Apple A7", "MediaTek MT6575" } }; }

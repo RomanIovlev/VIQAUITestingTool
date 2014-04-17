@@ -63,7 +63,7 @@ namespace VIQA.SiteClasses
             Name = NameAttribute.GetName(this);
             WebDriverFunc = webDriver;
             Logger = Logger ?? new DefaultLogger();
-            Alerting = Alerting ?? new DefaultAllert(Logger);
+            Alerting = Alerting ?? new DefaultAllert();
             var site = SiteAttribute.Get(this);
             if (site != null)
             {

@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D8C9BCA0-23F3-4675-87D6-D2C07FA7A00F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VIQA</RootNamespace>
+    <AssemblyName>VIQA</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebDriver">
+      <HintPath>..\packages\Selenium.WebDriver.2.40.0\lib\net40\WebDriver.dll</HintPath>
+    </Reference>
+    <Reference Include="WebDriver.Support">
+      <HintPath>..\packages\Selenium.Support.2.40.0\lib\net40\WebDriver.Support.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\CommonExtensions.cs" />
+    <Compile Include="Common\DefaultAllert.cs" />
+    <Compile Include="Common\DefaultLogger.cs" />
+    <Compile Include="Common\IWebLogger.cs" />
+    <Compile Include="Common\Named.cs" />
+    <Compile Include="Common\Timer.cs" />
+    <Compile Include="Common\VIAction.cs" />
+    <Compile Include="HAttributes\ClickReloadsPageAttribute.cs" />
+    <Compile Include="HAttributes\LocateAttribute.cs" />
+    <Compile Include="HAttributes\PageAttribute.cs" />
+    <Compile Include="HAttributes\NameAttribute.cs" />
+    <Compile Include="HAttributes\SiteAttribute.cs" />
+    <Compile Include="Common\Interfaces\IAlerting.cs" />
+    <Compile Include="Common\Interfaces\ILogger.cs" />
+    <Compile Include="HtmlElements\BaseClasses\VIElementsList.cs" />
+    <Compile Include="HtmlElements\ComplexElements\DropDown.cs" />
+    <Compile Include="HtmlElements\Interfaces\ICheckList.cs" />
+    <Compile Include="HtmlElements\Interfaces\ISelector.cs" />
+    <Compile Include="HtmlElements\Interfaces\ITextArea.cs" />
+    <Compile Include="HtmlElements\Interfaces\IButton.cs" />
+    <Compile Include="HtmlElements\Interfaces\ICheckbox.cs" />
+    <Compile Include="HtmlElements\Interfaces\ILink.cs" />
+    <Compile Include="HtmlElements\Interfaces\IVIElement.cs" />
+    <Compile Include="SiteClasses\VISite.cs" />
+    <Compile Include="Common\ByExtension.cs" />
+    <Compile Include="Common\DefaultWebDriverTimeouts.cs" />
+    <Compile Include="Common\HtmlLocator.cs" />
+    <Compile Include="HtmlElements\SimpleElements\ClickableText.cs" />
+    <Compile Include="HtmlElements\BaseClasses\Selector.cs" />
+    <Compile Include="HtmlElements\Interfaces\ISetValue.cs" />
+    <Compile Include="HtmlElements\SimpleElements\TextElement.cs" />
+    <Compile Include="HtmlElements\SimpleElements\Button.cs" />
+    <Compile Include="HtmlElements\SimpleElements\Checkbox.cs" />
+    <Compile Include="HtmlElements\ComplexElements\CheckList.cs" />
+    <Compile Include="HtmlElements\BaseClasses\ClickableElement.cs" />
+    <Compile Include="HtmlElements\BaseClasses\VIElement.cs" />
+    <Compile Include="HtmlElements\Interfaces\IClickable.cs" />
+    <Compile Include="HtmlElements\Interfaces\ILabeled.cs" />
+    <Compile Include="HtmlElements\SimpleElements\Link.cs" />
+    <Compile Include="HtmlElements\ComplexElements\RadioButtons.cs" />
+    <Compile Include="HtmlElements\SimpleElements\TextArea.cs" />
+    <Compile Include="HtmlElements\SimpleElements\TextField.cs" />
+    <Compile Include="Common\IWebDriverTimeouts.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SiteClasses\VIPage.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="..\packages\Planet3.NugetPackageTemplate.1.0.6.6\build\net20\Planet3.NugetPackageTemplate.targets" Condition="Exists('..\packages\Planet3.NugetPackageTemplate.1.0.6.6\build\net20\Planet3.NugetPackageTemplate.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
