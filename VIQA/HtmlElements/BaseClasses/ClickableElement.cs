@@ -15,6 +15,7 @@ namespace VIQA.HtmlElements
         public ClickableElement(string name) : base(name) { }
         public ClickableElement(string name, string cssSelector) : base(name, cssSelector) { }
         public ClickableElement(string name, By byLocator) : base(name, byLocator) { }
+        public ClickableElement(By byLocator) : base(byLocator) { }
         public ClickableElement(string name, IWebElement webElement) : base(name, webElement) { }
         public ClickableElement(IWebElement webElement) : base(webElement) { }
 

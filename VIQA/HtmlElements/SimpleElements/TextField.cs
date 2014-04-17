@@ -19,6 +19,7 @@ namespace VIQA.HtmlElements
         public TextField(string name) : base(name) { }
         public TextField(string name, string cssSelector) : base(name, cssSelector) { }
         public TextField(string name, By byLocator) : base(name, byLocator) { }
+        public TextField(By byLocator) : base(byLocator) { }
         public TextField(string name, IWebElement webElement) : base(name, webElement) { }
         public TextField(IWebElement webElement) : base(webElement) { }
         

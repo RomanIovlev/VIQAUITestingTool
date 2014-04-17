@@ -16,6 +16,7 @@ namespace VIQA.HtmlElements
         public Link(string name) : base(name) { }
         public Link(string name, string cssSelector) : base(name, cssSelector) { }
         public Link(string name, By byLocator) : base(name, byLocator) { }
+        public Link(By byLocator) : base(byLocator) { }
         public Link(string name, IWebElement webElement) : base(name, webElement) { }
         public Link(IWebElement webElement) : base(webElement) { }
 

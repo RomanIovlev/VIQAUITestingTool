@@ -154,6 +154,7 @@ namespace VIQA.HtmlElements
         public VIElement(string name) { Name = name; }
         public VIElement(string name, string cssSelector) : this(name) { Locator = By.CssSelector(cssSelector); }
         public VIElement(string name, By byLocator) : this(name) { Locator = byLocator; }
+        public VIElement(By byLocator) : this() { Locator = byLocator; }
         public VIElement(string name, IWebElement webElement) : this(name) { WebElement = webElement; }
         public VIElement(IWebElement webElement) : this("", webElement) { }
 
@@ -164,54 +165,42 @@ namespace VIQA.HtmlElements
             return text + string.Format(" (Name: {0}, Type: {1}, Locator: {2})", FullName, _typeName, Locator);
         }
 
-        private Func<string, Func<Object>, Func<Object>, Object> _defaultViActionR
+        private Func<string, Func<Object>, Func<Object, string>, Object> _defaultViActionR
         {
             get
             {
                 return (text, viAction, logResult) =>
                 {
-                    var logResultFunc = (Func<Object, string>)logResult.Invoke();
                     VISite.Logger.Event(DefaultLogMessage(text));
-                    var result = ((Func<Object>)viAction.Invoke()).Invoke();
-                    if (logResultFunc != null)
-                        VISite.Logger.Event(logResultFunc.Invoke(result));
+                    var result = viAction.Invoke();
+                    if (logResult != null)
+                        VISite.Logger.Event(logResult.Invoke(result));
                     return result;
-        }; } }
+                }; } }
 
-        private Func<string, Func<Object>, Func<Object>, Object> _viActionR;
-        public Func<string, Func<Object>, Func<Object>, Object> VIActionR
+        private Func<string, Func<Object>, Func<Object, string>, Object> _viActionR;
+        public Func<string, Func<Object>, Func<Object, string>, Object> VIActionR
         {
             set { _viActionR = value; }
             get { return _viActionR ?? _defaultViActionR; }
         }
-
-        protected T DoVIAction<T, T1>(string logActionText, Func<T1, T> viAction, Func<T, string> logResult = null)
+        
+        protected T DoVIAction<T>(string logActionName, Func<T> viAction, Func<T, string> logResult = null)
         {
-            return (T)VIActionR.Invoke(logActionText, () => viAction, () => logResult);
+            return (T) VIActionR.Invoke(logActionName, () => viAction(), res => logResult((T)res));
         }
 
-        protected T DoVIAction<T>(string logActionText, Func<T> viAction, Func<T, string> logResult = null)
-        {
-            return (T) VIActionR.Invoke(logActionText, () => viAction, () => logResult);
-        }
-
-        private Action<VIElement, string, Action> _defaultDoViAction
-        {
-            get { return (viElement, text, viAction) => {
+        //----
+        public VIAction<Action<VIElement, string, Action>> DoViAction = new VIAction<Action<VIElement, string, Action>>(
+            (viElement, text, viAction) =>
+            {
                 VISite.Logger.Event(viElement.DefaultLogMessage(text));
                 viAction.Invoke();
-        }; } }
-
-        private Action<VIElement, string, Action> _doViAction;
-        public Action<VIElement, string, Action> DoViAction 
-        {
-            set { _doViAction = value; }
-            get { return _doViAction ?? _defaultDoViAction; }
-        }
+            });
         
-        protected void DoVIAction(string logActionText, Action viAction)
+        protected void DoVIAction(string logActionName, Action viAction)
         {
-            DoViAction.Invoke(this, logActionText, viAction);
+            DoViAction.Action.Invoke(this, logActionName, viAction);
         }
     }
 }

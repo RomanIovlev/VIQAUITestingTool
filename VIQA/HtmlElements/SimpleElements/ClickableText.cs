@@ -1,4 +1,5 @@
 ﻿using System;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using VIQA.HtmlElements.Interfaces;
 
@@ -13,26 +14,31 @@ namespace VIQA.HtmlElements
         public ClickableText() { }
         public ClickableText(string name) : base(name) { }
 
-        public ClickableText(string name, string cssSelector) : base(name, cssSelector) { TextElement = new TextElement(name + " label", cssSelector); }
-        public ClickableText(string name, By byLocator) : base(name, byLocator) { TextElement = new TextElement(name + " label", byLocator); }
-        public ClickableText(string name, IWebElement webElement) : base(name, webElement) { TextElement = new TextElement(name + " label", webElement); }
-        public ClickableText(IWebElement webElement) : base(webElement) { TextElement = new TextElement(webElement); }
+        public ClickableText(string name, string cssSelector) : base(name, cssSelector) { Init(name, By.CssSelector(cssSelector)); }
+        public ClickableText(string name, By byLocator) : base(name, byLocator) { Init(name, byLocator); }
+        public ClickableText(By byLocator) : base(byLocator) { Init("", byLocator); }
+        public ClickableText(string name, IWebElement webElement) : base(name, webElement) { Init(name, webElement); }
+        public ClickableText(IWebElement webElement) : base(webElement) { Init("", webElement); }
 
         public readonly VIAction<Func<TextElement, string>> GetLabelFunc =
             new VIAction<Func<TextElement, string>>(txt => txt.GetWebElement().Text);
 
-        //public virtual Func<string> DefaultGetLabelFunc { get { return () => GetWebElement().Text; } }
-
-        //private Func<string> _getLabelFunc;
-        //public Func<string> GetLabelFunc
-        //{
-        //    set { _getLabelFunc = value; }
-        //    get { return _getLabelFunc ?? DefaultGetLabelFunc; }
-        //}
+        private void Init(string name, By byLocator)
+        {
+            TextElement = new TextElement(name + " label", byLocator); 
+        }
+        private void Init(string name, IWebElement webElement)
+        {
+            TextElement = new TextElement(name + " label", webElement);
+        }
 
         public string Label
         {
-            get { return DoVIAction("Get label", GetLabelFunc.Action, text => text); }
+            get
+            {
+                return DoVIAction("Get label", () => GetLabelFunc.Action(TextElement), text => text);
+            }
         }
+
     }
 }

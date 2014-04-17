@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -26,7 +27,17 @@ namespace VITestsProject.Tests
         private static YandexMarketSite _yandexMarket;
         public static YandexMarketSite YandexMarket = new YandexMarketSite(BrowserType.Chrome);
         public static SearchSection SearchSection = HomePage.SearchSection;
-        
+
+        [Test]
+        public void VIQASimpleExampleTest(
+            [ValueSource("IPhoneProducts")] Product product,
+            [ValueSource("IPhoneFilters")] Filter filter)
+        {
+            YandexMarket.HomePage.Open();
+            SearchSection.SearchProduct(filter.ShortSearchName);
+            CheckProduct(product);
+        }
+
         [Test]
         public void BadSeleniumTestExample()
         {
@@ -70,7 +81,7 @@ namespace VITestsProject.Tests
         public static Button ContinueButton { get { return new Button("Далее к шагу 2", "#next-btn") { WithPageLoadAction = true }; } }
 
         [Test]
-        public void SimpleVITestExample()
+        public void VITestExampleLarge()
         {
             var site = new VISite(BrowserType.Chrome) { Domain = "http://market.yandex.ru/" };
             site.OpenHomePage();
@@ -106,7 +117,10 @@ namespace VITestsProject.Tests
             new Button("Показать", "input[value='Показать']").Click();
         }
 
-        public static void CheckProduct(Product product) { }
+        public static void CheckProduct(Product product)
+        {
+            Assert.IsNotNull(YandexMarket.WebDriver.FindElement(By.XPath("//a[contains(text(),'iPhone')]")));
+        }
 
         public static Filter[] IPhoneFilters
         {

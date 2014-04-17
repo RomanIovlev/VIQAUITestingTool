@@ -19,11 +19,11 @@ namespace VIQA.HtmlElements
             Func<Selector<ClickableText>, string, bool> isSelectedFunc = null)
             : base(name, listOfValuesFunc, selectAction, elementLabelFunc, isSelectedFunc) { }
 
-        public DropDown(string name, string cssSelector)
-            : base(name, cssSelector) { }
-
+        public DropDown(string name, string cssSelector) : base(name, cssSelector) { }
 
         public DropDown(string name, By rootCssSelector, string cssOptionTemplateSelector)
             : base(name, rootCssSelector, cssOptionTemplateSelector) { }
+
+        public DropDown(string name, By byLocator) : base(name, byLocator) { }
     }
 }

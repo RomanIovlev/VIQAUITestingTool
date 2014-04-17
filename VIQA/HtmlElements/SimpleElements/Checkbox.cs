@@ -35,7 +35,7 @@ namespace VIQA.HtmlElements
         public Checkbox(string name) : base(name) { }
         public Checkbox(string name, By bySelector) : base(name, bySelector)  { CheckSignElement = new VIElement(name + " label", bySelector); }
         public Checkbox(string name, string cssSelector) : base(cssSelector, name)  { CheckSignElement = new VIElement(name + " label", cssSelector); }
-        public Checkbox(By bySelector) : base("", bySelector) { CheckSignElement = new VIElement("", bySelector); }
+        public Checkbox(By bySelector) : base(bySelector) { CheckSignElement = new VIElement("", bySelector); }
         public Checkbox(string name, IWebElement webElement) : base(name, webElement) { CheckSignElement = new VIElement(name + " label", webElement); }
         public Checkbox(IWebElement webElement) : base(webElement) { CheckSignElement = new VIElement(webElement); }
         

@@ -29,8 +29,8 @@ namespace VIQA.HtmlElements
             : base(name, cssSelector) { }
 
 
-        public CheckList(string name, By rootCssSelector, string cssOptionTemplateSelector = CheckboxTemplate)
-            : base(name, rootCssSelector, cssOptionTemplateSelector) { }
+        public CheckList(string name, By byLocator)
+            : base(name, byLocator) { }
 
         public void CheckGroup(params string[] values)
         {

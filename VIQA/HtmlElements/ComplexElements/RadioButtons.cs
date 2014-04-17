@@ -29,8 +29,8 @@ namespace VIQA.HtmlElements
             : base(name, cssSelector) { }
 
 
-        public RadioButtons(string name, By rootCssSelector, string cssOptionTemplateSelector = RadioButtonTemplate)
-            : base(name, rootCssSelector, cssOptionTemplateSelector) { }
+        public RadioButtons(string name, By byLocator)
+            : base(name, byLocator) { }
         
     }
 

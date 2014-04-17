@@ -53,6 +53,7 @@ namespace VIQA.SiteClasses
             _webDriver = WebDriverFunc.Invoke();
             RunWebDrivers.Add(_webDriver);
             _webDriver.Manage().Window.Maximize();
+            _webDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(WebDriverTimeouts.WaitWebElementInSec));
             return _webDriver;
         }
 

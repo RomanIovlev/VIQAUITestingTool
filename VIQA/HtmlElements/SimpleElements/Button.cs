@@ -1,5 +1,4 @@
-﻿using System;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using VIQA.HtmlElements.Interfaces;
 
 namespace VIQA.HtmlElements
@@ -13,12 +12,18 @@ namespace VIQA.HtmlElements
 
         protected override string _typeName { get { return "Button"; } }
 
-        public Button() { GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value"); }
-        public Button(string name) : base(name) { GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value"); }
-        public Button(string name, string cssSelector) : base(name, cssSelector) { GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value"); }
-        public Button(string name, By byLocator) : base(name, byLocator) { GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value"); }
-        public Button(string name, IWebElement webElement) : base(name, webElement) { GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value"); }
-        public Button(IWebElement webElement) : base(webElement) { GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value"); }
+        public Button() {  }
+        public Button(string name) : base(name) { Init(); }
+        public Button(string name, string cssSelector) : base(name, cssSelector) { Init(); }
+        public Button(string name, By byLocator) : base(name, byLocator) { Init(); }
+        public Button(By byLocator) : base(byLocator) { Init(); }
+        public Button(string name, IWebElement webElement) : base(name, webElement) { Init(); }
+        public Button(IWebElement webElement) : base(webElement) { Init(); }
+
+        private void Init()
+        {
+            GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value");
+        }
 
     }
 }

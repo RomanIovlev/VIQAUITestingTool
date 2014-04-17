@@ -16,6 +16,7 @@ namespace VIQA.HtmlElements
         public TextArea(string name) : base(name) { }
         public TextArea(string name, string cssSelector) : base(name, cssSelector) { }
         public TextArea(string name, By byLocator) : base(name, byLocator) { }
+        public TextArea(By byLocator) : base(byLocator) { }
         public TextArea(string name, IWebElement webElement) : base(name, webElement) { }
         public TextArea(IWebElement webElement) : base(webElement) { }
         
