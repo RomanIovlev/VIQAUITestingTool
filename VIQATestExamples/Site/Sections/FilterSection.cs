@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenQA.Selenium;
 using VIQA;
+using VIQA.Common;
 using VIQA.HAttributes;
 using VIQA.HtmlElements;
 using VIQA.HtmlElements.Interfaces;
@@ -13,20 +14,19 @@ namespace VITestsProject.Site.Sections
 {
     public class FilterSection : VIElement
     {
-        [Name(Name = "Цена От"), Locate(ByXPath = "//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-0')]")]
-        public readonly ITextArea TextFieldFrom = new TextField {
-            FillRule = ToFillRule<Filter>(filter => (filter.CostRange != null) ? (int?)filter.CostRange.From : null)
-        };
+        [Name("Цена От")] 
+        [Locate(ByXPath = "//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-0')]")] 
+        [FillFromField("CostRange.From")]
+        public readonly ITextArea TextFieldFrom = new TextField ();
 
-        [Name(Name = "Цена До"), Locate(ByXPath = "//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-1')]")]
+        [Name("Цена До"), Locate(ByXPath = "//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-1')]")]
         public readonly ITextArea TextFieldTo = new TextField {
             FillRule = ToFillRule<Filter>(filter => (filter.CostRange != null) ? (int?)filter.CostRange.To : null)
         };
 
-        [Name(Name = "Wi-fi"), Locate(ByXPath = "//*[@class='b-gurufilters']//*[contains(text(),'Wi-Fi')]//..//input")]
-        public readonly ICheckbox WiFiCheckbox = new Checkbox {
-            FillRule = ToFillRule<Filter>(filter => filter.Wifi)
-        };
+        [Name("Wi-fi"), Locate(ByXPath = "//*[@class='b-gurufilters']//*[contains(text(),'Wi-Fi')]//..//input"), FillFromField("Wifi")] 
+        public readonly ICheckbox WiFiCheckbox = new Checkbox();
+
         public readonly RadioButtons SensorScreenRadioButtons = new RadioButtons("Сенсорный экран",
             new RadioButton(By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']"))) {
                 DoViAction = new VIAction<Action<VIElement, string, Action>>((viElement, text, viAction) => {
@@ -36,9 +36,13 @@ namespace VITestsProject.Site.Sections
                         new ClickableElement("Сенсорный экран", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//i")).Click();
                     viAction.Invoke();
                 }),
-                FillRule = ToFillRule<Filter>(filter => filter.SensorScreen)
+                FillRule = ToFillRule<Filter>(filter => filter.SensorScreen),
+                GetListOfValuesFunc = driver => 
+                    driver.FindElements(By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//input[@type='radio']//..//span"))
+                    .Select(el => el.Text).ToList()
         };
 
+        [FillFromField("ProcessorTypes")]
         public readonly ICheckList ProcessorTypesChecklist = new CheckList("Процессор", 
             new Checkbox(By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//*[text()='{0} ']//..//input[@type='checkbox']"))) {
                 DoViAction = new VIAction<Action<VIElement, string, Action>>((viElement, text, viAction) => {
@@ -51,7 +55,6 @@ namespace VITestsProject.Site.Sections
                 GetListOfValuesFunc = driver =>
                     driver.FindElements(By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//li//span"))
                         .Select(el => el.Text.Contains("U8500") ? el.Text.Replace("U8500", " U8500") : el.Text).ToList(),
-                FillRule = ToFillRule<Filter>(filter => filter.ProcessorTypes)
         };
 
         public IButton ShowResultsButton { get { return new Button("Показать", "input[value='Показать']"); } }

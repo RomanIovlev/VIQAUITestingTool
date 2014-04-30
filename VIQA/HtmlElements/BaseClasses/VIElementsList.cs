@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +27,9 @@ namespace VIQA.HtmlElements
             var locator = LocateAttribute.GetLocator(viElement);
             if (locator != null)
                 instance.Locator = locator;
+            var fillFromName = FillFromFieldAttribute.GetFieldName(viElement);
+            if (!string.IsNullOrEmpty(fillFromName))
+                instance.FillRule = data => data.GetFieldByName(fillFromName);
             if (_locator != null)
                 instance.Context = (Context != null)
                     ? new ByChained(Context, _locator)
@@ -53,31 +57,31 @@ namespace VIQA.HtmlElements
             return o => new Func<T, object>(typeFillRule).Invoke((T) o);
         }
 
-        private Dictionary<string, ISetValue> _setValueElements;
-        public Dictionary<string, ISetValue> SetValueElements
+        private Dictionary<string, IHaveValue> _withValueElements;
+        public Dictionary<string, IHaveValue> WithValueElements
         {
-            get { return _setValueElements ?? (_setValueElements = 
-                GetElements<ISetValue>().Select(_ => (ISetValue)_.GetValue(this)).ToDictionary(_ => _.Name, _ => _)); }
+            get { return _withValueElements ?? (_withValueElements = 
+                GetElements<IHaveValue>().Select(_ => (IHaveValue)_.GetValue(this)).ToDictionary(_ => _.Name, _ => _)); }
         }
 
-        public void FillElements(Dictionary<ISetValue, Object> values)
+        public void FillElements(Dictionary<IHaveValue, Object> values)
         {
             FillElements(values.ToDictionary(_ => _.Key.Name, _ => _.Value));
         }
 
         public void FillElements(Dictionary<string, Object> values)
         {
-            if (values.Keys.All(SetValueElements.ContainsKey))
-                values.Where(_ => _.Value != null).ForEach(pair => SetValueElements[pair.Key].SetValue(pair.Value));
+            if (values.Keys.All(WithValueElements.ContainsKey))
+                values.Where(_ => _.Value != null).ForEach(pair => WithValueElements[pair.Key].SetValue(pair.Value));
             else
                 throw VISite.Alerting.ThrowError("Unknown Keys for Data form.".LineBreak() +
-                    "Possible:" + SetValueElements.Keys.Print().LineBreak() +
+                    "Possible:" + WithValueElements.Keys.Print().LineBreak() +
                     "Requested:" + values.Keys.Print());
         }
         
-        public void FillForm(Object data)
+        public void FillFrom(Object data)
         {
-            SetValueElements.Select(_ => _.Value).Where(_ => _.FillRule != null)
+            WithValueElements.Select(_ => _.Value).Where(_ => _.FillRule != null)
                 .ForEach(element =>
                 {
                     try { element.SetValue(element.FillRule(data)); }
@@ -85,9 +89,37 @@ namespace VIQA.HtmlElements
                 });
         }
 
+        public bool CompareValuesWith(Object data)
+        {
+            var result = true;
+            var elements = WithValueElements.Select(_ => _.Value).Where(_ => _.FillRule != null);
+            foreach (var element in elements) {
+                try
+                {
+                    var expected = element.FillRule(data);
+                    var expectedEnum = expected as IEnumerable<Object>;
+                    if (expectedEnum == null)
+                    {
+                        if (element.Value == expected.ToString())
+                            continue;
+                    }
+                    else
+                    {
+                        var expecctedList = expectedEnum.ToList();
+                        if (expecctedList.Count(el => element.Value.Contains(el.ToString())) == expecctedList.Count())
+                        continue;
+                    }
+                    result = false;
+                    break;
+                }
+                catch { }
+            }
+            return result;
+        }
+
         public void FillElement(string name, string value)
         {
-            SetValueElements[name].SetValue(value);
+            WithValueElements[name].SetValue(value);
         }
 
         public VIElementsList()

@@ -14,6 +14,7 @@ namespace VIQA.HtmlElements
         public T GetlistElement(string name)
         {
             ListElementTemplate.TemplateId = name;
+            ListElementTemplate.TextElement.TemplateId = name;
             return ListElementTemplate;
         }
         
@@ -60,8 +61,15 @@ namespace VIQA.HtmlElements
                 (selector, name) => selector.GetlistElement(name).GetWebElement().Selected);
         
         public Func<IWebDriver, List<string>> GetListOfValuesFunc;
-        
-        protected IEnumerable<string> GetAllValues { get { return GetListOfValuesFunc.Invoke(WebDriver); } } 
+
+        protected IEnumerable<string> GetAllValues
+        {
+            get
+            {
+                try { return GetListOfValuesFunc.Invoke(WebDriver); }
+                catch { throw new Exception("GetListOfValuesFunc not set for " + Name); }
+            }
+        }
 
         public List<string> GetListOfValues()
         {
@@ -79,9 +87,11 @@ namespace VIQA.HtmlElements
         public List<string> IsSelected()
         {
             return DoVIAction(Name + ". IsSelected", 
-                () => GetAllValues.Where(el => IsSelectedFunc.Action(this, el)).Select(el => GetElementLabelFunc.Action(this, el)).ToList(),
+                () => GetAllValues.Where(el => IsSelectedFunc.Action(this, el)).ToList(),
                 values => FullName + " have selected following values: " + values.Print());
         }
+
+        public string Value { get { return IsSelected().Print(); } }
 
         public virtual void SetValue<T>(T value)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using VIQA.HtmlElements;
 
 namespace VIQA.Common
@@ -30,6 +31,25 @@ namespace VIQA.Common
         {
             element.TemplateId = id;
             return element;
+        }
+
+        public static Object GetFieldByName(this Object obj, string fieldName)
+        {
+            var fieldsQueue = new Queue<string> (fieldName.Split('.'));
+            var result = obj;
+            while (fieldsQueue.Any() && result != null)
+            {
+                var fieldsName = fieldsQueue.Dequeue();
+                var fieldInfo = result.GetType().GetField(fieldsName);
+                if (fieldInfo != null)
+                {
+                    result = fieldInfo.GetValue(result);
+                    continue;
+                }
+                var propInfo = result.GetType().GetProperty(fieldsName);
+                result = propInfo != null ? propInfo.GetValue(result) : null;
+            }
+            return result;
         }
     }
 }

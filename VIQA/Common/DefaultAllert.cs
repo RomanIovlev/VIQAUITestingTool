@@ -7,7 +7,6 @@ namespace VIQA.Common
 {
     public class DefaultAllert : IAlerting
     {
-
         public Exception ThrowError(string errorMsg)
         {
             VISite.Logger.Error(errorMsg);

@@ -4,7 +4,7 @@ using System.Reflection;
 namespace VIQA.HAttributes
 {
     [AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = false)]
-    public class PageAttribute : NameAttribute
+    public class PageAttribute : Attribute
     {
         public string Url { get; set; }
 

@@ -46,9 +46,9 @@ namespace VITestsProject.Tests
             driver.Manage().Timeouts().ImplicitlyWait(new TimeSpan(0, 0, 5));
             driver.Navigate().GoToUrl("http://market.yandex.ru/");
 
-            driver.FindElement(By.Id("search-input"))
+            driver.FindElement(By.XPath("//*[@class='b-search__input']//*[@class='b-form-input__input']"))
                 .SendKeys("IPhone");
-            driver.FindElement(By.XPath("//*[@class='b-head-search']//*[contains(text(),'Найти')]//..//..//input"))
+            driver.FindElement(By.XPath("//*[contains(text(),'Найти')]//..//..//input"))
                 .Click();
             driver.FindElement(By.XPath("//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-0')]"))
                 .SendKeys("1000");
@@ -86,9 +86,9 @@ namespace VITestsProject.Tests
             var site = new VISite(BrowserType.Chrome) { Domain = "http://market.yandex.ru/" };
             site.OpenHomePage();
 
-            new TextField("Поле Поиска", By.Id("search-input"))
+            new TextField("Поле Поиска", By.XPath("//*[@class='b-search__input']//*[@class='b-form-input__input']"))
                 .Input("IPhone");
-            new Button("Кнопка 'Найти'", By.XPath("//*[@class='b-head-search']//*[contains(text(),'Найти')]//..//..//input"))
+            new Button("Кнопка 'Найти'", By.XPath("//*[contains(text(),'Найти')]//..//..//input"))
                 .Click();
             new TextField("Цена От", By.XPath("//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-0')]"))
                 .Input("1000");
@@ -179,7 +179,8 @@ namespace VITestsProject.Tests
             SearchSection.SearchProduct(filter.ShortSearchName);
             {
                 var _ = ProductPage.FilterSection;
-                _.FillForm(filter);
+                _.FillFrom(filter);
+                Assert.IsTrue(_.CompareValuesWith(filter));
                 _.FillElements(new Dictionary<string, object>
                 {
                     {_.ProcessorTypesChecklist.Name, ProductFilter.ProcessorTypes}

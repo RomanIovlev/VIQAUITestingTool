@@ -2,7 +2,7 @@
 {
     public class Range
     {
-        public int From;
+        public int From { get; set; }
         public int To;
 
         public Range(int from, int to)

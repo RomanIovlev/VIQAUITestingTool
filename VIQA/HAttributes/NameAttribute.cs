@@ -8,6 +8,8 @@ namespace VIQA.HAttributes
     {
         public string Name;
 
+        public NameAttribute(string name) { Name = name; }
+
         public static string GetName(FieldInfo field)
         {
             var name = field.GetCustomAttribute<NameAttribute>(false);

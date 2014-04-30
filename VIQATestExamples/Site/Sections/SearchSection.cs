@@ -6,11 +6,11 @@ namespace VITestsProject.Site.Sections
 {
     public class SearchSection : VIElement
     {
-        [Name(Name = "Поле Поиска")]
-        [Locate(ById = "search-input")]
+        [Name("Поле Поиска")]
+        [Locate(ByXPath = "//*[@class='b-search__input']//*[@class='b-form-input__input']")]
         public ITextArea SearchTextField = new TextField();
 
-        [Name(Name = "Кнопка 'Найти")]
+        [Name("Кнопка 'Найти")]
         [Locate(ByXPath = "//*[contains(text(),'Найти')]//..//..//input")]
         [ClickReloadsPage]
         public IButton SearchButton = new Button();

@@ -11,6 +11,8 @@ namespace VIQA.HtmlElements
     {
         public VIElement CheckSignElement;
 
+        public new string Value { get { return IsChecked().ToString(); } }
+
         //<input type="checkbox" name="vehicle" value="Bike" id="bike">
         //<label for="bike">I have a bike<br></label>
         private const string LocatorTmplate = "input[type=checkbox][{0}={1}]";

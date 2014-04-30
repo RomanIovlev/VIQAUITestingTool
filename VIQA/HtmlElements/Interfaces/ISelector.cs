@@ -2,7 +2,7 @@
 
 namespace VIQA.HtmlElements.Interfaces
 {
-    public interface ISelector : ISetValue
+    public interface ISelector : IHaveValue
     {
         List<string> GetListOfValues();
         void Select(string valueName);

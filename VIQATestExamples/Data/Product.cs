@@ -7,6 +7,7 @@
         public bool Wifi;
         public bool SensorScreen;
         public string ProcessorType;
+        public string Test { set; get; }
 
         public Product(string name) { Name = name; }
     }

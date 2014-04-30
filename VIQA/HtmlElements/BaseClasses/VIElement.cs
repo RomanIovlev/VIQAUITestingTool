@@ -45,7 +45,11 @@ namespace VIQA.HtmlElements
         
         #region Temp Settings
         private int? _waitTimeoutInSec = null;
-        public string TemplateId;
+        private string _templateId;
+        public string TemplateId
+        {
+            set { DropCache(); _templateId = value; }
+            private get { return _templateId;  }}
 
         private void ClearTempSettings()
         {
@@ -112,21 +116,31 @@ namespace VIQA.HtmlElements
         {
             get
             {
+                WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
                 var elements = WebDriver.FindElements(Locator);
+                WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
                 return elements.Count != 0 && CheckWebElementIsUnique(elements).Displayed;
             }
         }
 
-        public int CashDropTimes;
+        public int CashDropTime;
 
         private void IsClearCashNeeded()
         {
             if (Site.UseCache) {
-                if (CashDropTimes == Site.CashDropTimes) return;
-                CashDropTimes = Site.CashDropTimes;
+                if (CashDropTime != Site.CashDropTimes) 
+                    DropCache();
+                return;
             }
             WebElement = null;
         }
+
+        private void DropCache()
+        {
+            CashDropTime = Site.CashDropTimes;
+            WebElement = null;
+        }
+
 
         public IWebElement GetWebElement()
         {

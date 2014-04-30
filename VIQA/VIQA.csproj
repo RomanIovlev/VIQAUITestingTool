@@ -65,6 +65,7 @@
     <Compile Include="Common\Timer.cs" />
     <Compile Include="Common\VIAction.cs" />
     <Compile Include="HAttributes\ClickReloadsPageAttribute.cs" />
+    <Compile Include="HAttributes\FillFromFieldAttribute.cs" />
     <Compile Include="HAttributes\LocateAttribute.cs" />
     <Compile Include="HAttributes\PageAttribute.cs" />
     <Compile Include="HAttributes\NameAttribute.cs" />
@@ -86,7 +87,7 @@
     <Compile Include="Common\HtmlLocator.cs" />
     <Compile Include="HtmlElements\SimpleElements\ClickableText.cs" />
     <Compile Include="HtmlElements\BaseClasses\Selector.cs" />
-    <Compile Include="HtmlElements\Interfaces\ISetValue.cs" />
+    <Compile Include="HtmlElements\Interfaces\IHaveValue.cs" />
     <Compile Include="HtmlElements\SimpleElements\TextElement.cs" />
     <Compile Include="HtmlElements\SimpleElements\Button.cs" />
     <Compile Include="HtmlElements\SimpleElements\Checkbox.cs" />

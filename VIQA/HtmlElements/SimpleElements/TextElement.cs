@@ -25,6 +25,8 @@ namespace VIQA.HtmlElements
             get { return _getLabelFunc ?? DefaultGetLabelFunc; }
         }
 
+        public string Value { get { return Label; } }
+
         public string Label
         {
             get { return DoVIAction("Get label", GetLabelFunc, text => text); }
