@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using OpenQA.Selenium;
+using VIQA.HtmlElements.BaseClasses;
 
 namespace VIQA.HtmlElements
 {
@@ -31,10 +33,19 @@ namespace VIQA.HtmlElements
 
         public RadioButtons(string name, By byLocator)
             : base(name, byLocator) { }
-        
+
+        public new string IsSelected()
+        {
+            return DoVIAction(Name + ". IsSelected",
+                () => GetAllValues.First(el => IsSelectedFunc.Action(this, el)),
+                values => values.ToString());
+        }
+
+        public override string Value { get { return IsSelected(); } }
+
     }
 
-    public class RadioButton : ClickableText
+    public class RadioButton : SelectItem
     {
         public RadioButton(string name, By bySelector) : base(name, bySelector) { }
         public RadioButton(string name, string cssSelector) : base(cssSelector, name) { }

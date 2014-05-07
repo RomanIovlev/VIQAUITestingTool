@@ -7,7 +7,7 @@ using VIQA.HtmlElements.Interfaces;
 
 namespace VIQA.HtmlElements
 {
-    public class Selector<T> : ClickableText, ISelector where T : ClickableText
+    public class Selector<T> : ClickableText, ISelector where T : ClickableText, ISelected
     {
         public T ListElementTemplate;
 
@@ -15,6 +15,8 @@ namespace VIQA.HtmlElements
         {
             ListElementTemplate.TemplateId = name;
             ListElementTemplate.TextElement.TemplateId = name;
+            ListElementTemplate.Name = Name + " element with value: " + name;
+            ListElementTemplate.TextElement.Name = Name + " label with value: " + name;
             return ListElementTemplate;
         }
         
@@ -58,7 +60,7 @@ namespace VIQA.HtmlElements
 
         public VIAction<Func<Selector<T>, string, bool>> IsSelectedFunc =
             new VIAction<Func<Selector<T>, string, bool>>(
-                (selector, name) => selector.GetlistElement(name).GetWebElement().Selected);
+                (selector, name) => selector.GetlistElement(name).IsSelected());
         
         public Func<IWebDriver, List<string>> GetListOfValuesFunc;
 
@@ -91,7 +93,7 @@ namespace VIQA.HtmlElements
                 values => FullName + " have selected following values: " + values.Print());
         }
 
-        public string Value { get { return IsSelected().Print(); } }
+        public virtual string Value { get { return IsSelected().Print(); } }
 
         public virtual void SetValue<T>(T value)
         {

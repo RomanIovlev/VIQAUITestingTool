@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using NUnit.Framework;
 using OpenQA.Selenium;
@@ -180,7 +181,12 @@ namespace VITestsProject.Tests
             {
                 var _ = ProductPage.FilterSection;
                 _.FillFrom(filter);
-                Assert.IsTrue(_.CompareValuesWith(filter));
+                Assert.IsTrue(_.CompareValuesWith(filter, (a, e) =>
+                {
+                    VISite.Logger.Event(string.Format("Compare Actual: {0}; Expected: {1}", a, e));
+                    Assert.AreEqual(a, e);
+                    return true;
+                }));
                 _.FillElements(new Dictionary<string, object>
                 {
                     {_.ProcessorTypesChecklist.Name, ProductFilter.ProcessorTypes}

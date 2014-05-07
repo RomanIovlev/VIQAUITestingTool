@@ -10,5 +10,10 @@
             From = from;
             To = to;
         }
+
+        public override string ToString()
+        {
+            return string.Format("(From: {0}; To: {1})", From, To);
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace VIQA.HtmlElements
         private void SetViElement(FieldInfo viElement)
         {
             var instance = (VIElement) viElement.GetValue(this) ??
-                (VIElement)Activator.CreateInstance(viElement.FieldType);
+                (VIElement)Activator.CreateInstance(InterfacesMap(viElement.FieldType));
             var name = NameAttribute.GetName(viElement);
             if (!string.IsNullOrEmpty(name))
                 instance.Name = name;
@@ -38,6 +38,16 @@ namespace VIQA.HtmlElements
             if (clickReloadsPage != null)
                 instance.WithPageLoadAction = true;
             viElement.SetValue(this, instance);
+        }
+
+        private static Type InterfacesMap(Type fieldType)
+        {
+            if (!fieldType.IsInterface) return fieldType;
+            var listOfTypes = VIElement.InterfaceTypeMap.Where(el => fieldType == el.Key).ToList();
+            if (listOfTypes.Count() == 1)
+                return listOfTypes.First().Value;
+            VISite.Alerting.ThrowError("Unknown interface: " + fieldType);
+            return fieldType;
         }
 
         public List<FieldInfo> GetElements() { return GetElements<IVIElement>(); }
@@ -69,10 +79,22 @@ namespace VIQA.HtmlElements
             FillElements(values.ToDictionary(_ => _.Key.Name, _ => _.Value));
         }
 
+        private string ObjToString(Object obj)
+        {
+            var objects = obj as IEnumerable<object>;
+            return objects != null 
+                ? string.Join(", ", objects.Select(el => el.ToString())) 
+                : obj.ToString();
+        }
+
         public void FillElements(Dictionary<string, Object> values)
         {
+            var vals = values.ToDictionary(_ => _.Key, _ => ObjToString(_.Value));
+            VISite.Logger.Event("Fill elements: '" + Name + "'".LineBreak() + "With data: " + vals.Print());
             if (values.Keys.All(WithValueElements.ContainsKey))
-                values.Where(_ => _.Value != null).ForEach(pair => WithValueElements[pair.Key].SetValue(pair.Value));
+                try
+                { values.Where(_ => _.Value != null).ForEach(pair => WithValueElements[pair.Key].SetValue(pair.Value)); }
+                catch (Exception ex) { VISite.Alerting.ThrowError("Error in FillElements. Exception: " + ex); }
             else
                 throw VISite.Alerting.ThrowError("Unknown Keys for Data form.".LineBreak() +
                     "Possible:" + WithValueElements.Keys.Print().LineBreak() +
@@ -81,17 +103,20 @@ namespace VIQA.HtmlElements
         
         public void FillFrom(Object data)
         {
+            VISite.Logger.Event("Fill form: '" + Name + "'".LineBreak() + "With data: " + data);
             WithValueElements.Select(_ => _.Value).Where(_ => _.FillRule != null)
                 .ForEach(element =>
                 {
                     try { element.SetValue(element.FillRule(data)); }
-                    catch { }
+                    catch (Exception ex) { VISite.Alerting.ThrowError("Error in FillFrom. Exception: " + ex); }
                 });
         }
 
-        public bool CompareValuesWith(Object data)
+        public bool CompareValuesWith(Object data, Func<string, string, bool> compareFunc = null)
         {
+            VISite.Logger.Event("Check Form values: '" + Name + "'".LineBreak() + "With data: " + data);
             var result = true;
+            var CompareFunc = compareFunc ?? VIElement.DefaultCompareFunc;
             var elements = WithValueElements.Select(_ => _.Value).Where(_ => _.FillRule != null);
             foreach (var element in elements) {
                 try
@@ -100,7 +125,7 @@ namespace VIQA.HtmlElements
                     var expectedEnum = expected as IEnumerable<Object>;
                     if (expectedEnum == null)
                     {
-                        if (element.Value == expected.ToString())
+                        if (CompareFunc(element.Value, expected.ToString()))
                             continue;
                     }
                     else
@@ -112,7 +137,7 @@ namespace VIQA.HtmlElements
                     result = false;
                     break;
                 }
-                catch { }
+                catch (Exception ex) { VISite.Alerting.ThrowError("Error in CompareValuesWith. Exception: " + ex); }
             }
             return result;
         }

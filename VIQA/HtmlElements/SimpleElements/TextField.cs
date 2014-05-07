@@ -4,7 +4,7 @@ using VIQA.HtmlElements.Interfaces;
 
 namespace VIQA.HtmlElements
 {
-    public class TextField : TextElement, ITextArea
+    public class TextField : TextElement, ITextField
     {
         public const string LocatorTmpl = "input[type=text][{0}={1}]";
         public static string CommonLocatorById(string id) { return string.Format(LocatorTmpl, "id", id); }

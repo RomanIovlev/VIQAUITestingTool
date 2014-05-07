@@ -72,14 +72,17 @@
     <Compile Include="HAttributes\SiteAttribute.cs" />
     <Compile Include="Common\Interfaces\IAlerting.cs" />
     <Compile Include="Common\Interfaces\ILogger.cs" />
+    <Compile Include="HtmlElements\BaseClasses\SelectItem.cs" />
     <Compile Include="HtmlElements\BaseClasses\VIElementsList.cs" />
     <Compile Include="HtmlElements\ComplexElements\DropDown.cs" />
     <Compile Include="HtmlElements\Interfaces\ICheckList.cs" />
+    <Compile Include="HtmlElements\Interfaces\ISelected.cs" />
     <Compile Include="HtmlElements\Interfaces\ISelector.cs" />
     <Compile Include="HtmlElements\Interfaces\ITextArea.cs" />
     <Compile Include="HtmlElements\Interfaces\IButton.cs" />
     <Compile Include="HtmlElements\Interfaces\ICheckbox.cs" />
     <Compile Include="HtmlElements\Interfaces\ILink.cs" />
+    <Compile Include="HtmlElements\Interfaces\ITextField.cs" />
     <Compile Include="HtmlElements\Interfaces\IVIElement.cs" />
     <Compile Include="SiteClasses\VISite.cs" />
     <Compile Include="Common\ByExtension.cs" />

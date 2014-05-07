@@ -1,6 +1,7 @@
 ﻿using VIQA.HAttributes;
 using VIQA.HtmlElements;
 using VIQA.HtmlElements.Interfaces;
+using VIQA.SiteClasses;
 
 namespace VITestsProject.Site.Sections
 {
@@ -8,15 +9,16 @@ namespace VITestsProject.Site.Sections
     {
         [Name("Поле Поиска")]
         [Locate(ByXPath = "//*[@class='b-search__input']//*[@class='b-form-input__input']")]
-        public ITextArea SearchTextField = new TextField();
+        public ITextField SearchTextField;
 
-        [Name("Кнопка 'Найти")]
+        [Name("Кнопка 'Найти'")]
         [Locate(ByXPath = "//*[contains(text(),'Найти')]//..//..//input")]
         [ClickReloadsPage]
-        public IButton SearchButton = new Button();
+        public IButton SearchButton;
 
         public void SearchProduct(string productName)
         {
+            VISite.Logger.Event("SearchProduct: " + productName);
             SearchTextField.NewInput(productName);
             SearchButton.Click();
         }

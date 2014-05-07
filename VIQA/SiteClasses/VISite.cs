@@ -76,6 +76,7 @@ namespace VIQA.SiteClasses
                     UseCache = site.UseCache;
             }
             if (!isMain) return;
+            ;
             VIElement.Init(this);
             VIPage.Init(this);
         }

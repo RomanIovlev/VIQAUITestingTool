@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using OpenQA.Selenium;
 using VIQA;
-using VIQA.Common;
 using VIQA.HAttributes;
 using VIQA.HtmlElements;
 using VIQA.HtmlElements.Interfaces;
@@ -17,15 +15,15 @@ namespace VITestsProject.Site.Sections
         [Name("Цена От")] 
         [Locate(ByXPath = "//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-0')]")] 
         [FillFromField("CostRange.From")]
-        public readonly ITextArea TextFieldFrom = new TextField ();
+        public readonly ITextField TextFieldFrom;
 
         [Name("Цена До"), Locate(ByXPath = "//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-1')]")]
-        public readonly ITextArea TextFieldTo = new TextField {
+        public readonly ITextField TextFieldTo = new TextField {
             FillRule = ToFillRule<Filter>(filter => (filter.CostRange != null) ? (int?)filter.CostRange.To : null)
         };
 
         [Name("Wi-fi"), Locate(ByXPath = "//*[@class='b-gurufilters']//*[contains(text(),'Wi-Fi')]//..//input"), FillFromField("Wifi")] 
-        public readonly ICheckbox WiFiCheckbox = new Checkbox();
+        public readonly ICheckbox WiFiCheckbox;
 
         public readonly RadioButtons SensorScreenRadioButtons = new RadioButtons("Сенсорный экран",
             new RadioButton(By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']"))) {
