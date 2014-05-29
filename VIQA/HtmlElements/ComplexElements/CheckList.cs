@@ -15,33 +15,29 @@ namespace VIQA.HtmlElements
         private readonly Func<string, Checkbox> _checkBoxTmpl;
 
         public CheckList() { }
-        
-        public CheckList(string name, Checkbox checkboxTemplate) : base(name) {
-            ListElementTemplate = checkboxTemplate;
-        }
 
-        public CheckList(string name, Func<IWebDriver, List<string>> listOfValuesFunc = null,
-            Action<Selector<Checkbox>, string> selectAction = null, Func<Selector<Checkbox>, string, string> elementLabelFunc = null,
-            Func<Selector<Checkbox>, string, bool> isSelectedFunc = null)
-            : base(name, listOfValuesFunc, selectAction, elementLabelFunc, isSelectedFunc) { }
-
-        public CheckList(string name, string cssSelector = CheckboxTemplate)
-            : base(name, cssSelector) { }
-
-
-        public CheckList(string name, By byLocator)
-            : base(name, byLocator) { }
+        public CheckList(string name, By rootLocator, Func<Checkbox> checkboxTemplate) : base(name, rootLocator, checkboxTemplate) { }
+        public CheckList(string name, Func<Checkbox> checkboxTemplate) : base(name, checkboxTemplate) { }
+        public CheckList(string name, By byLocator) : base(name, byLocator) { }
+        public CheckList(string name, string cssLocator) : base(name, cssLocator) { }
 
         public void CheckGroup(params string[] values)
         {
-            DoVIAction("Check Group: " + values.Print(), 
-                () => values.ForEach(val => GetlistElement(val).Check()));
+            DoVIAction("Check Group: " + values.Print(),
+                () => values.ForEach(val => GetVIElement(val).Check()));
         }
 
         public void UncheckGroup(params string[] values)
         {
             DoVIAction("Uncheck Group: " + values.Print(),
-                () => values.ForEach(val => GetlistElement(val).Uncheck()));
+                () => values.ForEach(val => GetVIElement(val).Uncheck()));
+        }
+
+        public Action<List<Checkbox>> ClearAction;
+
+        public void Clear()
+        {
+            DoVIAction("Clear cheklist:", () => ClearAction(Elements.Select(pair => pair.Value).ToList()));
         }
 
         public void CheckOnly(params string[] values)
@@ -49,10 +45,8 @@ namespace VIQA.HtmlElements
             DoVIAction("CheckOnly: " + values.Print(),
                 () =>
                 {
+                    Clear();
                     CheckGroup(values);
-                    if (GetListOfValuesFunc != null)
-                        //Todo better to Hide logging
-                        UncheckGroup(GetAllValues.Except(values).ToArray());
                 });
         }
 
@@ -61,10 +55,8 @@ namespace VIQA.HtmlElements
             DoVIAction("UnheckOnly: " + values.Print(),
                 () =>
                 {
-                    UncheckGroup(values);
-                    if (GetListOfValuesFunc != null)
-                        //Todo better to Hide logging
-                        CheckGroup(GetAllValues.Except(values).ToArray());
+                    Clear();
+                    CheckGroup(ListOfValues.Except(values).ToArray());
                 });
         }
 
@@ -77,7 +69,7 @@ namespace VIQA.HtmlElements
         public List<string> GetListOfNotChecked()
         {
             return DoVIAction("GetListOfChecked elements",
-                () => GetAllValues.Except(GetListOfChecked()).ToList(), result => "Checkboxes list. GetListOfNotChecked elements: " + result.Print());
+                () => ListOfValues.Except(IsSelected()).ToList(), result => "Checkboxes list. GetListOfNotChecked elements: " + result.Print());
         }
 
         public override void SetValue<T>(T value)
@@ -89,7 +81,7 @@ namespace VIQA.HtmlElements
             else
             {
                 var valAsString = value as string;
-                if (valAsString != null) 
+                if (valAsString != null)
                     CheckOnly(valAsString);
                 else
                     throw VISite.Alerting.ThrowError("Wrong Value type");

@@ -11,7 +11,7 @@ using Timer = VIQA.Common.Timer;
 
 namespace VIQA.HtmlElements
 {
-    public class VIElement : VIElementsList, IVIElement
+    public class VIElement : VIElementsSet, IVIElement
     {
         public ISearchContext SearchContext
         {
@@ -39,12 +39,17 @@ namespace VIQA.HtmlElements
         private static VISite _defaultSite { set; get; }
         public VISite Site { set { _site = value; } get { return _site ?? _defaultSite; } }
         public IWebDriverTimeouts Timeouts { get { return Site.WebDriverTimeouts; }}
-
-        protected IWebElement WebElement;
+        private IWebElement _webElement;
+        public IWebElement WebElement { set
+        {
+            DropCache(); _webElement = value; }
+            get { return _webElement; }
+        }
 
         private int _defaultWaitTimeoutInSec { get { return Timeouts.WaitWebElementInSec; } }
         
         #region Temp Settings
+        public void SetWaitTimeout(int waitTimeoutInSec) { _waitTimeoutInSec = waitTimeoutInSec; }
         private int? _waitTimeoutInSec = null;
         private string _templateId;
         public string TemplateId
@@ -52,20 +57,8 @@ namespace VIQA.HtmlElements
             set { DropCache(); _templateId = value; }
             private get { return _templateId;  }}
 
-        private void ClearTempSettings()
-        {
-            TemplateId = null;
-            _waitTimeoutInSec = _defaultWaitTimeoutInSec;
-        }
-
-        public T WaitTimeout<T>(int timeoutInSec) where T : VIElement
-        {
-            _waitTimeoutInSec = timeoutInSec;
-            return (T)this;
-        }
 
         #endregion
-
 
         protected int WaitTimeoutInSec
         {
@@ -78,7 +71,7 @@ namespace VIQA.HtmlElements
             }
         }
 
-        public bool WithPageLoadAction = false;
+        public bool WithPageLoadAction { get; set; }
         protected static bool NextActionNeedWaitPageToLoad;
         protected static Action PreviousClickAction = null;
         
@@ -124,7 +117,7 @@ namespace VIQA.HtmlElements
             }
         }
 
-        public int CashDropTime;
+        public int CashDropTime { get; set; }
 
         private void IsClearCashNeeded()
         {
@@ -133,15 +126,14 @@ namespace VIQA.HtmlElements
                     DropCache();
                 return;
             }
-            WebElement = null;
+            _webElement = null;
         }
 
         private void DropCache()
         {
             CashDropTime = Site.CashDropTimes;
-            WebElement = null;
+            _webElement = null;
         }
-
 
         public IWebElement GetWebElement()
         {
@@ -165,8 +157,24 @@ namespace VIQA.HtmlElements
             return CheckWebElementIsUnique(FoundElements);
         }
 
-        public VIElement() { DefaultNameFunc = () => _typeName + " with by selector " + Locator; }
-        public VIElement(string name) { Name = name; }
+        public IVIElement GetVIElement()
+        {
+            WebElement = GetWebElement();
+            return this;
+        }
+
+        public VIElement()
+        {
+            WithPageLoadAction = false;
+            DefaultNameFunc = () => _typeName + " with by selector " + Locator;
+        }
+
+        public VIElement(string name)
+        {
+            WithPageLoadAction = false;
+            Name = name;
+        }
+
         public VIElement(string name, string cssSelector) : this(name) { Locator = By.CssSelector(cssSelector); }
         public VIElement(string name, By byLocator) : this(name) { Locator = byLocator; }
         public VIElement(By byLocator) : this() { Locator = byLocator; }
@@ -226,6 +234,8 @@ namespace VIQA.HtmlElements
             { typeof(ILink), typeof(Link) },
             { typeof(ITextField), typeof(TextField) },
             { typeof(ITextArea), typeof(TextArea) },
+            { typeof(ILabeled), typeof(TextElement) },
+            { typeof(IClickable), typeof(ClickableElement) },
         };
 
         public static Func<string, string, bool> DefaultCompareFunc = (a, e) => a == e;

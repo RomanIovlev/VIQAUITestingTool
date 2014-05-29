@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using VIQA.HtmlElements;
+using VIQA.HtmlElements.Interfaces;
 
 namespace VIQA.Common
 {
@@ -22,6 +22,13 @@ namespace VIQA.Common
         {
             return s + " " + Environment.NewLine;
         }
+
+        public static T GetVIElement<T>(this T element) where T: IVIElement
+        {
+            element.GetWebElement();
+            return element;
+        }
+
         public static string Print(this IEnumerable<string> list, string separator = ", ", string format = "{0}")
         {
             return (list != null) ? string.Join(separator, list.Select(el => string.Format(format, el))) : "";
@@ -61,6 +68,13 @@ namespace VIQA.Common
                 result = propInfo != null ? propInfo.GetValue(result) : null;
             }
             return result;
+        }
+
+
+        public static T WaitTimeout<T>(this T viElement, int timeoutInSec) where T : VIElement
+        {
+            viElement.SetWaitTimeout(timeoutInSec);
+            return viElement;
         }
     }
 }

@@ -73,7 +73,7 @@ namespace VIQA.HtmlElements
         {
             if (value == null) return;
             var val = value.ToString();
-            if (val == null || (!new [] {"check", "uncheck", "true", "false"}.Contains(val = val.ToLower()))) 
+            if (!new [] {"check", "uncheck", "true", "false"}.Contains(val = val.ToLower()))
                 throw VISite.Alerting.ThrowError("Wrong Value type. For Checkbox availabel only 'check', 'uncheck', 'true', 'false'values of type String");
             if (val == "check" || val == "true")
                 Check();

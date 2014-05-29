@@ -26,4 +26,8 @@ namespace VIQA.HtmlElements
         }
 
     }
+    public class Buttons
+    {
+        public IButton SubmitButton { get { return new Button(By.Name("SubmitButton1")) { WithPageLoadAction = true}; } }
+    }
 }

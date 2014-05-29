@@ -16,7 +16,6 @@ namespace VIQA.SiteClasses
 {
     public class VISite : Named
     {
-        public BrowserType BrowserType;
         private IWebDriverTimeouts _webDriverTimeouts;
         public static ILogger Logger;
         public static IAlerting Alerting;
@@ -83,7 +82,7 @@ namespace VIQA.SiteClasses
         
         public void OpenPage(string uri)
         {
-            new VIPage(Name, uri, site: this).Open();
+            new VIPage(Name, uri, site: this, isTitleCheckNeeded: false).Open();
         }
 
         public void OpenHomePage()
@@ -136,7 +135,10 @@ namespace VIQA.SiteClasses
             foreach (var proc in from proc in Process.GetProcessesByName("firefox") 
                 let cmd = GetProcessCommandLine(proc.Id) where cmd.EndsWith("-foreground") select proc)
                     proc.Kill();
-            
+
+            foreach (var proc in Process.GetProcessesByName("IEDriverServer"))
+                KillProcessTree(proc.Id);
+
         }
 
         private static string GetProcessCommandLine(int pid)

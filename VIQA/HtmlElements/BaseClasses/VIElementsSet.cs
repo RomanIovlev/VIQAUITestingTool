@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -12,7 +11,7 @@ using VIQA.SiteClasses;
 
 namespace VIQA.HtmlElements
 {
-    public class VIElementsList : Named
+    public class VIElementsSet : Named
     {
         protected By _locator;
         public By Context;
@@ -34,7 +33,7 @@ namespace VIQA.HtmlElements
                 instance.Context = (Context != null)
                     ? new ByChained(Context, _locator)
                     : _locator;
-            var clickReloadsPage = viElement.GetCustomAttribute<ClickReloadsPageAttribute>(false);
+            var clickReloadsPage = viElement.GetCustomAttribute<WaitPageLoadAttribute>(false);
             if (clickReloadsPage != null)
                 instance.WithPageLoadAction = true;
             viElement.SetValue(this, instance);
@@ -147,7 +146,7 @@ namespace VIQA.HtmlElements
             WithValueElements[name].SetValue(value);
         }
 
-        public VIElementsList()
+        public VIElementsSet()
         {
             GetElements().ForEach(SetViElement);
         }

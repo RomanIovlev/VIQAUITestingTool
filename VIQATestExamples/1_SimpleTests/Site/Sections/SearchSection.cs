@@ -3,7 +3,7 @@ using VIQA.HtmlElements;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
 
-namespace VITestsProject.Site.Sections
+namespace Simple.VITestsProject.Site.Sections
 {
     public class SearchSection : VIElement
     {
@@ -13,7 +13,7 @@ namespace VITestsProject.Site.Sections
 
         [Name("Кнопка 'Найти'")]
         [Locate(ByXPath = "//*[contains(text(),'Найти')]//..//..//input")]
-        [ClickReloadsPage]
+        [WaitPageLoad]
         public IButton SearchButton;
 
         public void SearchProduct(string productName)

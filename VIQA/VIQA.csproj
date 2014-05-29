@@ -60,11 +60,10 @@
     <Compile Include="Common\CommonExtensions.cs" />
     <Compile Include="Common\DefaultAllert.cs" />
     <Compile Include="Common\DefaultLogger.cs" />
-    <Compile Include="Common\IWebLogger.cs" />
     <Compile Include="Common\Named.cs" />
     <Compile Include="Common\Timer.cs" />
     <Compile Include="Common\VIAction.cs" />
-    <Compile Include="HAttributes\ClickReloadsPageAttribute.cs" />
+    <Compile Include="HAttributes\WaitPageLoadAttribute.cs" />
     <Compile Include="HAttributes\FillFromFieldAttribute.cs" />
     <Compile Include="HAttributes\LocateAttribute.cs" />
     <Compile Include="HAttributes\PageAttribute.cs" />
@@ -73,7 +72,8 @@
     <Compile Include="Common\Interfaces\IAlerting.cs" />
     <Compile Include="Common\Interfaces\ILogger.cs" />
     <Compile Include="HtmlElements\BaseClasses\SelectItem.cs" />
-    <Compile Include="HtmlElements\BaseClasses\VIElementsList.cs" />
+    <Compile Include="HtmlElements\BaseClasses\VIList.cs" />
+    <Compile Include="HtmlElements\BaseClasses\VIElementsSet.cs" />
     <Compile Include="HtmlElements\ComplexElements\DropDown.cs" />
     <Compile Include="HtmlElements\Interfaces\ICheckList.cs" />
     <Compile Include="HtmlElements\Interfaces\ISelected.cs" />

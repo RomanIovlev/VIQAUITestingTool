@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using System.Security.Cryptography.X509Certificates;
+using OpenQA.Selenium;
 
 namespace VIQA.HtmlElements.Interfaces
 {
@@ -9,5 +10,8 @@ namespace VIQA.HtmlElements.Interfaces
         bool IsPresent { get; }
         bool IsDisplayed { get; }
         IWebElement GetWebElement();
+        By Locator { get; set; }
+        IWebElement WebElement { get; set; }
+        int CashDropTime { get; set; }
     }
 }

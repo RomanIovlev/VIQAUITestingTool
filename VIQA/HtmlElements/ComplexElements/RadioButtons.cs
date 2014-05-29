@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using OpenQA.Selenium;
 using VIQA.HtmlElements.BaseClasses;
@@ -17,32 +16,19 @@ namespace VIQA.HtmlElements
         protected override string _typeName { get { return "RadioButtons"; } }
 
         public RadioButtons() { }
-        
-        public RadioButtons(string name, RadioButton radioTemplate) : base(name) {
-            ListElementTemplate = radioTemplate;
-        }
 
-        public RadioButtons(string name, Func<IWebDriver, List<string>> listOfValuesFunc = null,
-            Action<Selector<RadioButton>, string> selectAction = null, Func<Selector<RadioButton>, string, string> elementLabelFunc = null,
-            Func<Selector<RadioButton>, string, bool> isSelectedFunc = null)
-            : base(name, listOfValuesFunc, selectAction, elementLabelFunc, isSelectedFunc) { }
-
-        public RadioButtons(string name, string cssSelector = RadioButtonTemplate)
-            : base(name, cssSelector) { }
-
-
-        public RadioButtons(string name, By byLocator)
-            : base(name, byLocator) { }
+        public RadioButtons(string name, By rootLocator, Func<RadioButton> radioTemplate) : base(name, rootLocator, radioTemplate) { }
+        public RadioButtons(string name, Func<RadioButton> selectorTemplate) : base(name, selectorTemplate) { }
+        public RadioButtons(string name, By byLocator) : base(name, byLocator) { }
+        public RadioButtons(string name, string cssLocator) : base(name, cssLocator) { }
 
         public new string IsSelected()
         {
             return DoVIAction(Name + ". IsSelected",
-                () => GetAllValues.First(el => IsSelectedFunc.Action(this, el)),
-                values => values.ToString());
+                () => GetAllElements().First(pair => pair.Value.IsSelected()).Key,
+                value => FullName + " value '" + value + "' is selected: ");
         }
-
         public override string Value { get { return IsSelected(); } }
-
     }
 
     public class RadioButton : SelectItem
@@ -50,5 +36,7 @@ namespace VIQA.HtmlElements
         public RadioButton(string name, By bySelector) : base(name, bySelector) { }
         public RadioButton(string name, string cssSelector) : base(cssSelector, name) { }
         public RadioButton(By bySelector) : base("", bySelector) { }
+        public RadioButton(string name, IWebElement webElement) : base(name, webElement) { }
+        public RadioButton(IWebElement webElement) : base(webElement) { }
     }
 }
