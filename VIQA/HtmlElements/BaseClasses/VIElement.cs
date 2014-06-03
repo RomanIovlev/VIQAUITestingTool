@@ -163,6 +163,8 @@ namespace VIQA.HtmlElements
             return this;
         }
 
+        #region Constructors
+
         public VIElement()
         {
             WithPageLoadAction = false;
@@ -180,6 +182,7 @@ namespace VIQA.HtmlElements
         public VIElement(By byLocator) : this() { Locator = byLocator; }
         public VIElement(string name, IWebElement webElement) : this(name) { WebElement = webElement; }
         public VIElement(IWebElement webElement) : this("", webElement) { }
+        #endregion
 
         public static void Init(VISite site) { _defaultSite = site; }
 

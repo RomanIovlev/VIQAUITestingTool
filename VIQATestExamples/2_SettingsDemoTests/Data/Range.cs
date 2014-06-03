@@ -1,4 +1,4 @@
-﻿namespace Settings.VITestsProject.Data
+﻿namespace VITestsProject.Standard.Data
 {
     public class Range
     {

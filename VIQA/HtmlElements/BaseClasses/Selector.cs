@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using OpenQA.Selenium;
 using VIQA.Common;
 using VIQA.HtmlElements.BaseClasses;
@@ -15,7 +16,15 @@ namespace VIQA.HtmlElements
 
         public Selector(string name) : base(name) { }
 
-        public Selector(string name, By rootCssSelector, Func<T> selectorTemplate) : base(name, rootCssSelector, selectorTemplate) { }
+        public Selector(string name, By rootCssSelector, Func<T> selectorTemplate)
+            : base(name, rootCssSelector, selectorTemplate)
+        {
+            DefaultSelectAction = (selector, val) =>
+            {
+                selector.GetWebElement().Click();
+                selector.GetVIElementByName(val).Click();
+            };
+        }
         public Selector(string name, Func<T> selectorTemplate) : base(name, selectorTemplate) { }
         public Selector(string name, By byLocator) : base(name, byLocator) { }
         public Selector(string name, string cssLocator) : base(name, cssLocator) { }
@@ -23,17 +32,32 @@ namespace VIQA.HtmlElements
         #endregion
 
         #region Actions
-        public VIAction<Action<Selector<T>, string>> SelectAction =
-            new VIAction<Action<Selector<T>, string>>(
-                (selector, name) => selector.GetVIElement(name).Click());
 
-        public VIAction<Func<Selector<T>, string, string>> GetElementLabelFunc =
-            new VIAction<Func<Selector<T>, string, string>>(
-                (selector, name) => selector.GetVIElement(name).Label);
+        public Action<Selector<T>, string> DefaultSelectAction = (selector, name) => selector.GetVIElementByName(name).Click();
 
-        public VIAction<Func<Selector<T>, string, bool>> IsSelectedFunc =
-            new VIAction<Func<Selector<T>, string, bool>>(
-                (selector, name) => selector.GetVIElement(name).IsSelected());
+        private Action<Selector<T>, string> _selectAction;
+        public Action<Selector<T>, string> SelectAction
+        {
+            set { _selectAction = value; }
+            get { return _selectAction ?? DefaultSelectAction; }
+        }
+
+
+        public Func<Selector<T>, string, string> DefaultGetElementLabelFunc = (selector, name) => selector.GetVIElementByName(name).Label;
+        private Func<Selector<T>, string, string> _getElementLabelFunc;
+        public Func<Selector<T>, string, string> GetElementLabelFunc
+        {
+            set { _getElementLabelFunc = value; }
+            get { return _getElementLabelFunc ?? DefaultGetElementLabelFunc; }
+        }
+
+        public Func<Selector<T>, string, bool> DefaultIsSelectedFunc = (selector, name) => selector.GetVIElementByName(name).IsSelected();
+        private Func<Selector<T>, string, bool> _isSelectedFunc;
+        public Func<Selector<T>, string, bool> IsSelectedFunc
+        {
+            set { _isSelectedFunc = value; }
+            get { return _isSelectedFunc ?? DefaultIsSelectedFunc; }
+        }
         #endregion
         
         public List<string> GetListOfValues()
@@ -46,7 +70,7 @@ namespace VIQA.HtmlElements
         public void Select(string valueName)
         {
             DoVIAction(Name + ". Select " + valueName,
-                () => SelectAction.Action(this, valueName));
+                () => SelectAction(this, valueName));
         }
 
         public List<string> IsSelected()

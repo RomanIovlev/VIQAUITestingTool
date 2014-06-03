@@ -23,7 +23,6 @@ namespace VIQA.HtmlElements
         public static string CommonLabelLocator(string id) { return string.Format("label[for='{0}']", id); }
 
         public virtual Func<bool> DefaultIsSelectedFunc { get { return () => GetWebElement().Selected; } }
-
         private Func<bool> _isSelectedFunc;
         public Func<bool> IsSelectedFunc
         {

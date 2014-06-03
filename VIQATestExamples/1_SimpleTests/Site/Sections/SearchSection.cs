@@ -3,7 +3,7 @@ using VIQA.HtmlElements;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
 
-namespace Simple.VITestsProject.Site.Sections
+namespace VITestsProject.Simple.Site.Sections
 {
     public class SearchSection : VIElement
     {

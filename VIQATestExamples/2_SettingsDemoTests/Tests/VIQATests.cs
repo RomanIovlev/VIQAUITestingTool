@@ -2,24 +2,30 @@
 using NUnit.Framework;
 using OpenQA.Selenium;
 using VIQA.HtmlElements;
+using VIQA.HtmlElements.BaseClasses;
+using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
-using Settings.VITestsProject.Site;
+using VITestsProject.Standard.Site;
 
-namespace Settings.VITestsProject.Tests
+namespace VI.Settings.VITestsProject.Tests
 {
     [TestFixture]
     public class VIQATests
     {
         [SetUp]
-        public void Init() { }
+        public void Init()
+        {
+        }
 
         [TearDown]
-        public void TestCleanup() { }
-        
+        public void TestCleanup()
+        {
+        }
+
         [Test]
         public void VITestExampleLarge()
         {
-            var site = new VISite(BrowserType.Chrome) { Domain = "http://market.yandex.ru/" };
+            var site = new VISite(BrowserType.Chrome) {Domain = "http://market.yandex.ru/"};
             site.OpenHomePage();
 
             new TextField("Поле Поиска", By.XPath("//*[@class='b-search__input']//*[@class='b-form-input__input']"))
@@ -34,18 +40,26 @@ namespace Settings.VITestsProject.Tests
             new Checkbox("Wi-fi", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Wi-Fi')]//..//input"))
                 .Check();
 
-            new ClickableElement("Сенсорный экран", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//i"))
+            new ClickableElement("Сенсорный экран",
+                By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//i"))
                 .Click();
-            new RadioButtons("Выбор Сенсорного Экрана", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']"))
+            new RadioButtons("Выбор Сенсорного Экрана",
+                By.XPath(
+                    "//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']"))
                 .Select("да");
 
-            new ClickableElement("Процессор", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//i"))
+            new ClickableElement("Процессор",
+                By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//i"))
                 .Click();
             var a = site.WebDriver.FindElements(
-                By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//li//span[contains(text(),'8500')]"));
+                By.XPath(
+                    "//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//li//span[contains(text(),'8500')]"));
 
-            var processorsCheckBox = new CheckList("Выбор Процессора", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//*[text()='{0} ']//..//input[@type='checkbox']"));
-            processorsCheckBox.CheckGroup("Apple A4", "Apple A5", "Apple A6", "Apple A7", "MediaTek MT6572W", "MediaTek MT6515");
+            var processorsCheckBox = new CheckList("Выбор Процессора",
+                By.XPath(
+                    "//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//*[text()='{0} ']//..//input[@type='checkbox']"));
+            processorsCheckBox.CheckGroup("Apple A4", "Apple A5", "Apple A6", "Apple A7", "MediaTek MT6572W",
+                "MediaTek MT6515");
             processorsCheckBox.GetAllElementsFunc = driver => driver.FindElements(
                 By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//..//li//label"))
                 .ToDictionary(
@@ -55,7 +69,19 @@ namespace Settings.VITestsProject.Tests
             new Button("Показать", "input[value='Показать']").Click();
         }
 
-        [Test]
+        public ISelector MyDropDown = new DropDown("MyDropDown", 
+            By.XPath("rootlocator"),
+            () => new SelectItem("", By.XPath("element locator")))
+            {
+                SelectAction = (selector, name) =>
+                {
+                    selector.GetWebElement().Click();
+                    selector.GetVIElementByName(name).Click();
+                }
+            };
+    
+
+    [Test]
         public void VITestExamplePageObjects()
         {
             YandexMarket.HomePage.Open();

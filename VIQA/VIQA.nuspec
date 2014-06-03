@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>VIQA</id>
+    <version>1.0.6100.10000</version>
+    <title>viqa - web testing tool</title>
+    <authors>Roman Iovlev</authors>
+    <owners>Roman Iovlev</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Framework for easy testing of UI Web pages with Selenium 2.X based on Virtual Intelligence technology</description>
+    <summary>Framework for easy testing of UI Web pages with Selenium 2.X based on Virtual Intelligence technology</summary>
+    <copyright>GPL2</copyright>
+    <tags>C# Selenium WebDriver QA Testing Web UI Framework</tags>
+  </metadata>
+</package>

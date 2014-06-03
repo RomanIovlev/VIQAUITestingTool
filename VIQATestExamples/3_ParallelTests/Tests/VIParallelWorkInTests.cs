@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using VIQA.SiteClasses;
-using Parallel.VITestsProject.Site;
+using VITestsProject.Parallel.Site;
 
-namespace Parallel.VITestsProject.Tests
+namespace VITestsProject.Parallel.Tests
 {
     [TestFixture]
     public class VIParallelWorkInTests

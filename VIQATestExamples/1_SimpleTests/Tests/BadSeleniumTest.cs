@@ -3,7 +3,7 @@ using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
-namespace Simple.VITestsProject.Tests.Simple
+namespace VITestsProject.Simple.Tests.Simple
 {
     [TestFixture]
     public class BadSeleniumTest

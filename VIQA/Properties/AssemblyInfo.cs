@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("viqa")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Framework for easy testing of UI Web pages with Selenium 2.X based on Virtual Intelligence technology")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("IFree")]
 [assembly: AssemblyProduct("viqa")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2013")]
+[assembly: AssemblyCopyright("No Copyriqht")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

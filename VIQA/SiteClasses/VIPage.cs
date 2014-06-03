@@ -42,14 +42,35 @@ namespace VIQA.SiteClasses
                 IsUrlCheckNeeded = false;
                 IsTitleCheckNeeded = false;
             }
-            else
-            {
-                Url = pageAttr.Url;
-                Title = pageAttr.Title;
-                IsUrlCheckNeeded = (!string.IsNullOrEmpty(Url)) && pageAttr.CheckUrl;
-                IsTitleCheckNeeded = (!string.IsNullOrEmpty(Title)) && pageAttr.CheckTitle;
-            }
+            else FillFromPageAttribute(pageAttr);
             FillMetaFromClass();         
+        }
+
+        public VIPage(PageAttribute pageAttributeField)
+        {
+            DefaultNameFunc = () => string.Format("Page with Title: '{0}', Url: '{1}'", Title ?? "", Url ?? "");
+            var pageAttrClass = GetType().GetCustomAttribute<PageAttribute>(false);
+
+            if (pageAttrClass == null && pageAttributeField == null)
+            {
+                Url = "";
+                Title = "";
+                IsUrlCheckNeeded = false;
+                IsTitleCheckNeeded = false;
+            }
+            else 
+                if (pageAttributeField ==null)
+                    FillFromPageAttribute(pageAttrClass);
+                else
+                    FillFromPageAttribute(pageAttributeField);
+            FillMetaFromClass();
+        }
+        public void FillFromPageAttribute(PageAttribute pageAttr)
+        {
+            Url = pageAttr.Url;
+            Title = pageAttr.Title;
+            IsUrlCheckNeeded = (!string.IsNullOrEmpty(Url)) && pageAttr.CheckUrl;
+            IsTitleCheckNeeded = (!string.IsNullOrEmpty(Title)) && pageAttr.CheckTitle;
         }
         
         public VIPage(string name, string url = null, string title = null, bool isUrlCheckNeeded = true, bool isTitleCheckNeeded = true, VISite site = null)
@@ -147,8 +168,15 @@ namespace VIQA.SiteClasses
             _defaultSite = site;
             var fields = _defaultSite.GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(_ => typeof(VIPage).IsAssignableFrom(_.FieldType));
-            fields.ForEach(page => page.SetValue(site, 
-                Activator.CreateInstance(page.FieldType)));
+            fields.ForEach(
+                page =>
+                {
+                    var pageAttribute = PageAttribute.Handler(page);
+                    var instance = (VIPage)Activator.CreateInstance(page.FieldType);
+                    if (pageAttribute != null) 
+                        instance.FillFromPageAttribute(pageAttribute);
+                    page.SetValue(site, instance);
+                });
         }
     }
 }

@@ -18,10 +18,7 @@ namespace VIQA.HtmlElements
         public ClickableText(By byLocator) : base(byLocator) { Init("", byLocator); }
         public ClickableText(string name, IWebElement webElement) : base(name, webElement) { Init(name, webElement); }
         public ClickableText(IWebElement webElement) : base(webElement) { Init("", webElement); }
-
-        public VIAction<Func<TextElement, string>> GetLabelFunc =
-            new VIAction<Func<TextElement, string>>(txt => txt.GetWebElement().Text);
-
+        
         private void Init(string name, By byLocator) {
             TextElement = new TextElement(name + " label", byLocator); 
         }
@@ -30,7 +27,7 @@ namespace VIQA.HtmlElements
         }
 
         public string Label { get {
-            return DoVIAction("Get label", () => GetLabelFunc.Action(TextElement), text => text);
+            return DoVIAction("Get label", () => TextElement.GetLabelFunc(), text => text);
         } }
 
     }

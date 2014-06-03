@@ -22,12 +22,8 @@ namespace VIQA.HtmlElements
 
         private void Init()
         {
-            GetLabelFunc.DefaultAction = txt => txt.GetWebElement().GetAttribute("value");
+            TextElement.GetLabelFunc = () => GetWebElement().GetAttribute("value");
         }
 
-    }
-    public class Buttons
-    {
-        public IButton SubmitButton { get { return new Button(By.Name("SubmitButton1")) { WithPageLoadAction = true}; } }
     }
 }

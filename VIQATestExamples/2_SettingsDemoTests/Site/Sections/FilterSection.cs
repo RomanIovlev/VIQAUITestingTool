@@ -6,9 +6,9 @@ using VIQA.HAttributes;
 using VIQA.HtmlElements;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
-using Settings.VITestsProject.Data;
+using VITestsProject.Standard.Data;
 
-namespace Settings.VITestsProject.Site.Sections
+namespace VITestsProject.Standard.Site.Sections
 {
     public class FilterSection : VIElement
     {

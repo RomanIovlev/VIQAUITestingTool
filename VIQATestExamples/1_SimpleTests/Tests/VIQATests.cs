@@ -2,9 +2,9 @@
 using OpenQA.Selenium;
 using VIQA.HtmlElements;
 using VIQA.SiteClasses;
-using Simple.VITestsProject.Site;
+using VITestsProject.Simple.Site;
 
-namespace Simple.VITestsProject.Tests
+namespace VITestsProject.Simple.Tests
 {
     [TestFixture]
     public class VIQATests

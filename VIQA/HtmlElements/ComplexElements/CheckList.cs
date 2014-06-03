@@ -24,13 +24,13 @@ namespace VIQA.HtmlElements
         public void CheckGroup(params string[] values)
         {
             DoVIAction("Check Group: " + values.Print(),
-                () => values.ForEach(val => GetVIElement(val).Check()));
+                () => values.ForEach(val => GetVIElementByName(val).Check()));
         }
 
         public void UncheckGroup(params string[] values)
         {
             DoVIAction("Uncheck Group: " + values.Print(),
-                () => values.ForEach(val => GetVIElement(val).Uncheck()));
+                () => values.ForEach(val => GetVIElementByName(val).Uncheck()));
         }
 
         public Action<List<Checkbox>> ClearAction;

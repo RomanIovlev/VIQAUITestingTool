@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenQA.Selenium;
 using VIQA.Common;
-using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
 
 namespace VIQA.HtmlElements.BaseClasses
 {
-    public class VIList<T> : VIElement where T : ClickableText, ISelected, IHaveValue
+    public class VIList<T> : VIElement where T : VIElement
     {
         public Func<T> CreateElementFunc = () => (T)Activator.CreateInstance(typeof(T));
         
@@ -20,7 +19,7 @@ namespace VIQA.HtmlElements.BaseClasses
             return locatorTemplate.GetByFunc().Invoke(string.Format(locatorTemplate.GetByLocator(), value));
         }
         
-        public T GetVIElement(string value)
+        public T GetVIElementByName(string value)
         {
             if (!Elements.ContainsKey(value))
             {
@@ -30,6 +29,7 @@ namespace VIQA.HtmlElements.BaseClasses
             }
             return Elements[value];
         }
+        #region Constructors
 
         public VIList() { }
         public VIList(string name) : base(name) { }
@@ -49,6 +49,7 @@ namespace VIQA.HtmlElements.BaseClasses
         }
 
         public VIList(string name, Func<T> selectorTemplate) : this(name, null, selectorTemplate) { }
+        #endregion
 
         public List<string> ListOfValues;
         public Func<IWebDriver, Dictionary<string,T>> GetAllElementsFunc;
@@ -68,13 +69,6 @@ namespace VIQA.HtmlElements.BaseClasses
 
             ListOfValues = Elements.Select(el => el.Key).ToList();
             return Elements;
-        }
-
-        private void CheckRequestTime(Action action)
-        {
-            var timer = new Timer();
-            action();
-            VISite.Logger.Event("RequestTime:" + timer.TimePassed());
         }
 
     }

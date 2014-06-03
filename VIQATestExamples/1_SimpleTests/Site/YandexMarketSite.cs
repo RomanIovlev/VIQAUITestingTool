@@ -2,9 +2,9 @@
 using OpenQA.Selenium;
 using VIQA.HAttributes;
 using VIQA.SiteClasses;
-using Simple.VITestsProject.Site.Pages;
+using VITestsProject.Simple.Site.Pages;
 
-namespace Simple.VITestsProject.Site
+namespace VITestsProject.Simple.Site
 {
     [Site(Domain = "http://market.yandex.ru/")]
     public class YandexMarketSite : VISite

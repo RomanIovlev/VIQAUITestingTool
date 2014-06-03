@@ -19,8 +19,13 @@ namespace VIQA.HtmlElements
         public ClickableElement(string name, IWebElement webElement) : base(name, webElement) { }
         public ClickableElement(IWebElement webElement) : base(webElement) { }
 
-        public VIAction<Action<ClickableElement>> ClickAction = 
-            new VIAction<Action<ClickableElement>>(cl => cl.GetWebElement().Click());
+        public Action<ClickableElement> DefaultClickAction = cl => cl.GetWebElement().Click();
+        private Action<ClickableElement> _clickAction;
+        public Action<ClickableElement> ClickAction
+        {
+            set { _clickAction = value; }
+            get { return _clickAction ?? DefaultClickAction; }
+        }
 
         public void ClickOnInvisibleElement()
         {
@@ -48,10 +53,10 @@ namespace VIQA.HtmlElements
             while (!clicked && !timer.TimeoutPassed(WaitTimeoutInSec * Site.WebDriverTimeouts.WaitWebElementInSec))
                 try
                 {
-                    ClickAction.Action.Invoke(this);
+                    ClickAction(this);
                     clicked = true;
                     PreviousClickAction = 
-                        () => ClickAction.Action.Invoke(this);
+                        () => ClickAction(this);
                     VISite.Logger.Event("Done");
                 }
                 catch

@@ -19,7 +19,9 @@ namespace VIQA.HtmlElements
         public new string IsSelected()
         {
             return DoVIAction(Name + ". IsSelected",
-                () => GetAllElements().First(pair => pair.Value.IsSelected()).Key,
+                () => (ListOfValues == null) 
+                    ? GetAllElements().First(pair => pair.Value.IsSelected()).Key
+                    : ListOfValues.First(name => GetVIElementByName(name).IsSelected()),
                 value => FullName + " value '" + value + "' is selected: ");
         }
 

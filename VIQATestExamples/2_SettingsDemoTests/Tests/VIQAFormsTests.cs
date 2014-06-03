@@ -2,10 +2,10 @@
 using NUnit.Framework;
 using OpenQA.Selenium;
 using VIQA.SiteClasses;
-using Settings.VITestsProject.Data;
-using Settings.VITestsProject.Site;
+using VITestsProject.Standard.Data;
+using VITestsProject.Standard.Site;
 
-namespace Settings.VITestsProject.Tests
+namespace VI.Settings.VITestsProject.Tests
 {
     [TestFixture]
     public class VIQAFormsTests

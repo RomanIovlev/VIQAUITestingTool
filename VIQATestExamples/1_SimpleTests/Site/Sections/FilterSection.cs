@@ -2,7 +2,7 @@
 using VIQA.HtmlElements;
 using VIQA.HtmlElements.Interfaces;
 
-namespace Simple.VITestsProject.Site.Sections
+namespace VITestsProject.Simple.Site.Sections
 {
     public class FilterSection : VIElement
     {

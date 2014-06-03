@@ -1,8 +1,8 @@
 ﻿using VIQA.HAttributes;
 using VIQA.SiteClasses;
-using Settings.VITestsProject.Site.Sections;
+using VITestsProject.Standard.Site.Sections;
 
-namespace Settings.VITestsProject.Site.Pages
+namespace VITestsProject.Standard.Site.Pages
 {
     [Page(Title = "Яндекс.Маркет", Url = "http://market.yandex.ru/")]
     public class HomePage : VIPage

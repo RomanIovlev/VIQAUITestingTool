@@ -81,6 +81,9 @@
     <Compile Include="3_ParallelTests\Site\Sections\SearchSection.cs" />
     <Compile Include="3_ParallelTests\Site\YandexMarketSite.cs" />
     <Compile Include="3_ParallelTests\Tests\VIParallelWorkInTests.cs" />
+    <Compile Include="4_TelerikItems\Site\Pages\ComboBoxPage.cs" />
+    <Compile Include="4_TelerikItems\Site\TelerikSite.cs" />
+    <Compile Include="4_TelerikItems\Tests\SimpleTelerikTests.cs" />
     <Compile Include="InitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
