@@ -4,7 +4,7 @@ using VIQA.HtmlElements.Interfaces;
 
 namespace VIQA.HtmlElements
 {
-    public class TextElement : VIElement, ILabeled
+    public class TextElement : VIElement, ILabeled, IHaveValue
     {
         protected override string _typeName { get { return "Label"; } }
 
@@ -31,6 +31,7 @@ namespace VIQA.HtmlElements
         {
             get { return DoVIAction("Get label", GetLabelFunc, text => text); }
         }
+        public void SetValue<T>(T value) { }
     }
 }
 

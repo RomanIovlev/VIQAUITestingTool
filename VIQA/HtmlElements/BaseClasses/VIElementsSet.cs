@@ -37,6 +37,7 @@ namespace VIQA.HtmlElements
             if (clickReloadsPage != null)
                 instance.WithPageLoadAction = true;
             viElement.SetValue(this, instance);
+            instance.InitSubElements();
         }
 
         private static Type InterfacesMap(Type fieldType)
@@ -146,7 +147,7 @@ namespace VIQA.HtmlElements
             WithValueElements[name].SetValue(value);
         }
 
-        public VIElementsSet()
+        public void InitSubElements()
         {
             GetElements().ForEach(SetViElement);
         }

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenQA.Selenium;
 using VIQA.Common;
+using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
 
 namespace VIQA.HtmlElements.BaseClasses
 {
-    public class VIList<T> : VIElement where T : VIElement
+    public class VIList<T> : VIElement, IVIList<T> where T : VIElement
     {
         public Func<T> CreateElementFunc = () => (T)Activator.CreateInstance(typeof(T));
         
@@ -16,7 +17,7 @@ namespace VIQA.HtmlElements.BaseClasses
         public By GetLocator(string value)
         {
             var locatorTemplate = CreateElementFunc().Locator;
-            return locatorTemplate.GetByFunc().Invoke(string.Format(locatorTemplate.GetByLocator(), value));
+            return locatorTemplate.FillByTemplate(value);
         }
         
         public T GetVIElementByName(string value)
@@ -29,6 +30,7 @@ namespace VIQA.HtmlElements.BaseClasses
             }
             return Elements[value];
         }
+
         #region Constructors
 
         public VIList() { }
@@ -52,13 +54,14 @@ namespace VIQA.HtmlElements.BaseClasses
         #endregion
 
         public List<string> ListOfValues;
-        public Func<IWebDriver, Dictionary<string,T>> GetAllElementsFunc;
+        public Func<ISearchContext, Dictionary<string,T>> GetAllElementsFunc;
         
         public Dictionary<string, T> GetAllElements()
         {
-            try 
+            try
             {
-                Elements = GetAllElementsFunc(WebDriver).ToDictionary(el => el.Key, el =>
+                var context = CheckPreconditionsAndGetContext();
+                Elements = GetAllElementsFunc(context).ToDictionary(el => el.Key, el =>
                 {
                     if (string.IsNullOrEmpty(el.Value.Name))
                         el.Value.Name = FullName + " with value " + el.Key;
@@ -69,6 +72,19 @@ namespace VIQA.HtmlElements.BaseClasses
 
             ListOfValues = Elements.Select(el => el.Key).ToList();
             return Elements;
+        }
+
+        private ISearchContext CheckPreconditionsAndGetContext()
+        {
+            if (GetAllElementsFunc == null)
+                throw VISite.Alerting.ThrowError("GetListOfValuesFunc not set for " + Name);
+            ISearchContext context;
+            if (Context == null)
+                return WebDriver;
+            var countOfElements = WebDriver.FindElements(Context).Count;
+            if (countOfElements == 1)
+                return WebDriver.FindElements(Context).First();
+            throw VISite.Alerting.ThrowError(Name + "Find elements by Context failed. Found " + countOfElements + " elements");
         }
 
     }

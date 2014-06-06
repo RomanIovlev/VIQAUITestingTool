@@ -76,8 +76,10 @@
     <Compile Include="HtmlElements\BaseClasses\VIElementsSet.cs" />
     <Compile Include="HtmlElements\ComplexElements\DropDown.cs" />
     <Compile Include="HtmlElements\Interfaces\ICheckList.cs" />
+    <Compile Include="HtmlElements\Interfaces\IDropDown.cs" />
     <Compile Include="HtmlElements\Interfaces\ISelected.cs" />
     <Compile Include="HtmlElements\Interfaces\ISelector.cs" />
+    <Compile Include="HtmlElements\Interfaces\IRadioButton.cs" />
     <Compile Include="HtmlElements\Interfaces\ITable.cs" />
     <Compile Include="HtmlElements\Interfaces\ITextArea.cs" />
     <Compile Include="HtmlElements\Interfaces\IButton.cs" />
@@ -85,11 +87,11 @@
     <Compile Include="HtmlElements\Interfaces\ILink.cs" />
     <Compile Include="HtmlElements\Interfaces\ITextField.cs" />
     <Compile Include="HtmlElements\Interfaces\IVIElement.cs" />
+    <Compile Include="HtmlElements\Interfaces\IVIList.cs" />
     <Compile Include="HtmlElements\SimpleElements\Table.cs" />
     <Compile Include="SiteClasses\VISite.cs" />
     <Compile Include="Common\ByExtension.cs" />
     <Compile Include="Common\DefaultWebDriverTimeouts.cs" />
-    <Compile Include="Common\HtmlLocator.cs" />
     <Compile Include="HtmlElements\SimpleElements\ClickableText.cs" />
     <Compile Include="HtmlElements\BaseClasses\Selector.cs" />
     <Compile Include="HtmlElements\Interfaces\IHaveValue.cs" />

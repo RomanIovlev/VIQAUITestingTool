@@ -39,7 +39,9 @@ namespace VIQA.SiteClasses
             } get { return _domain; } 
         }
 
-        public readonly Func<IWebDriver> WebDriverFunc;
+        public Func<IWebDriver> WebDriverFunc;
+        public BrowserType UseBrowser { set { WebDriverFunc = GetDriver(value); } }
+
         private IWebDriver _webDriver;
 
         public IWebDriver WebDriver
@@ -49,7 +51,7 @@ namespace VIQA.SiteClasses
 
         public IWebDriver RunWebDriver()
         {
-            _webDriver = WebDriverFunc.Invoke();
+            _webDriver = WebDriverFunc();
             RunWebDrivers.Add(_webDriver);
             _webDriver.Manage().Window.Maximize();
             _webDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(WebDriverTimeouts.WaitWebElementInSec));
@@ -82,7 +84,7 @@ namespace VIQA.SiteClasses
         
         public void OpenPage(string uri)
         {
-            new VIPage(Name, uri, site: this, isTitleCheckNeeded: false).Open();
+            new VIPage(Name, uri, site: this).Open();
         }
 
         public void OpenHomePage()

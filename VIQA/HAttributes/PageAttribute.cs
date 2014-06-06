@@ -9,15 +9,16 @@ namespace VIQA.HAttributes
         public string Url { get; set; }
 
         public string Title { get; set; }
-
-        public bool CheckUrl { get; set; }
-
-        public bool CheckTitle { get; set; }
+        
+        public bool IsUrlCheckContainsNeeded { get; set; }
+        public bool IsTitleCheckContainsNeeded { get; set; }
+        public bool IsUrlCheckEqualNeeded { get; set; }
+        public bool IsTitleCheckEqualNeeded { get; set; }
 
         public PageAttribute()
         {
-            CheckUrl = !string.IsNullOrEmpty(Url);
-            CheckTitle = !string.IsNullOrEmpty(Title);
+            IsUrlCheckContainsNeeded = !string.IsNullOrEmpty(Url);
+            IsTitleCheckContainsNeeded = !string.IsNullOrEmpty(Title);
         }
 
         public static PageAttribute Handler(FieldInfo field)

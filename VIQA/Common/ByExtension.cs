@@ -12,18 +12,18 @@ namespace VIQA.Common
             return MapByTypes.First(el => by.ToString().Contains(el.Key)).Value;
         }
 
+        public static By FillByTemplate(this By by, params object[] args)
+        {
+            return by.GetByFunc()(string.Format(by.GetByLocator(), args)); 
+        }
+
         public static string GetByLocator(this By by)
         {
             var byAsString = by.ToString();
             var index = byAsString.IndexOf(": ") + 2;
             return byAsString.Substring(index);
         }
-
-        public static By SetLocatorTemplateValue(this By by, string value)
-        {
-            return by.GetByFunc().Invoke(string.Format(by.GetByLocator(), value));
-        }
-
+        
         private static readonly Dictionary<string, Func<string, By>> MapByTypes = new Dictionary<string, Func<string, By>>
         {
             {"CssSelector", By.CssSelector},

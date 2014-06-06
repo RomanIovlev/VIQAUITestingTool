@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using OpenQA.Selenium;
 using VIQA.HtmlElements.BaseClasses;
+using VIQA.HtmlElements.Interfaces;
 
 namespace VIQA.HtmlElements
 {
-    public class RadioButtons : Selector<RadioButton>
+    public class RadioButtons : Selector<RadioButton>, IRadioButton
     {
         private const string RadioButtonTemplate = "input[type=radio][id={0}]";
         private const string LocatorTmpl = "input[type=radio][{0}={1}]";
@@ -22,13 +24,17 @@ namespace VIQA.HtmlElements
         public RadioButtons(string name, By byLocator) : base(name, byLocator) { }
         public RadioButtons(string name, string cssLocator) : base(name, cssLocator) { }
 
-        public new string IsSelected()
-        {
-            return DoVIAction(Name + ". IsSelected",
-                () => GetAllElements().First(pair => pair.Value.IsSelected()).Key,
+        private new List<string> SelectedItems() { return null; }
+        
+        public string SelectedItem { get {
+            return DoVIAction(Name + ". SelectedItems",
+                () => (ListOfValues == null)
+                    ? GetAllElements().First(pair => pair.Value.IsSelected()).Key
+                    : ListOfValues.First(name => GetVIElementByName(name).IsSelected()),
                 value => FullName + " value '" + value + "' is selected: ");
-        }
-        public override string Value { get { return IsSelected(); } }
+        } }
+
+        public override string Value { get { return SelectedItem; } }
     }
 
     public class RadioButton : SelectItem

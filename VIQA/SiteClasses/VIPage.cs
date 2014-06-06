@@ -26,9 +26,10 @@ namespace VIQA.SiteClasses
 
         public string Title { get; set; }
 
-        public bool IsUrlCheckNeeded { get; set; }
-
-        public bool IsTitleCheckNeeded { get; set; }
+        public bool IsUrlCheckContainsNeeded { get; set; }
+        public bool IsTitleCheckContainsNeeded { get; set; }
+        public bool IsUrlCheckEqualNeeded { get; set; }
+        public bool IsTitleCheckEqualNeeded { get; set; }
 
         public VIPage() 
         {
@@ -39,8 +40,10 @@ namespace VIQA.SiteClasses
             {
                 Url = "";
                 Title = "";
-                IsUrlCheckNeeded = false;
-                IsTitleCheckNeeded = false;
+                IsUrlCheckContainsNeeded = false;
+                IsTitleCheckContainsNeeded = false;
+                IsUrlCheckEqualNeeded = false;
+                IsTitleCheckEqualNeeded = false;
             }
             else FillFromPageAttribute(pageAttr);
             FillMetaFromClass();         
@@ -55,8 +58,10 @@ namespace VIQA.SiteClasses
             {
                 Url = "";
                 Title = "";
-                IsUrlCheckNeeded = false;
-                IsTitleCheckNeeded = false;
+                IsUrlCheckContainsNeeded = false;
+                IsTitleCheckContainsNeeded = false;
+                IsUrlCheckEqualNeeded = false;
+                IsTitleCheckEqualNeeded = false;
             }
             else 
                 if (pageAttributeField ==null)
@@ -69,11 +74,11 @@ namespace VIQA.SiteClasses
         {
             Url = pageAttr.Url;
             Title = pageAttr.Title;
-            IsUrlCheckNeeded = (!string.IsNullOrEmpty(Url)) && pageAttr.CheckUrl;
-            IsTitleCheckNeeded = (!string.IsNullOrEmpty(Title)) && pageAttr.CheckTitle;
+            IsUrlCheckContainsNeeded = (!string.IsNullOrEmpty(Url)) && pageAttr.IsUrlCheckContainsNeeded;
+            IsTitleCheckContainsNeeded = (!string.IsNullOrEmpty(Title)) && pageAttr.IsTitleCheckContainsNeeded;
         }
         
-        public VIPage(string name, string url = null, string title = null, bool isUrlCheckNeeded = true, bool isTitleCheckNeeded = true, VISite site = null)
+        public VIPage(string name, string url = null, string title = null, VISite site = null)
         {
             DefaultNameFunc = () => string.Format("Page with Title: '{0}', Url: '{1}'", Title ?? "", Url ?? "");
             if (name != null)
@@ -88,9 +93,6 @@ namespace VIQA.SiteClasses
                 Site = site;
             Url = url ?? "";
             Title = title ?? "";
-            IsUrlCheckNeeded = isUrlCheckNeeded;
-            IsTitleCheckNeeded = isTitleCheckNeeded;
-            
             FillMetaFromClass();
         }
 
@@ -104,12 +106,19 @@ namespace VIQA.SiteClasses
                     Url = pageAttr.Url;
                 if (Url == null)
                     Title = pageAttr.Title;
-                if (IsUrlCheckNeeded && !pageAttr.CheckUrl)
-                    IsUrlCheckNeeded = pageAttr.CheckUrl;
-                if (IsTitleCheckNeeded && !pageAttr.CheckTitle)
-                    IsTitleCheckNeeded = pageAttr.CheckTitle;
+                IsUrlCheckContainsNeeded = false;
+                IsTitleCheckContainsNeeded = false;
+                IsUrlCheckEqualNeeded = false;
+                IsTitleCheckEqualNeeded = false;
+                if (IsUrlCheckContainsNeeded && !pageAttr.IsUrlCheckContainsNeeded)
+                    IsUrlCheckContainsNeeded = pageAttr.IsUrlCheckContainsNeeded;
+                if (IsTitleCheckContainsNeeded && !pageAttr.IsTitleCheckContainsNeeded)
+                    IsTitleCheckContainsNeeded = pageAttr.IsTitleCheckContainsNeeded;
+                if (IsUrlCheckEqualNeeded && !pageAttr.IsUrlCheckEqualNeeded)
+                    IsUrlCheckEqualNeeded = pageAttr.IsUrlCheckEqualNeeded;
+                if (IsTitleCheckEqualNeeded && !pageAttr.IsTitleCheckEqualNeeded)
+                    IsTitleCheckEqualNeeded = pageAttr.IsTitleCheckEqualNeeded;
             }
-            
         }
 
         public void Open()
@@ -117,12 +126,18 @@ namespace VIQA.SiteClasses
             VISite.Logger.Event("Open page: " + Url);
             Site.WebDriver.Navigate().GoToUrl(Url);
             Site.WindowHandle = WebDriver.WindowHandles.First();
-            Site.CashDropTimes ++;
-            if (IsUrlCheckNeeded) CheckUrl();
-            if (IsTitleCheckNeeded) CheckTitle();
+            Site.CashDropTimes++;
+            if (IsUrlCheckEqualNeeded) 
+                CheckUrl(true);
+            else if (IsUrlCheckContainsNeeded)
+                CheckUrl(false);
+            if (IsTitleCheckEqualNeeded)
+                CheckTitle(true);
+            else if (IsTitleCheckContainsNeeded)
+                CheckUrl(false);
         }
 
-        public bool CheckUrl()
+        public bool CheckUrl(bool checkEqual)
         {
             VISite.Logger.Event(string.Format("Check url {0} for page '{1}'", Url, Name));
             if (string.IsNullOrEmpty(Url))
@@ -131,16 +146,16 @@ namespace VIQA.SiteClasses
                 return false;
             }
             var timer = new Timer();
-            while (!(WebDriver.Url.Contains(Url)))
+            while (!((checkEqual) ? WebDriver.Url == Url : WebDriver.Url.Contains(Url)))
                 if (timer.TimeoutPassed(Site.WebDriverTimeouts.WaitPageToLoadInSec*1000))
                 {
-                    VISite.Alerting.ThrowError(string.Format("Can't url {0} for page '{1}'", Url, Name));
+                    VISite.Alerting.ThrowError(string.Format("Can't check url {0} for page '{1}'", Url, Name));
                     return false;
                 }
             return true;
         }
-        
-        public bool CheckTitle()
+
+        public bool CheckTitle(bool checkEqual)
         {
             VISite.Logger.Event(string.Format("Check title {0} for page '{1}'", Title, Name));
             if (string.IsNullOrEmpty(Title))
@@ -149,7 +164,7 @@ namespace VIQA.SiteClasses
                 return false;
             }
             var timer = new Timer();
-            while (!(WebDriver.Title.Contains(Title)))
+            while (!((checkEqual) ? WebDriver.Title == Title : WebDriver.Title.Contains(Title)))
                 if (timer.TimeoutPassed(Site.WebDriverTimeouts.WaitPageToLoadInSec * 1000))
                 {
                     VISite.Alerting.ThrowError(string.Format("Can't title {0} for page '{1}'", Title, Name));
@@ -176,6 +191,7 @@ namespace VIQA.SiteClasses
                     if (pageAttribute != null) 
                         instance.FillFromPageAttribute(pageAttribute);
                     page.SetValue(site, instance);
+                    instance.InitSubElements();
                 });
         }
     }

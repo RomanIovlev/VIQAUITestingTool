@@ -29,8 +29,8 @@ namespace VIQA.HtmlElements
             get
             {
                 return string.IsNullOrEmpty(TemplateId) 
-                    ? _locator 
-                    : _locator.GetByFunc().Invoke(string.Format(_locator.GetByLocator(), TemplateId));
+                    ? _locator
+                    : _locator.FillByTemplate(TemplateId);
             }
         }
 
@@ -40,7 +40,7 @@ namespace VIQA.HtmlElements
         public VISite Site { set { _site = value; } get { return _site ?? _defaultSite; } }
         public IWebDriverTimeouts Timeouts { get { return Site.WebDriverTimeouts; }}
         private IWebElement _webElement;
-        public IWebElement WebElement { set
+        private IWebElement WebElement { set
         {
             DropCache(); _webElement = value; }
             get { return _webElement; }
@@ -111,7 +111,7 @@ namespace VIQA.HtmlElements
             get
             {
                 WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
-                var elements = WebDriver.FindElements(Locator);
+                var elements = SearchContext.FindElements(Locator);
                 WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
                 return elements.Count != 0 && CheckWebElementIsUnique(elements).Displayed;
             }
@@ -213,7 +213,12 @@ namespace VIQA.HtmlElements
         
         protected T DoVIAction<T>(string logActionName, Func<T> viAction, Func<T, string> logResult = null)
         {
-            return (T) VIActionR.Invoke(logActionName, () => viAction(), res => logResult((T)res));
+            try { return (T)VIActionR.Invoke(logActionName, () => viAction(), res => logResult != null ? logResult((T)res) : null); }
+            catch (Exception ex)
+            {
+                throw VISite.Alerting.ThrowError(string.Format("Failed to do '{0}' action. Exception: {1}", logActionName, ex));
+            }
+            
         }
 
         //----
@@ -226,7 +231,11 @@ namespace VIQA.HtmlElements
         
         protected void DoVIAction(string logActionName, Action viAction)
         {
-            DoViAction.Action.Invoke(this, logActionName, viAction);
+            try { DoViAction.Action.Invoke(this, logActionName, viAction); }
+            catch (Exception ex)
+            {
+                throw VISite.Alerting.ThrowError(string.Format("Failed to do '{0}' action. Exception: {1}", logActionName, ex));
+            }
         }
 
         public static Dictionary<Type, Type> InterfaceTypeMap = new Dictionary<Type, Type>

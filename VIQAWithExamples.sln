@@ -5,7 +5,13 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIQA", "VIQA\VIQA.csproj", "{D8C9BCA0-23F3-4675-87D6-D2C07FA7A00F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIQATestExamples", "VIQATestExamples\VIQATestExamples.csproj", "{06E8F16E-DA1C-428A-92BE-5B84DF723234}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1_SimpleTests", "SimpleTests\1_SimpleTests.csproj", "{951C2F55-A18E-4224-9D38-61918FCFA0EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2_CommonTestsWithComplexElements", "CommonTestsWithComplexElements\2_CommonTestsWithComplexElements.csproj", "{A08A6315-4C12-431F-ABF5-465E7A1CC19F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3_ParallelTestsExamples", "ParallelTestsExamples\3_ParallelTestsExamples.csproj", "{57176A6D-53D3-46E6-B274-C82645B96F2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "4_TelerikExamplesTests", "TelerikExamplesTests\4_TelerikExamplesTests.csproj", "{40A46070-A6E8-4198-8A26-BD084C59895B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +23,22 @@ Global
 		{D8C9BCA0-23F3-4675-87D6-D2C07FA7A00F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8C9BCA0-23F3-4675-87D6-D2C07FA7A00F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8C9BCA0-23F3-4675-87D6-D2C07FA7A00F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{06E8F16E-DA1C-428A-92BE-5B84DF723234}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06E8F16E-DA1C-428A-92BE-5B84DF723234}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{06E8F16E-DA1C-428A-92BE-5B84DF723234}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{06E8F16E-DA1C-428A-92BE-5B84DF723234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{951C2F55-A18E-4224-9D38-61918FCFA0EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{951C2F55-A18E-4224-9D38-61918FCFA0EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{951C2F55-A18E-4224-9D38-61918FCFA0EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{951C2F55-A18E-4224-9D38-61918FCFA0EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A08A6315-4C12-431F-ABF5-465E7A1CC19F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A08A6315-4C12-431F-ABF5-465E7A1CC19F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A08A6315-4C12-431F-ABF5-465E7A1CC19F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A08A6315-4C12-431F-ABF5-465E7A1CC19F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57176A6D-53D3-46E6-B274-C82645B96F2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57176A6D-53D3-46E6-B274-C82645B96F2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57176A6D-53D3-46E6-B274-C82645B96F2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57176A6D-53D3-46E6-B274-C82645B96F2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40A46070-A6E8-4198-8A26-BD084C59895B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40A46070-A6E8-4198-8A26-BD084C59895B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40A46070-A6E8-4198-8A26-BD084C59895B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40A46070-A6E8-4198-8A26-BD084C59895B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,7 +11,6 @@ namespace VIQA.HtmlElements.Interfaces
         bool IsDisplayed { get; }
         IWebElement GetWebElement();
         By Locator { get; set; }
-        IWebElement WebElement { get; set; }
         int CashDropTime { get; set; }
     }
 }
