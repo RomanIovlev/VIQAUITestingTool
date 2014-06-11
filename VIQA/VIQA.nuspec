@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>VIQA</id>
-    <version>1.0.6100.10000</version>
+    <version>1.0.7000.00000</version>
     <title>viqa - web testing tool</title>
     <authors>Roman Iovlev</authors>
     <owners>Roman Iovlev</owners>

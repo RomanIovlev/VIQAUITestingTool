@@ -16,7 +16,6 @@ namespace TelerikExamplesTests.Tests
         [Test]
         public void VITelerikSimpleTest()
         {
-            VISite.KillAllRunWebDrivers();
             var site = new TelerikSite { UseBrowser = BrowserType.Chrome };
             {
                 var _ = site.ComboBoxPage;

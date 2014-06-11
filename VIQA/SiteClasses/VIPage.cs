@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
 using OpenQA.Selenium;
 using VIQA.Common;
 using VIQA.HAttributes;
@@ -13,184 +11,189 @@ namespace VIQA.SiteClasses
         private string _url;
         public string Url
         {
-            set
-            {
-                _url = (string.IsNullOrEmpty(value))
-                    ? Site.Domain
-                    : (value.Contains("http://"))
-                        ? value
-                        : Site.Domain + value.TrimStart('/');
-            }
+            set { _url = GetUrlValue(value, Site); }
             get { return _url; }
         }
 
-        public string Title { get; set; }
+        public static string GetUrlValue(string url, VISite site)
+        {
+            return (string.IsNullOrEmpty(url))
+                    ? site.Domain
+                    : (url.Contains("http://"))
+                        ? url
+                        : site.Domain + url.TrimStart('/');
+        }
 
-        public bool IsUrlCheckContainsNeeded { get; set; }
-        public bool IsTitleCheckContainsNeeded { get; set; }
-        public bool IsUrlCheckEqualNeeded { get; set; }
-        public bool IsTitleCheckEqualNeeded { get; set; }
+        public string Title { get; set; }
+        public bool IsHomePage { get; set; }
+
+        public PageCheckType CheckUrl { get; set; }
+        public PageCheckType CheckTitle { get; set; }
+
+        private void SetEmptyPage()
+        {
+            if (IsSiteSet)
+                Url = "";
+            else
+                _url = "";
+            Title = "";
+            CheckUrl = PageCheckType.NoCheck;
+            CheckTitle = PageCheckType.NoCheck;
+            IsHomePage = false;
+        }
 
         public VIPage() 
         {
             DefaultNameFunc = () => string.Format("Page with Title: '{0}', Url: '{1}'", Title ?? "", Url ?? "");
-            var pageAttr = GetType().GetCustomAttribute<PageAttribute>(false);
-
-            if (pageAttr == null)
-            {
-                Url = "";
-                Title = "";
-                IsUrlCheckContainsNeeded = false;
-                IsTitleCheckContainsNeeded = false;
-                IsUrlCheckEqualNeeded = false;
-                IsTitleCheckEqualNeeded = false;
-            }
-            else FillFromPageAttribute(pageAttr);
-            FillMetaFromClass();         
+            SetEmptyPage();
         }
 
-        public VIPage(PageAttribute pageAttributeField)
-        {
-            DefaultNameFunc = () => string.Format("Page with Title: '{0}', Url: '{1}'", Title ?? "", Url ?? "");
-            var pageAttrClass = GetType().GetCustomAttribute<PageAttribute>(false);
+        //public VIPage(PageAttribute pageAttributeField)
+        //{
+        //    DefaultNameFunc = () => string.Format("Page with Title: '{0}', Url: '{1}'", Title ?? "", Url ?? "");
+        //    var name = NameAttribute.GetName(this);
+        //    if (!string.IsNullOrEmpty(name))
+        //        Name = name;
+        //    var pageAttrClass = PageAttribute.Handler(this);
 
-            if (pageAttrClass == null && pageAttributeField == null)
-            {
-                Url = "";
-                Title = "";
-                IsUrlCheckContainsNeeded = false;
-                IsTitleCheckContainsNeeded = false;
-                IsUrlCheckEqualNeeded = false;
-                IsTitleCheckEqualNeeded = false;
-            }
-            else 
-                if (pageAttributeField ==null)
-                    FillFromPageAttribute(pageAttrClass);
-                else
-                    FillFromPageAttribute(pageAttributeField);
-            FillMetaFromClass();
-        }
+        //    if (pageAttrClass == null && pageAttributeField == null)
+        //        SetEmptyPage();
+        //    else 
+        //        if (pageAttributeField ==null)
+        //            FillFromPageAttribute(pageAttrClass);
+        //        else
+        //            FillFromPageAttribute(pageAttributeField);
+        //}
+
         public void FillFromPageAttribute(PageAttribute pageAttr)
         {
+            if (pageAttr == null) return;
             Url = pageAttr.Url;
             Title = pageAttr.Title;
-            IsUrlCheckContainsNeeded = (!string.IsNullOrEmpty(Url)) && pageAttr.IsUrlCheckContainsNeeded;
-            IsTitleCheckContainsNeeded = (!string.IsNullOrEmpty(Title)) && pageAttr.IsTitleCheckContainsNeeded;
+            CheckUrl = pageAttr.CheckUrl;
+            CheckTitle = pageAttr.CheckTitle;
+            IsHomePage = pageAttr.IsHomePage;
+        }
+
+        public void UpdatePageAttribute(PageAttribute pageAttr)
+        {
+            if (pageAttr == null) return;
+            if (!string.IsNullOrEmpty(pageAttr.Url))
+                Url = pageAttr.Url;
+            if (!string.IsNullOrEmpty(pageAttr.Title))
+                Title = pageAttr.Title;
+            if (pageAttr.IsCheckUrlSetManual)
+                CheckUrl = pageAttr.CheckUrl;
+            if (pageAttr.IsCheckTitleSetManual)
+                CheckTitle = pageAttr.CheckTitle;
+            if (pageAttr.IsHomePage)
+                IsHomePage = true;
         }
         
         public VIPage(string name, string url = null, string title = null, VISite site = null)
         {
             DefaultNameFunc = () => string.Format("Page with Title: '{0}', Url: '{1}'", Title ?? "", Url ?? "");
-            if (name != null)
+            if (!string.IsNullOrEmpty(name))
                 Name = name;
             else
             {
-                var nameAttr = GetType().GetCustomAttribute<NameAttribute>(false);
-                if (nameAttr != null)
-                    Name = nameAttr.Name;
+                name = NameAttribute.GetName(this);
+                if (!string.IsNullOrEmpty(name))
+                    Name = name;
             }
             if (site != null)
                 Site = site;
-            Url = url ?? "";
-            Title = title ?? "";
-            FillMetaFromClass();
-        }
-
-        private void FillMetaFromClass()
-        {           
-            var pageAttr = GetType().GetCustomAttribute<PageAttribute>(false);
-
+            var pageAttr = PageAttribute.Handler(this);
             if (pageAttr != null)
-            {
-                if (Url == null)
-                    Url = pageAttr.Url;
-                if (Url == null)
-                    Title = pageAttr.Title;
-                IsUrlCheckContainsNeeded = false;
-                IsTitleCheckContainsNeeded = false;
-                IsUrlCheckEqualNeeded = false;
-                IsTitleCheckEqualNeeded = false;
-                if (IsUrlCheckContainsNeeded && !pageAttr.IsUrlCheckContainsNeeded)
-                    IsUrlCheckContainsNeeded = pageAttr.IsUrlCheckContainsNeeded;
-                if (IsTitleCheckContainsNeeded && !pageAttr.IsTitleCheckContainsNeeded)
-                    IsTitleCheckContainsNeeded = pageAttr.IsTitleCheckContainsNeeded;
-                if (IsUrlCheckEqualNeeded && !pageAttr.IsUrlCheckEqualNeeded)
-                    IsUrlCheckEqualNeeded = pageAttr.IsUrlCheckEqualNeeded;
-                if (IsTitleCheckEqualNeeded && !pageAttr.IsTitleCheckEqualNeeded)
-                    IsTitleCheckEqualNeeded = pageAttr.IsTitleCheckEqualNeeded;
-            }
+                FillFromPageAttribute(pageAttr);
+            else
+                SetEmptyPage();
+            if (!string.IsNullOrEmpty(url)) 
+                Url = url;
+            if (!string.IsNullOrEmpty(title))
+                Title = title;
         }
 
         public void Open()
         {
-            VISite.Logger.Event("Open page: " + Url);
-            Site.WebDriver.Navigate().GoToUrl(Url);
-            Site.WindowHandle = WebDriver.WindowHandles.First();
-            Site.CashDropTimes++;
-            if (IsUrlCheckEqualNeeded) 
-                CheckUrl(true);
-            else if (IsUrlCheckContainsNeeded)
-                CheckUrl(false);
-            if (IsTitleCheckEqualNeeded)
-                CheckTitle(true);
-            else if (IsTitleCheckContainsNeeded)
-                CheckUrl(false);
+            Site.Navigate.OpenPage(this);
+            CheckPage();
         }
 
-        public bool CheckUrl(bool checkEqual)
+        public void CheckPage()
         {
-            VISite.Logger.Event(string.Format("Check url {0} for page '{1}'", Url, Name));
+            DoUrlCheck(CheckUrl);
+            DoTitleCheck(CheckTitle);
+        }
+
+        public bool DoUrlCheck(PageCheckType checkType)
+        {
+            if (checkType == PageCheckType.NoCheck) return true;
             if (string.IsNullOrEmpty(Url))
             {
-                VISite.Alerting.ThrowError(string.Format("Can't check url {0} for page '{1}'. Please set Expected value", Url, Name));
+                VISite.Alerting.ThrowError(string.Format("Page '{0}' url is empty. Please set Url for this page", Name));
                 return false;
             }
+            VISite.Logger.Event(string.Format("Check page '{0}' url {1} '{2}'", Name, checkType == PageCheckType.Equal ? "equal to " : "contains", Url));
             var timer = new Timer();
-            while (!((checkEqual) ? WebDriver.Url == Url : WebDriver.Url.Contains(Url)))
+            while (!((checkType == PageCheckType.Equal) ? WebDriver.Url == Url : WebDriver.Url.Contains(Url)))
                 if (timer.TimeoutPassed(Site.WebDriverTimeouts.WaitPageToLoadInSec*1000))
                 {
-                    VISite.Alerting.ThrowError(string.Format("Can't check url {0} for page '{1}'", Url, Name));
+                    VISite.Alerting.ThrowError(string.Format("Can't check url for page '{0}'." + 
+                        "Actual: '{1}'".FromNewLine() + 
+                        "Expected: '{2}'".FromNewLine() +
+                        "CheckType: " + checkType, Name, WebDriver.Url, Url));
                     return false;
                 }
             return true;
         }
 
-        public bool CheckTitle(bool checkEqual)
+        public bool DoTitleCheck(PageCheckType checkType)
         {
-            VISite.Logger.Event(string.Format("Check title {0} for page '{1}'", Title, Name));
+            if (checkType == PageCheckType.NoCheck) return true;
             if (string.IsNullOrEmpty(Title))
             {
-                VISite.Alerting.ThrowError(string.Format("Can't check title {0} for page '{1}'. Please set Expected value", Title, Name));
+                VISite.Alerting.ThrowError(string.Format("Page '{0}' title is empty. Please set Title for this page", Name));
                 return false;
             }
+            VISite.Logger.Event(string.Format("Check page '{0}' title {1} '{2}'", Name, checkType == PageCheckType.Equal ? "equal to " : "contains", Title));
             var timer = new Timer();
-            while (!((checkEqual) ? WebDriver.Title == Title : WebDriver.Title.Contains(Title)))
+            while (!((checkType == PageCheckType.Equal) ? WebDriver.Title == Title : WebDriver.Title.Contains(Title)))
                 if (timer.TimeoutPassed(Site.WebDriverTimeouts.WaitPageToLoadInSec * 1000))
                 {
-                    VISite.Alerting.ThrowError(string.Format("Can't title {0} for page '{1}'", Title, Name));
+                    VISite.Alerting.ThrowError(string.Format("Can't check title for page '{0}'." +
+                        "Actual: '{1}'".FromNewLine() +
+                        "Expected: '{2}'".FromNewLine() +
+                        "CheckType: " + checkType, Name, WebDriver.Title, Title));
                     return false;
                 }
             return true;
         }
 
+        public Navigation Navigate { get { return Site.Navigate; } } 
+
         public IWebDriver WebDriver { get { return Site.WebDriver; } }
-        private VISite _site;
-        private static VISite _defaultSite { set; get; }
-        public VISite Site { set { _site = value; } get { return _site ?? _defaultSite; } }
 
         public static void Init(VISite site)
         {
-            _defaultSite = site;
-            var fields = _defaultSite.GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-                .Where(_ => typeof(VIPage).IsAssignableFrom(_.FieldType));
-            fields.ForEach(
+            site.PagesFields.ForEach(
                 page =>
                 {
-                    var pageAttribute = PageAttribute.Handler(page);
                     var instance = (VIPage)Activator.CreateInstance(page.FieldType);
-                    if (pageAttribute != null) 
-                        instance.FillFromPageAttribute(pageAttribute);
+                    instance.Site = site;
+
+                    var pageAttr = PageAttribute.Handler(instance);
+                    if (pageAttr == null)
+                        instance.SetEmptyPage();
+                    else
+                        instance.FillFromPageAttribute(pageAttr);
+
+                    pageAttr = PageAttribute.Handler(page);
+                    if (pageAttr != null)
+                        instance.UpdatePageAttribute(pageAttr);
+
                     page.SetValue(site, instance);
+
                     instance.InitSubElements();
                 });
         }

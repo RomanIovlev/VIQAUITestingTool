@@ -35,9 +35,6 @@ namespace VIQA.HtmlElements
         }
 
         public IWebDriver WebDriver { get { return Site.WebDriver; } }
-        private VISite _site;
-        private static VISite _defaultSite { set; get; }
-        public VISite Site { set { _site = value; } get { return _site ?? _defaultSite; } }
         public IWebDriverTimeouts Timeouts { get { return Site.WebDriverTimeouts; }}
         private IWebElement _webElement;
         private IWebElement WebElement { set
@@ -60,20 +57,8 @@ namespace VIQA.HtmlElements
 
         #endregion
 
-        protected int WaitTimeoutInSec
-        {
-            get
-            {
-                if (!NextActionNeedWaitPageToLoad) 
-                    return _waitTimeoutInSec ?? _defaultWaitTimeoutInSec;
-                NextActionNeedWaitPageToLoad = false;
-                return Timeouts.WaitPageToLoadInSec;
-            }
-        }
-
-        public bool WithPageLoadAction { get; set; }
-        protected static bool NextActionNeedWaitPageToLoad;
-        protected static Action PreviousClickAction = null;
+        protected int WaitTimeoutInSec { get { return _waitTimeoutInSec ?? _defaultWaitTimeoutInSec; } }
+        protected static Action PreviousClickAction;
         
         protected virtual string _typeName { get { return "Element type undefined"; } }
         public string FullName { get { return Name ?? _typeName + " with undefiened Name";} }
@@ -100,11 +85,20 @@ namespace VIQA.HtmlElements
                 else
                     Thread.Sleep(Timeouts.RetryActionInMsec);
             }
-            while (FoundElements == null || (!FoundElements.Any() && !timer.TimeoutPassed(timeout)));
+            while ((FoundElements == null || !FoundElements.Any()) && !timer.TimeoutPassed(timeout));
             return FoundElements.Any();
         }
 
-        public bool IsPresent { get { return WebDriver.FindElements(Locator).Any(); } }
+        public bool IsPresent
+        {
+            get
+            {
+                WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
+                var elements = SearchContext.FindElements(Locator);
+                WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
+                return elements.Count > 0; 
+            }
+        }
 
         public bool IsDisplayed
         {
@@ -113,7 +107,18 @@ namespace VIQA.HtmlElements
                 WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
                 var elements = SearchContext.FindElements(Locator);
                 WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
-                return elements.Count != 0 && CheckWebElementIsUnique(elements).Displayed;
+                return elements.Count > 0 && CheckWebElementIsUnique(elements).Displayed;
+            }
+        }
+        public bool WaitDisplayed
+        {
+            get
+            {            
+                IWebElement webElement;
+                var timer = new Timer();
+                do { webElement = GetWebElement(); }
+                while (!webElement.Displayed && !timer.TimeoutPassed(WaitTimeoutInSec));
+                return webElement.Displayed;
             }
         }
 
@@ -121,8 +126,9 @@ namespace VIQA.HtmlElements
 
         private void IsClearCashNeeded()
         {
-            if (Site.UseCache) {
-                if (CashDropTime != Site.CashDropTimes) 
+            if (Site.SiteSettings.UseCache)
+            {
+                if (CashDropTime != Site.SiteSettings.CashDropTimes) 
                     DropCache();
                 return;
             }
@@ -131,7 +137,7 @@ namespace VIQA.HtmlElements
 
         private void DropCache()
         {
-            CashDropTime = Site.CashDropTimes;
+            CashDropTime = Site.SiteSettings.CashDropTimes;
             _webElement = null;
         }
 
@@ -140,20 +146,23 @@ namespace VIQA.HtmlElements
             IsClearCashNeeded();
             if (WebElement != null)
                 return WebElement;
-            var timeout = WaitTimeoutInSec * 1000;
-            if (WithPageLoadAction)
-                NextActionNeedWaitPageToLoad = true;
-            if (!WaitWebElement(timeout))
+            var timeoutInSec = WaitTimeoutInSec;
+            if (!string.IsNullOrEmpty(OpenPageName))
+            {
+                timeoutInSec = Timeouts.WaitPageToLoadInSec;
+                Site.CheckPage(OpenPageName);
+                OpenPageName = null;
+            }
+            if (!WaitWebElement(timeoutInSec * 1000))
             {
                 if (PreviousClickAction != null)
                 try
                 {
-                    PreviousClickAction.Invoke();
-                    WaitWebElement(timeout);
+                    PreviousClickAction();
+                    WaitWebElement(timeoutInSec);
                     VISite.Logger.Event("Used Click Previous action");
                 } catch {WaitWebElement(0);}
             }
-            //ClearTempSettings();
             return CheckWebElementIsUnique(FoundElements);
         }
 
@@ -167,13 +176,11 @@ namespace VIQA.HtmlElements
 
         public VIElement()
         {
-            WithPageLoadAction = false;
             DefaultNameFunc = () => _typeName + " with by selector " + Locator;
         }
 
         public VIElement(string name)
         {
-            WithPageLoadAction = false;
             Name = name;
         }
 
@@ -183,9 +190,7 @@ namespace VIQA.HtmlElements
         public VIElement(string name, IWebElement webElement) : this(name) { WebElement = webElement; }
         public VIElement(IWebElement webElement) : this("", webElement) { }
         #endregion
-
-        public static void Init(VISite site) { _defaultSite = site; }
-
+        
         public string DefaultLogMessage(string text)
         {
             return text + string.Format(" (Name: '{0}', Type: '{1}', Locator: '{2}')", FullName, _typeName, Locator);
@@ -218,7 +223,6 @@ namespace VIQA.HtmlElements
             {
                 throw VISite.Alerting.ThrowError(string.Format("Failed to do '{0}' action. Exception: {1}", logActionName, ex));
             }
-            
         }
 
         //----
@@ -238,7 +242,7 @@ namespace VIQA.HtmlElements
             }
         }
 
-        public static Dictionary<Type, Type> InterfaceTypeMap = new Dictionary<Type, Type>
+        public static readonly Dictionary<Type, Type> InterfaceTypeMap = new Dictionary<Type, Type>
         {
             { typeof(IButton), typeof(Button) },
             { typeof(ICheckbox), typeof(Checkbox) },
@@ -248,8 +252,13 @@ namespace VIQA.HtmlElements
             { typeof(ITextArea), typeof(TextArea) },
             { typeof(ILabeled), typeof(TextElement) },
             { typeof(IClickable), typeof(ClickableElement) },
+            { typeof(IVIElement), typeof(VIElement) },
+            { typeof(IRadioButtons), typeof(RadioButtonses) },
+            { typeof(IDropDown), typeof(DropDown) },
         };
 
-        public static Func<string, string, bool> DefaultCompareFunc = (a, e) => a == e;
+        public static readonly Func<string, string, bool> DefaultCompareFunc = (a, e) => a == e;
+
+        protected static string OpenPageName;
     }
 }

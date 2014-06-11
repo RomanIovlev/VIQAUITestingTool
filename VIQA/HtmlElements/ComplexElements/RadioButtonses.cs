@@ -7,7 +7,7 @@ using VIQA.HtmlElements.Interfaces;
 
 namespace VIQA.HtmlElements
 {
-    public class RadioButtons : Selector<RadioButton>, IRadioButton
+    public class RadioButtonses : Selector<RadioButton>, IRadioButtons
     {
         private const string RadioButtonTemplate = "input[type=radio][id={0}]";
         private const string LocatorTmpl = "input[type=radio][{0}={1}]";
@@ -15,14 +15,14 @@ namespace VIQA.HtmlElements
         public static string CommonLocatorByNamed(string id) { return string.Format(LocatorTmpl, "name", id); }
         public static string CommonLocatorByClassName(string id) { return string.Format(LocatorTmpl, "class", id); }
         
-        protected override string _typeName { get { return "RadioButtons"; } }
+        protected override string _typeName { get { return "RadioButtonses"; } }
 
-        public RadioButtons() { }
+        public RadioButtonses() { }
 
-        public RadioButtons(string name, By rootLocator, Func<RadioButton> radioTemplate) : base(name, rootLocator, radioTemplate) { }
-        public RadioButtons(string name, Func<RadioButton> selectorTemplate) : base(name, selectorTemplate) { }
-        public RadioButtons(string name, By byLocator) : base(name, byLocator) { }
-        public RadioButtons(string name, string cssLocator) : base(name, cssLocator) { }
+        public RadioButtonses(string name, By rootLocator, Func<RadioButton> radioTemplate) : base(name, rootLocator, radioTemplate) { }
+        public RadioButtonses(string name, Func<RadioButton> selectorTemplate) : base(name, selectorTemplate) { }
+        public RadioButtonses(string name, By byLocator) : base(name, byLocator) { }
+        public RadioButtonses(string name, string cssLocator) : base(name, cssLocator) { }
 
         private new List<string> SelectedItems() { return null; }
         

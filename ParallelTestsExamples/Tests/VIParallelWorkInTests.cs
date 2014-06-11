@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using ParallelTestsExamples.Site;
+using VIQA.HAttributes;
 using VIQA.SiteClasses;
 
 namespace ParallelTestsExamples.Tests
@@ -22,7 +23,7 @@ namespace ParallelTestsExamples.Tests
             var listOfBrowsers = new [] { BrowserType.Chrome, BrowserType.Firefox/*, BrowserType.Chrome, BrowserType.Chrome, BrowserType.Chrome*/ };
             var tasks = listOfBrowsers.Select(GetTask).ToList();
             tasks.ForEach(task => task.Start());
-            tasks.ForEach(task => task.Wait());
+            tasks.ForEach(task => task.Wait(30000));
         }
 
         private static Task GetTask(BrowserType browser)
@@ -32,7 +33,7 @@ namespace ParallelTestsExamples.Tests
                 var site = new YandexMarketSite { UseBrowser = browser };
                 site.HomePage.Open();
                 site.HomePage.SearchSection.SearchProduct("IPhone");
-                site.ProductPage.CheckUrl(false);
+                site.ProductPage.DoUrlCheck(PageCheckType.Contains);
                 Thread.Sleep(2000);
             });
         }

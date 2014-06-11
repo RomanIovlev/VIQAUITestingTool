@@ -3,6 +3,6 @@
     public interface IClickable : IVIElement
     {
         void Click();
-        bool WithPageLoadAction { get; set; }
+        string ClickOpensPage { get; set; }
     }
 }

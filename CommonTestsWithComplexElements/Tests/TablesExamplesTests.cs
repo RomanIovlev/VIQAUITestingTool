@@ -17,7 +17,7 @@ namespace CommonTestsWithComplexElements.Tests
         [TearDown]
         public void TestCleanup() { }
 
-        private VIPage W3CPageTable = new VIPage { Site = new VISite(), Url = "http://www.w3schools.com/html/html_tables.asp" };
+        private VIPage W3CPageTable = new VIPage { Url = "http://www.w3schools.com/html/html_tables.asp" };
 
         [Test]
         public void TableColNamesRowIndexTest()

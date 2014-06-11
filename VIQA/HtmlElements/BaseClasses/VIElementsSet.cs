@@ -15,11 +15,16 @@ namespace VIQA.HtmlElements
     {
         protected By _locator;
         public By Context;
+        private VISite _site;
+        public bool IsSiteSet { get { return _site != null; } }
+        public VISite Site { get { return _site = _site ?? (DefaultSite ?? new VISite()); } set { _site = value; } }
+        public static VISite DefaultSite { set; get; }
         
         private void SetViElement(FieldInfo viElement)
         {
             var instance = (VIElement) viElement.GetValue(this) ??
                 (VIElement)Activator.CreateInstance(InterfacesMap(viElement.FieldType));
+            instance.Site = Site;
             var name = NameAttribute.GetName(viElement);
             if (!string.IsNullOrEmpty(name))
                 instance.Name = name;
@@ -33,9 +38,16 @@ namespace VIQA.HtmlElements
                 instance.Context = (Context != null)
                     ? new ByChained(Context, _locator)
                     : _locator;
-            var clickReloadsPage = viElement.GetCustomAttribute<WaitPageLoadAttribute>(false);
-            if (clickReloadsPage != null)
-                instance.WithPageLoadAction = true;
+            var clickableElement = instance as IClickable;
+            if (clickableElement != null)
+            {
+                var clickReloadsPage = ClickOpensPageAttribute.Handler(viElement);
+                if (!string.IsNullOrEmpty(clickReloadsPage))
+                    clickableElement.ClickOpensPage = clickReloadsPage;
+                viElement.SetValue(this, clickableElement);
+                ((VIElement)clickableElement).InitSubElements();
+                return;
+            }
             viElement.SetValue(this, instance);
             instance.InitSubElements();
         }
@@ -101,14 +113,14 @@ namespace VIQA.HtmlElements
                     "Requested:" + values.Keys.Print());
         }
         
-        public void FillFrom(Object data)
+        public void FillElements(Object data)
         {
-            VISite.Logger.Event("Fill form: '" + Name + "'".LineBreak() + "With data: " + data);
+            VISite.Logger.Event("Fill elements: '" + Name + "'".LineBreak() + "With data: " + data);
             WithValueElements.Select(_ => _.Value).Where(_ => _.FillRule != null)
                 .ForEach(element =>
                 {
                     try { element.SetValue(element.FillRule(data)); }
-                    catch (Exception ex) { VISite.Alerting.ThrowError("Error in FillFrom. Exception: " + ex); }
+                    catch (Exception ex) { VISite.Alerting.ThrowError("Error in FillElements. Exception: " + ex); }
                 });
         }
 

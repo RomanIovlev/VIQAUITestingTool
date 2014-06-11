@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
+using System.Reflection;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
@@ -16,19 +17,16 @@ namespace VIQA.SiteClasses
 {
     public class VISite : Named
     {
-        private IWebDriverTimeouts _webDriverTimeouts;
         public static ILogger Logger;
         public static IAlerting Alerting;
 
         public IWebDriverTimeouts WebDriverTimeouts {
-            get { return _webDriverTimeouts ?? new DefaultWebDriverTimeouts(); }
-            set { _webDriverTimeouts = value; }
+            get { return SiteSettings.WebDriverTimeouts ?? new DefaultWebDriverTimeouts(); }
+            set { SiteSettings.WebDriverTimeouts = value; }
         }
 
-        public int CashDropTimes = -1;
-        public bool UseCache = true;
-
-        public string WindowHandle;
+        public readonly SiteSettings SiteSettings;
+        
         private string _domain;
         public string Domain { 
             set
@@ -66,7 +64,9 @@ namespace VIQA.SiteClasses
             WebDriverFunc = webDriver;
             Logger = Logger ?? new DefaultLogger();
             Alerting = Alerting ?? new DefaultAllert();
+            Navigate = new Navigation(this);
             var site = SiteAttribute.Get(this);
+            SiteSettings = new SiteSettings();
             if (site != null)
             {
                 if (site.Domain != null)
@@ -74,24 +74,48 @@ namespace VIQA.SiteClasses
                 if (isMain)
                     isMain = site.IsMain;
                 if (site.UseCache)
-                    UseCache = site.UseCache;
+                    SiteSettings.UseCache = site.UseCache;
             }
             if (!isMain) return;
-            ;
-            VIElement.Init(this);
+            VIElementsSet.DefaultSite = this;
             VIPage.Init(this);
         }
-        
-        public void OpenPage(string uri)
+
+        public IEnumerable<FieldInfo> PagesFields {  get  { 
+            return GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(_ => typeof(VIPage).IsAssignableFrom(_.FieldType)).ToList();
+        } }
+
+        public List<VIPage> Pages { get { return PagesFields.Select(pageField => (VIPage)pageField.GetValue(this)).ToList(); } }
+
+        public void CheckPage(string name)
         {
-            new VIPage(Name, uri, site: this).Open();
+            VIPage viPage = null;
+            if (Pages.Any(page => String.Equals(page.Name, name, StringComparison.CurrentCultureIgnoreCase)))
+                viPage = Pages.First(page => String.Equals(page.Name, name, StringComparison.CurrentCultureIgnoreCase));
+            if (PagesFields.Any(field => String.Equals(field.Name, name, StringComparison.CurrentCultureIgnoreCase)))
+                viPage = ((VIPage)PagesFields.First(field => String.Equals(field.Name, name, StringComparison.CurrentCultureIgnoreCase)).GetValue(this));
+            if (viPage != null)
+                viPage.CheckPage();
+            else
+                Alerting.ThrowError("Can't check page '" + name + "'. Site have no pages with this name.");
         }
 
-        public void OpenHomePage()
+        public VIPage HomePage
         {
-            OpenPage("");
+            get
+            {
+                var homePagesCount = Pages.Count(page => page.IsHomePage);
+                if (homePagesCount == 1)
+                    return Pages.First(page => page.IsHomePage);
+                throw Alerting.ThrowError((homePagesCount == 0)
+                    ? "Site have no HomePage. Please specify one VIPage as HomePage using attribute IsHomePage"
+                    : "Site have more than one HomePage. Please specify only one HomePage. Current HomePages: " + 
+                        Pages.Where(page => page.IsHomePage).Select(page => page.Name));
+            }
         }
-        
+
+        public Navigation Navigate;
         
         public void Dispose()
         {

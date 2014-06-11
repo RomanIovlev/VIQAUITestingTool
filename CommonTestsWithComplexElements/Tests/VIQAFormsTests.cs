@@ -26,7 +26,7 @@ namespace CommonTestsWithComplexElements.Tests
             }
             {
                 var _ = YandexMarket.ProductPage.FilterSection;
-                _.FillFrom(filter);
+                _.FillElements(filter);
                 // Check that all fields correctly filled
                 Assert.IsTrue(_.CompareValuesWith(filter));
                 // or with custom output

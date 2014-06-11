@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using VIQA.HAttributes;
 using VIQA.HtmlElements;
 using VIQA.HtmlElements.BaseClasses;
 using VIQA.HtmlElements.Interfaces;
@@ -13,20 +14,16 @@ namespace CommonTestsWithComplexElements.Tests
     public class VIQATests
     {
         [SetUp]
-        public void Init()
-        {
-        }
+        public void Init() { }
 
         [TearDown]
-        public void TestCleanup()
-        {
-        }
+        public void TestCleanup() { }
 
         [Test]
         public void VITestExampleLarge()
         {
             var site = new VISite(BrowserType.Chrome) {Domain = "http://market.yandex.ru/"};
-            site.OpenHomePage();
+            site.Navigate.OpenHomePage();
 
             new TextField("Поле Поиска", By.XPath("//*[@class='b-search__input']//*[@class='b-form-input__input']"))
                 .Input("IPhone");
@@ -43,7 +40,7 @@ namespace CommonTestsWithComplexElements.Tests
             new ClickableElement("Сенсорный экран",
                 By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//i"))
                 .Click();
-            new RadioButtons("Выбор Сенсорного Экрана",
+            new RadioButtonses("Выбор Сенсорного Экрана",
                 By.XPath(
                     "//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']"))
                 .Select("да");
@@ -97,13 +94,13 @@ namespace CommonTestsWithComplexElements.Tests
                 _.TextFieldFrom.Input("1000");
                 _.TextFieldTo.Input("2000");
                 _.WiFiCheckbox.Check();
-                _.SensorScreenRadioButtons.Select("да");
+                _.SensorScreenRadioButtonses.Select("да");
                 _.PlatformTypesChecklist.CheckGroup(new[] { "Android", "iOS", "BlackBerry OS", "Symbian", "Series 60" });
                 _.PlatformTypesChecklist.CheckGroup("iOS");
                 _.ShowResultsButton.Click();
             }
 
-            YandexMarket.ProductPage.CheckUrl(false);
+            YandexMarket.ProductPage.DoUrlCheck(PageCheckType.Contains);
         }
 
         #region Common tests data

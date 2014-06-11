@@ -4,7 +4,7 @@ using VIQA.SiteClasses;
 
 namespace SimpleTests.Site.Pages
 {
-    [Page(Title = "Яндекс.Маркет", Url = "http://market.yandex.ru/")]
+    [Name("HomePage"), Page(Title = "Яндекс.Маркет", Url = "http://market.yandex.ru/", CheckUrl = PageCheckType.Equal, CheckTitle = PageCheckType.Contains, IsHomePage = true)]
     public class HomePage : VIPage
     {
         [Name("Search section")]

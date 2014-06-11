@@ -13,7 +13,7 @@ namespace ParallelTestsExamples.Site.Sections
 
         [Name("Кнопка 'Найти'")]
         [Locate(ByXPath = ".//*[contains(text(),'Найти')]//..//..//input")]
-        [WaitPageLoad]
+        [ClickOpensPage]
         public IButton SearchButton;
 
         public void SearchProduct(string productName)

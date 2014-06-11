@@ -63,7 +63,7 @@
     <Compile Include="Common\Named.cs" />
     <Compile Include="Common\Timer.cs" />
     <Compile Include="Common\VIAction.cs" />
-    <Compile Include="HAttributes\WaitPageLoadAttribute.cs" />
+    <Compile Include="HAttributes\ClickOpensPageAttribute.cs" />
     <Compile Include="HAttributes\FillFromFieldAttribute.cs" />
     <Compile Include="HAttributes\LocateAttribute.cs" />
     <Compile Include="HAttributes\PageAttribute.cs" />
@@ -79,7 +79,7 @@
     <Compile Include="HtmlElements\Interfaces\IDropDown.cs" />
     <Compile Include="HtmlElements\Interfaces\ISelected.cs" />
     <Compile Include="HtmlElements\Interfaces\ISelector.cs" />
-    <Compile Include="HtmlElements\Interfaces\IRadioButton.cs" />
+    <Compile Include="HtmlElements\Interfaces\IRadioButtons.cs" />
     <Compile Include="HtmlElements\Interfaces\ITable.cs" />
     <Compile Include="HtmlElements\Interfaces\ITextArea.cs" />
     <Compile Include="HtmlElements\Interfaces\IButton.cs" />
@@ -89,6 +89,8 @@
     <Compile Include="HtmlElements\Interfaces\IVIElement.cs" />
     <Compile Include="HtmlElements\Interfaces\IVIList.cs" />
     <Compile Include="HtmlElements\SimpleElements\Table.cs" />
+    <Compile Include="SiteClasses\Navigation.cs" />
+    <Compile Include="SiteClasses\SiteSettings.cs" />
     <Compile Include="SiteClasses\VISite.cs" />
     <Compile Include="Common\ByExtension.cs" />
     <Compile Include="Common\DefaultWebDriverTimeouts.cs" />
@@ -104,7 +106,7 @@
     <Compile Include="HtmlElements\Interfaces\IClickable.cs" />
     <Compile Include="HtmlElements\Interfaces\ILabeled.cs" />
     <Compile Include="HtmlElements\SimpleElements\Link.cs" />
-    <Compile Include="HtmlElements\ComplexElements\RadioButtons.cs" />
+    <Compile Include="HtmlElements\ComplexElements\RadioButtonses.cs" />
     <Compile Include="HtmlElements\SimpleElements\TextArea.cs" />
     <Compile Include="HtmlElements\SimpleElements\TextField.cs" />
     <Compile Include="Common\IWebDriverTimeouts.cs" />

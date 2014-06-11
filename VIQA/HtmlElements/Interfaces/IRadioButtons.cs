@@ -1,7 +1,7 @@
 ﻿
 namespace VIQA.HtmlElements.Interfaces
 {
-    public interface IRadioButton : ISelector<RadioButton>
+    public interface IRadioButtons : ISelector<RadioButton>
     {
         string SelectedItem { get; }
     }

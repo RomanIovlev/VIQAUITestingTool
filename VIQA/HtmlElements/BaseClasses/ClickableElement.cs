@@ -18,6 +18,8 @@ namespace VIQA.HtmlElements
         public ClickableElement(By byLocator) : base(byLocator) { }
         public ClickableElement(string name, IWebElement webElement) : base(name, webElement) { }
         public ClickableElement(IWebElement webElement) : base(webElement) { }
+        
+        public string ClickOpensPage { get; set; }
 
         public Action<ClickableElement> DefaultClickAction = cl => cl.GetWebElement().Click();
         private Action<ClickableElement> _clickAction;
@@ -40,9 +42,9 @@ namespace VIQA.HtmlElements
         {
             DoVIAction("Click", () => {
                 SmartClickAction();
-                if (!WithPageLoadAction) return;
-                NextActionNeedWaitPageToLoad = true;
-                Site.CashDropTimes ++;
+                if (string.IsNullOrEmpty(ClickOpensPage)) return;
+                OpenPageName = ClickOpensPage;
+                Site.SiteSettings.CashDropTimes ++;
             });
         }
 

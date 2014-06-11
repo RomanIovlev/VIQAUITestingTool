@@ -4,7 +4,7 @@ using VIQA.SiteClasses;
 
 namespace SimpleTests.Site.Pages
 {
-    [Page(Title = "Выбор по параметрам - Яндекс.Маркет", Url = "http://market.yandex.ru/guru.xml")]
+    [Name("ProductPage"), Page(Title = "выбор по параметрам на Яндекс.Маркет", Url = "guru.xml")]
     public class ProductPage : VIPage
     {
         [Name("Filter section")]
