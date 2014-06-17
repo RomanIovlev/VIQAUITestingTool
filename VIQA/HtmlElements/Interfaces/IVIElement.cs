@@ -12,7 +12,7 @@ namespace VIQA.HtmlElements.Interfaces
         bool IsPresent { get; }
         bool IsDisplayed { get; }
         List<T> GetElements<T>();
-        bool WaitElementState(Func<IWebElement, bool> waitFunc);
+        bool WaitElementState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null);
         By Locator { get; set; }
         void SetWaitTimeout(int waitTimeoutInSec);
         VISite Site { get; set; }

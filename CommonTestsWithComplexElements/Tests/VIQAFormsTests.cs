@@ -36,7 +36,6 @@ namespace CommonTestsWithComplexElements.Tests
                     Assert.AreEqual(a, e);
                     return true;
                 });
-                // Fill Elements from Dictionary pairs <VIElement, FillData>
                 _.FillSubElements(new Dictionary<string, object>
                 {
                     {_.PlatformTypesChecklist.Name, ProductFilter.PlatformTypes}

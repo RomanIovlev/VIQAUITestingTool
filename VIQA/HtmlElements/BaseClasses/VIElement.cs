@@ -102,7 +102,7 @@ namespace VIQA.HtmlElements
             return result;
         }
 
-        public bool IsPresent
+        public virtual bool IsPresent
         {
             get
             {
@@ -113,27 +113,28 @@ namespace VIQA.HtmlElements
             }
         }
 
-        public bool IsDisplayed
+        public virtual bool IsDisplayed
         {
             get
             {
                 WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
                 var elements = SearchContext.FindElements(Locator);
                 WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
-                return elements.Count > 0 && CheckWebElementIsUnique(elements).Displayed;
+                try { return CheckWebElementIsUnique(elements).Displayed; } 
+                catch { return false; }
             }
         }
 
-        public bool WaitElementState(Func<IWebElement, bool> waitFunc)
+        public bool WaitElementState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null)
         {
-            IWebElement webElement;
+            webElement = webElement ?? GetWebElement();
             var timer = new Timer();
             bool result = false;
-            do { webElement = GetWebElement(); }
+            do {  }
             while (!(result = waitFunc(webElement)) && !timer.TimeoutPassed(WaitTimeoutInSec));
             return result;
         }
-
+        
         public int CashDropTime { get; set; }
 
         private void IsClearCashNeeded()
