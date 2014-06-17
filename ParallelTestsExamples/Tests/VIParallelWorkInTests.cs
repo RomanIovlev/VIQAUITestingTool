@@ -33,7 +33,7 @@ namespace ParallelTestsExamples.Tests
                 var site = new YandexMarketSite { UseBrowser = browser };
                 site.HomePage.Open();
                 site.HomePage.SearchSection.SearchProduct("IPhone");
-                site.ProductPage.DoUrlCheck(PageCheckType.Contains);
+                site.ProductPage.CheckUrl(PageCheckType.Contains);
                 Thread.Sleep(2000);
             });
         }

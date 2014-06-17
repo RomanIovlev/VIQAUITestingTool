@@ -42,7 +42,7 @@ namespace VIQA.HtmlElements
         }
 
         public Func<Selector<T>, string, string> DefaultGetElementLabelFunc 
-            = (selector, name) => selector.GetVIElementByName(name).Label;
+            = (selector, name) => selector.GetVIElementByName(name).Text;
         private Func<Selector<T>, string, string> _getElementLabelFunc;
         public Func<Selector<T>, string, string> GetElementLabelFunc
         {

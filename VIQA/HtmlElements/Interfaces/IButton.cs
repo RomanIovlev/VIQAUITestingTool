@@ -1,6 +1,6 @@
 ﻿namespace VIQA.HtmlElements.Interfaces
 {
-    public interface IButton : IClickable, ILabeled
+    public interface IButton : IClickable, IText
     {
     }
 }

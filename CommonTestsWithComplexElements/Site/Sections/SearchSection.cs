@@ -13,7 +13,7 @@ namespace CommonTestsWithComplexElements.Site.Sections
 
         [Name("Кнопка 'Найти'")]
         [Locate(ByXPath = ".//*[contains(text(),'Найти')]//..//..//input")]
-        [ClickOpensPage]
+        [ClickLoadsPage]
         public IButton SearchButton;
 
         public void SearchProduct(string productName)

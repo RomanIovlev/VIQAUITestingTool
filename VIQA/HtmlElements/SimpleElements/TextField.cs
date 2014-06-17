@@ -13,7 +13,7 @@ namespace VIQA.HtmlElements
 
         protected override string _typeName { get { return "TextField"; } }
 
-        public override Func<string> DefaultGetLabelFunc { get { return () => GetWebElement().GetAttribute("value"); } }
+        public override Func<string> DefaultGetTextFunc { get { return () => GetWebElement().GetAttribute("value"); } }
 
         public TextField() { }
         public TextField(string name) : base(name) { }

@@ -1,6 +1,6 @@
 ﻿namespace VIQA.HtmlElements.Interfaces
 {
-    public interface ITextArea : ILabeled, IHaveValue
+    public interface ITextArea : IText, IHaveValue
     {
         void Input(string text);
         void NewInput(string text);

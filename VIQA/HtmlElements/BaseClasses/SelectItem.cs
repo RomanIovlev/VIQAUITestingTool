@@ -21,7 +21,7 @@ namespace VIQA.HtmlElements.BaseClasses
             set { _isSelectedFunc = value; }
             get { return _isSelectedFunc ?? DefaultIsSelectedFunc; }
         }
-
+        
         public bool IsSelected()
         {
             return DoVIAction(Name + " isSelected", () => IsSelectedFunc(this), val => val.ToString());

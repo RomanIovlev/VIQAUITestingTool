@@ -27,8 +27,8 @@ namespace VIQA.SiteClasses
         public string Title { get; set; }
         public bool IsHomePage { get; set; }
 
-        public PageCheckType CheckUrl { get; set; }
-        public PageCheckType CheckTitle { get; set; }
+        public PageCheckType UrlCheckType { get; set; }
+        public PageCheckType TitleCheckType { get; set; }
 
         private void SetEmptyPage()
         {
@@ -37,8 +37,8 @@ namespace VIQA.SiteClasses
             else
                 _url = "";
             Title = "";
-            CheckUrl = PageCheckType.NoCheck;
-            CheckTitle = PageCheckType.NoCheck;
+            UrlCheckType = PageCheckType.NoCheck;
+            TitleCheckType = PageCheckType.NoCheck;
             IsHomePage = false;
         }
 
@@ -47,31 +47,14 @@ namespace VIQA.SiteClasses
             DefaultNameFunc = () => string.Format("Page with Title: '{0}', Url: '{1}'", Title ?? "", Url ?? "");
             SetEmptyPage();
         }
-
-        //public VIPage(PageAttribute pageAttributeField)
-        //{
-        //    DefaultNameFunc = () => string.Format("Page with Title: '{0}', Url: '{1}'", Title ?? "", Url ?? "");
-        //    var name = NameAttribute.GetName(this);
-        //    if (!string.IsNullOrEmpty(name))
-        //        Name = name;
-        //    var pageAttrClass = PageAttribute.Handler(this);
-
-        //    if (pageAttrClass == null && pageAttributeField == null)
-        //        SetEmptyPage();
-        //    else 
-        //        if (pageAttributeField ==null)
-        //            FillFromPageAttribute(pageAttrClass);
-        //        else
-        //            FillFromPageAttribute(pageAttributeField);
-        //}
-
+        
         public void FillFromPageAttribute(PageAttribute pageAttr)
         {
             if (pageAttr == null) return;
             Url = pageAttr.Url;
             Title = pageAttr.Title;
-            CheckUrl = pageAttr.CheckUrl;
-            CheckTitle = pageAttr.CheckTitle;
+            UrlCheckType = pageAttr.UrlCheckType;
+            TitleCheckType = pageAttr.TitleCheckType;
             IsHomePage = pageAttr.IsHomePage;
         }
 
@@ -83,9 +66,9 @@ namespace VIQA.SiteClasses
             if (!string.IsNullOrEmpty(pageAttr.Title))
                 Title = pageAttr.Title;
             if (pageAttr.IsCheckUrlSetManual)
-                CheckUrl = pageAttr.CheckUrl;
+                UrlCheckType = pageAttr.UrlCheckType;
             if (pageAttr.IsCheckTitleSetManual)
-                CheckTitle = pageAttr.CheckTitle;
+                TitleCheckType = pageAttr.TitleCheckType;
             if (pageAttr.IsHomePage)
                 IsHomePage = true;
         }
@@ -117,16 +100,15 @@ namespace VIQA.SiteClasses
         public void Open()
         {
             Site.Navigate.OpenPage(this);
-            CheckPage();
+            VerifyPage(true);
         }
 
-        public void CheckPage()
+        public bool VerifyPage(bool throwError = false)
         {
-            DoUrlCheck(CheckUrl);
-            DoTitleCheck(CheckTitle);
+            return CheckUrl(UrlCheckType, throwError) && CheckTitle(TitleCheckType, throwError);
         }
 
-        public bool DoUrlCheck(PageCheckType checkType)
+        public bool CheckUrl(PageCheckType checkType, bool throwError = false)
         {
             if (checkType == PageCheckType.NoCheck) return true;
             if (string.IsNullOrEmpty(Url))
@@ -139,16 +121,19 @@ namespace VIQA.SiteClasses
             while (!((checkType == PageCheckType.Equal) ? WebDriver.Url == Url : WebDriver.Url.Contains(Url)))
                 if (timer.TimeoutPassed(Site.WebDriverTimeouts.WaitPageToLoadInSec*1000))
                 {
-                    VISite.Alerting.ThrowError(string.Format("Can't check url for page '{0}'." + 
+                    var errorMsg = string.Format("Failed to check page url'{0}'." + 
                         "Actual: '{1}'".FromNewLine() + 
                         "Expected: '{2}'".FromNewLine() +
-                        "CheckType: " + checkType, Name, WebDriver.Url, Url));
+                        "CheckType: " + checkType, Name, WebDriver.Url, Url);
+                    if (throwError)
+                        throw VISite.Alerting.ThrowError(errorMsg);
+                    VISite.Logger.Error(errorMsg);
                     return false;
                 }
             return true;
         }
 
-        public bool DoTitleCheck(PageCheckType checkType)
+        public bool CheckTitle(PageCheckType checkType, bool throwError = false)
         {
             if (checkType == PageCheckType.NoCheck) return true;
             if (string.IsNullOrEmpty(Title))
@@ -161,10 +146,13 @@ namespace VIQA.SiteClasses
             while (!((checkType == PageCheckType.Equal) ? WebDriver.Title == Title : WebDriver.Title.Contains(Title)))
                 if (timer.TimeoutPassed(Site.WebDriverTimeouts.WaitPageToLoadInSec * 1000))
                 {
-                    VISite.Alerting.ThrowError(string.Format("Can't check title for page '{0}'." +
+                    var errorMsg = string.Format("Failed to check page title '{0}'." +
                         "Actual: '{1}'".FromNewLine() +
                         "Expected: '{2}'".FromNewLine() +
-                        "CheckType: " + checkType, Name, WebDriver.Title, Title));
+                        "CheckType: " + checkType, Name, WebDriver.Title, Title);
+                    if (throwError)
+                        throw VISite.Alerting.ThrowError(errorMsg);
+                    VISite.Logger.Error(errorMsg);
                     return false;
                 }
             return true;

@@ -5,11 +5,11 @@
         public T DefaultAction;
         public VIAction(T defaultAction) { DefaultAction = defaultAction; }
 
-        private T _getElementLabelFunc;
+        private T _getElementTextFunc;
         public T Action
         {
-            set { _getElementLabelFunc = value; }
-            get { return _getElementLabelFunc ?? DefaultAction; }
+            set { _getElementTextFunc = value; }
+            get { return _getElementTextFunc ?? DefaultAction; }
         }
     }
 }

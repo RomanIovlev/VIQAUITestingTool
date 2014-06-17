@@ -21,13 +21,7 @@ namespace VIQA.SiteClasses
         private int _currentPageNum;
         public VIPage CurrentPage { get { return PagesHistory[_currentPageNum]; } }
         public string WindowHandle;
-
-        public void OpenHomePage()
-        {
-            try { _site.HomePage.Open(); }
-            catch { OpenPage(_site.Domain);}
-        }
-
+        
         public void OpenPage(string uri)
         {
             OpenPage(new VIPage("Page with url " + VIPage.GetUrlValue(uri, _site), uri, site: _site));

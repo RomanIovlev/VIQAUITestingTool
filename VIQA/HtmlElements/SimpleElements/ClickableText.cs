@@ -4,11 +4,11 @@ using VIQA.HtmlElements.Interfaces;
 
 namespace VIQA.HtmlElements
 {
-    public class ClickableText : ClickableElement, ILabeled
+    public class ClickableText : ClickableElement, IText
     {
         public TextElement TextElement;
 
-        protected override string _typeName { get { return "Clickable label"; } }
+        protected override string _typeName { get { return "Clickable text"; } }
 
         public ClickableText() { }
         public ClickableText(string name) : base(name) { }
@@ -20,15 +20,15 @@ namespace VIQA.HtmlElements
         public ClickableText(IWebElement webElement) : base(webElement) { Init("", webElement); }
         
         private void Init(string name, By byLocator) {
-            TextElement = new TextElement(name + " label", byLocator); 
+            TextElement = new TextElement(name + " text", byLocator); 
         }
         private void Init(string name, IWebElement webElement) {
-            TextElement = new TextElement(name + " label", webElement);
+            TextElement = new TextElement(name + " text", webElement);
         }
 
-        public string Label { get {
-            return DoVIAction("Get label", () => TextElement.GetLabelFunc(), text => text);
+        public string Text { get {
+            return DoVIAction("Get text", () => TextElement.GetTextFunc(), text => text);
         } }
-
+        
     }
 }

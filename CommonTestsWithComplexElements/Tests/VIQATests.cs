@@ -23,7 +23,7 @@ namespace CommonTestsWithComplexElements.Tests
         public void VITestExampleLarge()
         {
             var site = new VISite(BrowserType.Chrome) {Domain = "http://market.yandex.ru/"};
-            site.Navigate.OpenHomePage();
+            site.HomePage.Open();
 
             new TextField("Поле Поиска", By.XPath("//*[@class='b-search__input']//*[@class='b-form-input__input']"))
                 .Input("IPhone");
@@ -40,7 +40,7 @@ namespace CommonTestsWithComplexElements.Tests
             new ClickableElement("Сенсорный экран",
                 By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//i"))
                 .Click();
-            new RadioButtonses("Выбор Сенсорного Экрана",
+            new RadioButtons("Выбор Сенсорного Экрана",
                 By.XPath(
                     "//*[@class='b-gurufilters']//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']"))
                 .Select("да");
@@ -94,13 +94,13 @@ namespace CommonTestsWithComplexElements.Tests
                 _.TextFieldFrom.Input("1000");
                 _.TextFieldTo.Input("2000");
                 _.WiFiCheckbox.Check();
-                _.SensorScreenRadioButtonses.Select("да");
+                _.SensorScreenRadioButtons.Select("да");
                 _.PlatformTypesChecklist.CheckGroup(new[] { "Android", "iOS", "BlackBerry OS", "Symbian", "Series 60" });
                 _.PlatformTypesChecklist.CheckGroup("iOS");
                 _.ShowResultsButton.Click();
             }
 
-            YandexMarket.ProductPage.DoUrlCheck(PageCheckType.Contains);
+            YandexMarket.ProductPage.CheckUrl(PageCheckType.Contains);
         }
 
         #region Common tests data

@@ -1,6 +1,6 @@
 ﻿namespace VIQA.HtmlElements.Interfaces
 {
-    public interface ICheckbox : IClickable, ILabeled, IHaveValue
+    public interface ICheckbox : IClickable, IText, IHaveValue
     {
         void Check();
         void Uncheck();

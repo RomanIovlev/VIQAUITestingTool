@@ -13,7 +13,8 @@ namespace SimpleTests.Site.Sections
 
         [Name("Кнопка 'Найти'")]
         [Locate(ByXPath = ".//*[contains(text(),'Найти')]//..//..//input")]
-        [ClickOpensPage("Productpage")]
+        [ClickLoadsPage("Productpage")]
+
         public IButton SearchButton;
 
         public void SearchProduct(string productName)

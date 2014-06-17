@@ -135,12 +135,20 @@ namespace VIQA.HtmlElements.SimpleElements
         public TableHeadingType HeadingsType = TableHeadingType.ColumnsOnly;
         
         public Func<T> CreateElementFunc = () => (T)Activator.CreateInstance(typeof(T));
+
+        private T CreateElement()
+        {
+            var instance = CreateElementFunc();
+            instance.Context = Context;
+            return instance;
+        }
         
         public By GetLocator(string col, string row)
         {
-            var locatorTemplate = CreateElementFunc().Locator;
-            if (locatorTemplate == null)
-                locatorTemplate = By.XPath(".//tr[{1}]/td[{0}]");
+            var cell = CreateElementFunc();
+            var locatorTemplate = (cell.HaveLocator())
+                ? cell.Locator
+                : By.XPath(".//tr[{1}]/td[{0}]");
             var byLocator = locatorTemplate.GetByLocator();
             if (!byLocator.Contains("{0}") && byLocator.Contains("{1}"))
                 throw VISite.Alerting.ThrowError(FullName + ". Bad locator template for table element - " + byLocator + ". Locator template should contains {0} and {1}");
@@ -229,11 +237,6 @@ namespace VIQA.HtmlElements.SimpleElements
 
         public Table() { }
         public Table(string name) : base(name) { }
-        //public Table(string name, string cssSelector) : base(name, cssSelector) { Init(); }
-        //public Table(string name, By byLocator) : base(name, byLocator) { Init(); }
-        //public Table(By byLocator) : base(byLocator) { Init(); }
-        //public Table(string name, IWebElement webElement) : base(name, webElement) { Init(); }
-        //public Table(IWebElement webElement) : base(webElement) { Init(); }
 
     }
 }

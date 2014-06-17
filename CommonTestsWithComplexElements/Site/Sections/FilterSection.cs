@@ -25,7 +25,7 @@ namespace CommonTestsWithComplexElements.Site.Sections
         [Name("Wi-fi"), Locate(ByXPath = ".//*[contains(text(),'Wi-Fi')]//..//input"), FillFromField("Wifi")] 
         public readonly ICheckbox WiFiCheckbox;
 
-        public readonly RadioButtonses SensorScreenRadioButtonses = new RadioButtonses("Сенсорный экран",
+        public readonly RadioButtons SensorScreenRadioButtons = new RadioButtons("Сенсорный экран",
             () => new RadioButton(By.XPath(".//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']"))) {
                 DoViAction = new VIAction<Action<VIElement, string, Action>>((viElement, text, viAction) => {
                     VISite.Logger.Event(viElement.DefaultLogMessage(text));

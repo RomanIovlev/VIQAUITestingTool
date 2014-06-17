@@ -13,7 +13,7 @@ namespace VIQA.HAttributes
             set
             {
                 _url = value;
-                _checkUrl = PageCheckType.Contains;
+                _urlCheckType = PageCheckType.Contains;
             }
         }
 
@@ -25,7 +25,7 @@ namespace VIQA.HAttributes
             set
             {
                 _title = value;
-                _checkTitle = PageCheckType.Contains;
+                _titleCheckType = PageCheckType.Contains;
         } }
 
         public bool IsCheckUrlSetManual { get { return _isCheckUrlSetManual; } }
@@ -33,13 +33,13 @@ namespace VIQA.HAttributes
 
         private bool _isCheckUrlSetManual;
         private bool _isCheckTitleSetManual;
-        private PageCheckType _checkUrl = PageCheckType.NoCheck;
-        private PageCheckType _checkTitle = PageCheckType.NoCheck;
+        private PageCheckType _urlCheckType = PageCheckType.NoCheck;
+        private PageCheckType _titleCheckType = PageCheckType.NoCheck;
 
-        public PageCheckType CheckUrl { get { return _checkUrl; } set { _checkUrl = value;
+        public PageCheckType UrlCheckType { get { return _urlCheckType; } set { _urlCheckType = value;
         _isCheckUrlSetManual = true;
         } }
-        public PageCheckType CheckTitle { get { return _checkTitle; } set { _checkTitle = value;
+        public PageCheckType TitleCheckType { get { return _titleCheckType; } set { _titleCheckType = value;
         _isCheckTitleSetManual = true;
         } }
         

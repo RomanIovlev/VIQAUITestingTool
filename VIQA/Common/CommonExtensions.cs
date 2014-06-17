@@ -71,7 +71,7 @@ namespace VIQA.Common
         }
 
 
-        public static T WaitTimeout<T>(this T viElement, int timeoutInSec) where T : VIElement
+        public static T WaitTimeout<T>(this T viElement, int timeoutInSec) where T : IVIElement
         {
             viElement.SetWaitTimeout(timeoutInSec);
             return viElement;

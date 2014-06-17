@@ -22,7 +22,7 @@ namespace VIQA.HtmlElements
 
         private void Init()
         {
-            TextElement.GetLabelFunc = () => GetWebElement().GetAttribute("value");
+            TextElement.GetTextFunc = () => GetWebElement().GetAttribute("value");
         }
 
     }

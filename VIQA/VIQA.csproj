@@ -63,7 +63,7 @@
     <Compile Include="Common\Named.cs" />
     <Compile Include="Common\Timer.cs" />
     <Compile Include="Common\VIAction.cs" />
-    <Compile Include="HAttributes\ClickOpensPageAttribute.cs" />
+    <Compile Include="HAttributes\ClickLoadsPageAttribute.cs" />
     <Compile Include="HAttributes\FillFromFieldAttribute.cs" />
     <Compile Include="HAttributes\LocateAttribute.cs" />
     <Compile Include="HAttributes\PageAttribute.cs" />
@@ -104,9 +104,9 @@
     <Compile Include="HtmlElements\BaseClasses\ClickableElement.cs" />
     <Compile Include="HtmlElements\BaseClasses\VIElement.cs" />
     <Compile Include="HtmlElements\Interfaces\IClickable.cs" />
-    <Compile Include="HtmlElements\Interfaces\ILabeled.cs" />
+    <Compile Include="HtmlElements\Interfaces\IText.cs" />
     <Compile Include="HtmlElements\SimpleElements\Link.cs" />
-    <Compile Include="HtmlElements\ComplexElements\RadioButtonses.cs" />
+    <Compile Include="HtmlElements\ComplexElements\RadioButtons.cs" />
     <Compile Include="HtmlElements\SimpleElements\TextArea.cs" />
     <Compile Include="HtmlElements\SimpleElements\TextField.cs" />
     <Compile Include="Common\IWebDriverTimeouts.cs" />

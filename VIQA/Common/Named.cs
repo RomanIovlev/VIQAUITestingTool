@@ -11,7 +11,7 @@ namespace VIQA.Common
         public string Name
         {
             set { _name = value; }
-            get { return _name ?? DefaultNameFunc.Invoke(); }
+            get { return _name ?? DefaultNameFunc(); }
         }
     }
 }

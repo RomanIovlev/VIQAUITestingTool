@@ -24,15 +24,26 @@ namespace VIQA.HtmlElements
             }
         }
 
+        private string PrintLocator()
+        {
+            return string.Format("Context: '{0}'. Locator: '{1}'.", 
+                Context != null ? Context.ToString() : "null", 
+                _locator != null ? _locator.ToString() : "null");
+        }
+
         public By Locator { 
             set { _locator = value; }
             get
             {
-                return string.IsNullOrEmpty(TemplateId) 
+                var locator = string.IsNullOrEmpty(TemplateId)
                     ? _locator
                     : _locator.FillByTemplate(TemplateId);
+                if (locator != null)
+                    return locator;
+                throw VISite.Alerting.ThrowError(DefaultLogMessage("Locator cannot be null"));
             }
         }
+        public bool HaveLocator() { return _locator != null; }
 
         public IWebDriver WebDriver { get { return Site.WebDriver; } }
         public IWebDriverTimeouts Timeouts { get { return Site.WebDriverTimeouts; }}
@@ -68,8 +79,8 @@ namespace VIQA.HtmlElements
             if (webElements.Count == 1)
                 return WebElement = webElements.First();
             if (webElements.Any())
-                throw VISite.Alerting.ThrowError(string.Format("Found {0} {1} elements but expected. Please specify locator", webElements.Count, FullName));
-            throw VISite.Alerting.ThrowError((string.Format("Can't found element {0} by selector {1}. Please correct locator", FullName, Locator)));
+                throw VISite.Alerting.ThrowError(string.Format("Found {0} {1} elements but expected. Please correct locator '{2}'", webElements.Count, FullName, PrintLocator()));
+            throw VISite.Alerting.ThrowError((string.Format("Can't found element {0} by selector {1}. Please correct locator", FullName, PrintLocator())));
         }
 
         private ReadOnlyCollection<IWebElement> FoundElements;
@@ -77,6 +88,8 @@ namespace VIQA.HtmlElements
         {
             var firstTime = true;
             var timer = new Timer();
+            var result = false;
+            FoundElements = null;
             do { FoundElements = (SearchContext != null)
                     ? SearchContext.FindElements(Locator)
                     : null;
@@ -85,8 +98,8 @@ namespace VIQA.HtmlElements
                 else
                     Thread.Sleep(Timeouts.RetryActionInMsec);
             }
-            while ((FoundElements == null || !FoundElements.Any()) && !timer.TimeoutPassed(timeout));
-            return FoundElements.Any();
+            while (!(result = (FoundElements != null && FoundElements.Any())) && !timer.TimeoutPassed(timeout));
+            return result;
         }
 
         public bool IsPresent
@@ -110,16 +123,15 @@ namespace VIQA.HtmlElements
                 return elements.Count > 0 && CheckWebElementIsUnique(elements).Displayed;
             }
         }
-        public bool WaitDisplayed
+
+        public bool WaitElementState(Func<IWebElement, bool> waitFunc)
         {
-            get
-            {            
-                IWebElement webElement;
-                var timer = new Timer();
-                do { webElement = GetWebElement(); }
-                while (!webElement.Displayed && !timer.TimeoutPassed(WaitTimeoutInSec));
-                return webElement.Displayed;
-            }
+            IWebElement webElement;
+            var timer = new Timer();
+            bool result = false;
+            do { webElement = GetWebElement(); }
+            while (!(result = waitFunc(webElement)) && !timer.TimeoutPassed(WaitTimeoutInSec));
+            return result;
         }
 
         public int CashDropTime { get; set; }
@@ -147,10 +159,11 @@ namespace VIQA.HtmlElements
             if (WebElement != null)
                 return WebElement;
             var timeoutInSec = WaitTimeoutInSec;
-            if (!string.IsNullOrEmpty(OpenPageName))
+            if (OpenPageName != null)
             {
                 timeoutInSec = Timeouts.WaitPageToLoadInSec;
-                Site.CheckPage(OpenPageName);
+                if (OpenPageName != "") 
+                    Site.CheckPage(OpenPageName);
                 OpenPageName = null;
             }
             if (!WaitWebElement(timeoutInSec * 1000))
@@ -176,7 +189,7 @@ namespace VIQA.HtmlElements
 
         public VIElement()
         {
-            DefaultNameFunc = () => _typeName + " with by selector " + Locator;
+            DefaultNameFunc = () => _typeName + " with by selector " + PrintLocator();
         }
 
         public VIElement(string name)
@@ -193,7 +206,7 @@ namespace VIQA.HtmlElements
         
         public string DefaultLogMessage(string text)
         {
-            return text + string.Format(" (Name: '{0}', Type: '{1}', Locator: '{2}')", FullName, _typeName, Locator);
+            return text + string.Format(" (Name: '{0}', Type: '{1}', Locator: '{2}')", FullName, _typeName, PrintLocator());
         }
 
         private Func<string, Func<Object>, Func<Object, string>, Object> _defaultViActionR
@@ -203,9 +216,9 @@ namespace VIQA.HtmlElements
                 return (text, viAction, logResult) =>
                 {
                     VISite.Logger.Event(DefaultLogMessage(text));
-                    var result = viAction.Invoke();
+                    var result = viAction();
                     if (logResult != null)
-                        VISite.Logger.Event(logResult.Invoke(result));
+                        VISite.Logger.Event(logResult(result));
                     return result;
                 }; } }
 
@@ -218,7 +231,7 @@ namespace VIQA.HtmlElements
         
         protected T DoVIAction<T>(string logActionName, Func<T> viAction, Func<T, string> logResult = null)
         {
-            try { return (T)VIActionR.Invoke(logActionName, () => viAction(), res => logResult != null ? logResult((T)res) : null); }
+            try { return (T)VIActionR(logActionName, () => viAction(), res => logResult != null ? logResult((T)res) : null); }
             catch (Exception ex)
             {
                 throw VISite.Alerting.ThrowError(string.Format("Failed to do '{0}' action. Exception: {1}", logActionName, ex));
@@ -230,12 +243,12 @@ namespace VIQA.HtmlElements
             (viElement, text, viAction) =>
             {
                 VISite.Logger.Event(viElement.DefaultLogMessage(text));
-                viAction.Invoke();
+                viAction();
             });
         
         protected void DoVIAction(string logActionName, Action viAction)
         {
-            try { DoViAction.Action.Invoke(this, logActionName, viAction); }
+            try { DoViAction.Action(this, logActionName, viAction); }
             catch (Exception ex)
             {
                 throw VISite.Alerting.ThrowError(string.Format("Failed to do '{0}' action. Exception: {1}", logActionName, ex));
@@ -250,15 +263,22 @@ namespace VIQA.HtmlElements
             { typeof(ILink), typeof(Link) },
             { typeof(ITextField), typeof(TextField) },
             { typeof(ITextArea), typeof(TextArea) },
-            { typeof(ILabeled), typeof(TextElement) },
+            { typeof(IText), typeof(TextElement) },
             { typeof(IClickable), typeof(ClickableElement) },
             { typeof(IVIElement), typeof(VIElement) },
-            { typeof(IRadioButtons), typeof(RadioButtonses) },
+            { typeof(IRadioButtons), typeof(RadioButtons) },
             { typeof(IDropDown), typeof(DropDown) },
         };
 
         public static readonly Func<string, string, bool> DefaultCompareFunc = (a, e) => a == e;
 
         protected static string OpenPageName;
+
+        public static void Init(VISite site)
+        {
+            OpenPageName = null;
+            DefaultSite = site;
+            PreviousClickAction = null;
+        }
     }
 }

@@ -4,9 +4,9 @@ using VIQA.HtmlElements.Interfaces;
 
 namespace VIQA.HtmlElements
 {
-    public class TextElement : VIElement, ILabeled, IHaveValue
+    public class TextElement : VIElement, IText, IHaveValue
     {
-        protected override string _typeName { get { return "Label"; } }
+        protected override string _typeName { get { return "Text"; } }
 
         public TextElement() { }
         public TextElement(string name) : base(name) { }
@@ -16,21 +16,29 @@ namespace VIQA.HtmlElements
         public TextElement(string name, IWebElement webElement) : base(name, webElement) { }
         public TextElement(IWebElement webElement) : base(webElement) { }
 
-        public virtual Func<string> DefaultGetLabelFunc { get { return () => GetWebElement().Text; } }
+        public virtual Func<string> DefaultGetTextFunc { get { return () => GetWebElement().Text; } }
 
-        private Func<string> _getLabelFunc;
-        public Func<string> GetLabelFunc
+        private Func<string> _getTextFunc;
+        public Func<string> GetTextFunc
         {
-            set { _getLabelFunc = value; }
-            get { return _getLabelFunc ?? DefaultGetLabelFunc; }
+            set { _getTextFunc = value; }
+            get { return _getTextFunc ?? DefaultGetTextFunc; }
         }
 
-        public string Value { get { return Label; } }
 
-        public string Label
+        public Func<Object, Object> FillRule { set; get; }
+        public static Func<Object, Object> ToFillRule<T>(Func<T, Object> typeFillRule)
         {
-            get { return DoVIAction("Get label", GetLabelFunc, text => text); }
+            return o => new Func<T, object>(typeFillRule)((T)o);
         }
+
+        public string Value { get { return Text; } }
+
+        public string Text
+        {
+            get { return DoVIAction("Get text", GetTextFunc, text => text); }
+        }
+
         public void SetValue<T>(T value) { }
     }
 }

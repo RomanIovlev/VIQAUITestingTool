@@ -26,7 +26,7 @@ namespace CommonTestsWithComplexElements.Tests
             }
             {
                 var _ = YandexMarket.ProductPage.FilterSection;
-                _.FillElements(filter);
+                _.FillSubElements(filter);
                 // Check that all fields correctly filled
                 Assert.IsTrue(_.CompareValuesWith(filter));
                 // or with custom output
@@ -37,13 +37,13 @@ namespace CommonTestsWithComplexElements.Tests
                     return true;
                 });
                 // Fill Elements from Dictionary pairs <VIElement, FillData>
-                _.FillElements(new Dictionary<string, object>
+                _.FillSubElements(new Dictionary<string, object>
                 {
                     {_.PlatformTypesChecklist.Name, ProductFilter.PlatformTypes}
                 });
                 _.ShowResultsButton.Click();
             }
-            Assert.IsNotNull(YandexMarket.WebDriver.FindElement(By.XPath("//a[contains(text(),'iPhone')]")));
+            Assert.IsNotNull(YandexMarket.WebDriver.FindElement(By.XPath("//p[contains(text(),'Заданным характеристикам не')]")));
         }
 
         #region Common tests data
