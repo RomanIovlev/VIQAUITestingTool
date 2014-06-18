@@ -4,11 +4,11 @@ using VIQA.SiteClasses;
 
 namespace CommonTestsWithComplexElements.Site.Pages
 {
-    [Page(Title = "Выбор по параметрам - Яндекс.Маркет", Url = "http://market.yandex.ru/guru.xml")]
+    [Page(Title = "выбор по параметрам", Url = "http://market.yandex.ru/guru.xml")]
     public class ProductPage : VIPage
     {
         [Name("Filter section")]
-        [Locate(ByClassName = "b-gurufilters")]
+        [Locate(ByXPath = "//*[@class='b-gurufilters']")]
         public FilterSection FilterSection;
     }
 }

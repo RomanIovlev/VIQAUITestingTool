@@ -42,7 +42,7 @@ namespace CommonTestsWithComplexElements.Tests
                 });
                 _.ShowResultsButton.Click();
             }
-            Assert.IsNotNull(YandexMarket.WebDriver.FindElement(By.XPath("//p[contains(text(),'Заданным характеристикам не')]")));
+            Assert.IsNotNull(YandexMarket.WebDriver.FindElement(By.XPath("//a[contains(text(),'iPhone')]")));
         }
 
         #region Common tests data

@@ -10,7 +10,7 @@ namespace CommonTestsWithComplexElements.Site
         [Page(Title = "Яндекс.Маркет", Url = "http://market.yandex.ru/")]
         public HomePage HomePage;
 
-        [Page(Title = "Выбор по параметрам - Яндекс.Маркет", Url = "http://market.yandex.ru/guru.xml")]
+        [Page(Title = "выбор по параметрам", Url = "http://market.yandex.ru/guru.xml")]
         public ProductPage ProductPage;
         
     }

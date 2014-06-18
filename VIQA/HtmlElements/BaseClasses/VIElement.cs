@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using VIQA.Common;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
@@ -23,7 +24,7 @@ namespace VIQA.HtmlElements
                 return (elements.Count == 1) ? elements.First() : null;
             }
         }
-
+        
         private string PrintLocator()
         {
             return string.Format("Context: '{0}'. Locator: '{1}'.", 
@@ -79,27 +80,56 @@ namespace VIQA.HtmlElements
             if (webElements.Count == 1)
                 return WebElement = webElements.First();
             if (webElements.Any())
-                throw VISite.Alerting.ThrowError(string.Format("Found {0} {1} elements but expected. Please correct locator '{2}'", webElements.Count, FullName, PrintLocator()));
-            throw VISite.Alerting.ThrowError((string.Format("Can't found element {0} by selector {1}. Please correct locator", FullName, PrintLocator())));
+                throw VISite.Alerting.ThrowError(LotOfFindElementsMessage(webElements));
+            throw VISite.Alerting.ThrowError(CantFindElementMessage);
         }
+        
+        private string LotOfFindElementsMessage(ReadOnlyCollection<IWebElement> webElements) {
+            return string.Format("Found {0} elements '{1}' but expected. Please correct locator '{2}'", webElements.Count, FullName, PrintLocator()); } 
+        private string CantFindElementMessage { get {
+            return string.Format("Can't found element '{0}' by selector '{1}'. Please correct locator", FullName, PrintLocator()); } }
 
         private ReadOnlyCollection<IWebElement> FoundElements;
-        private bool WaitWebElement(int timeout)
+
+        public ReadOnlyCollection<IWebElement> SearchElements(By locator = null)
+        {
+            try { return SearchContext.FindElements(locator ?? Locator); }
+            catch { throw VISite.Alerting.ThrowError(CantFindElementMessage);}
+        }
+        private bool Wait(Func<bool> waitFunc, int timeoutInSec = -1)
         {
             var firstTime = true;
+            if (timeoutInSec < 0)
+                timeoutInSec = Site.WebDriverTimeouts.WaitWebElementInSec;
             var timer = new Timer();
             var result = false;
-            FoundElements = null;
-            do { FoundElements = (SearchContext != null)
-                    ? SearchContext.FindElements(Locator)
-                    : null;
+            do
+            {
                 if (firstTime)
                     firstTime = false;
                 else
                     Thread.Sleep(Timeouts.RetryActionInMsec);
+                result = waitFunc();
             }
-            while (!(result = (FoundElements != null && FoundElements.Any())) && !timer.TimeoutPassed(timeout));
+            while (!result && !timer.TimeoutPassed(timeoutInSec));
             return result;
+        }
+
+        public bool WaitElementState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, int timeoutInSec = -1)
+        {
+            return Wait(() => waitFunc(webElement ?? CheckWebElementIsUnique(SearchElements())), timeoutInSec);
+        }
+
+        private bool WaitWebElements(int timeout)
+        {
+            FoundElements = null;
+            return Wait(() => {
+                try { FoundElements = (SearchContext != null)
+                        ? SearchElements()
+                        : null; 
+                } catch { FoundElements = null; }
+                return FoundElements != null && FoundElements.Any();
+            }, timeout);
         }
 
         public virtual bool IsPresent
@@ -107,7 +137,7 @@ namespace VIQA.HtmlElements
             get
             {
                 WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
-                var elements = SearchContext.FindElements(Locator);
+                var elements = SearchElements();
                 WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
                 return elements.Count > 0; 
             }
@@ -118,21 +148,15 @@ namespace VIQA.HtmlElements
             get
             {
                 WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
-                var elements = SearchContext.FindElements(Locator);
+                var elements = SearchElements();
                 WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
-                try { return CheckWebElementIsUnique(elements).Displayed; } 
-                catch { return false; }
+                try { return CheckWebElementIsUnique(elements).Displayed; }
+                catch (Exception ex)
+                {
+                    VISite.Logger.Event("IsDisplayed Failed with exception: " + ex);
+                    return false;
+                }
             }
-        }
-
-        public bool WaitElementState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null)
-        {
-            webElement = webElement ?? GetWebElement();
-            var timer = new Timer();
-            bool result = false;
-            do {  }
-            while (!(result = waitFunc(webElement)) && !timer.TimeoutPassed(WaitTimeoutInSec));
-            return result;
         }
         
         public int CashDropTime { get; set; }
@@ -167,15 +191,15 @@ namespace VIQA.HtmlElements
                     Site.CheckPage(OpenPageName);
                 OpenPageName = null;
             }
-            if (!WaitWebElement(timeoutInSec * 1000))
+            if (!WaitWebElements(timeoutInSec * 1000))
             {
                 if (PreviousClickAction != null)
                 try
                 {
                     PreviousClickAction();
-                    WaitWebElement(timeoutInSec);
+                    WaitWebElements(timeoutInSec);
                     VISite.Logger.Event("Used Click Previous action");
-                } catch {WaitWebElement(0);}
+                } catch {WaitWebElements(0);}
             }
             return CheckWebElementIsUnique(FoundElements);
         }

@@ -41,8 +41,9 @@ namespace VIQA.HtmlElements.SimpleElements
         public Func<Table<T>, List<string>> GetColumnNamesFunc
         {
             set { _getColumnNamesFunc = value; }
-            get { return _getColumnNamesFunc ?? 
-                (table => table.SearchContext.FindElements(By.XPath(".//th")).Select(el => el.Text).ToList()); }
+            get { return _getColumnNamesFunc ??
+                (table => table.SearchElements(By.XPath(".//th")).Select(el => el.Text).ToList());
+            }
         }
 
         private List<string> _columnNames;
@@ -69,7 +70,7 @@ namespace VIQA.HtmlElements.SimpleElements
                 return _columnNames.Count;
             return ColumnIndex != null
                 ? ColumnIndex.Count
-                : SearchContext.FindElements(By.XPath(".//th")).Count();
+                : SearchElements(By.XPath(".//th")).Count();
         }
 
         private List<string> TryGenerateNumColumnNames()
@@ -90,7 +91,7 @@ namespace VIQA.HtmlElements.SimpleElements
             get
             {
                 return _getRowNamesFunc ??
-                    (table => table.SearchContext.FindElements(By.XPath(".//tr/td[1]")).Select(el => el.Text).ToList());
+                    (table => table.SearchElements(By.XPath(".//tr/td[1]")).Select(el => el.Text).ToList());
             }
         }
 
@@ -118,7 +119,7 @@ namespace VIQA.HtmlElements.SimpleElements
                 return _rowNames.Count;
             return RowIndex != null
                 ? RowIndex.Count
-                : SearchContext.FindElements(By.XPath(".//tr/td[1]")).Count();
+                : SearchElements(By.XPath(".//tr/td[1]")).Count();
         }
         private List<string> TryGenerateNumRowNames()
         {

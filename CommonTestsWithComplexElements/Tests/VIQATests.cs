@@ -25,9 +25,9 @@ namespace CommonTestsWithComplexElements.Tests
             var site = new VISite(BrowserType.Chrome) {Domain = "http://market.yandex.ru/"};
             site.HomePage.Open();
 
-            new TextField("Поле Поиска", By.XPath("//*[@class='b-search__input']//*[@class='b-form-input__input']"))
+            new TextField("Поле Поиска", By.XPath("//*[@class='search__table']//*[@id='market_search']"))
                 .Input("IPhone");
-            new Button("Кнопка 'Найти'", By.XPath("//*[contains(text(),'Найти')]//..//..//input"))
+            new Button("Кнопка 'Найти'", By.XPath("//*[@class='search__table']//*[contains(text(),'Найти')]//..//..//button"))
                 .Click();
             new TextField("Цена От", By.XPath("//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-0')]"))
                 .Input("1000");

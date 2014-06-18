@@ -10,7 +10,7 @@ namespace ParallelTestsExamples.Site
         [Page(Title = "Яндекс.Маркет", Url = "http://market.yandex.ru/", IsHomePage = true)]
         public HomePage HomePage;
 
-        [Page(Title = "выбор по параметрам на Яндекс.Маркет", Url = "http://market.yandex.ru/guru.xml")]
+        [Page(Title = "выбор по параметрам", Url = "http://market.yandex.ru/guru.xml")]
         public ProductPage ProductPage;
         
     }

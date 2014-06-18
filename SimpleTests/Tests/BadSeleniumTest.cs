@@ -23,9 +23,9 @@ namespace SimpleTests.Tests
             driver.Manage().Timeouts().ImplicitlyWait(new TimeSpan(0, 0, 5));
             driver.Navigate().GoToUrl("http://market.yandex.ru/");
 
-            driver.FindElement(By.XPath("//*[@class='b-search__input']//*[@class='b-form-input__input']"))
+            driver.FindElement(By.XPath("//*[@class='search__table']//*[@id='market_search']"))
                 .SendKeys("IPhone");
-            driver.FindElement(By.XPath("//*[contains(text(),'Найти')]//..//..//input"))
+            driver.FindElement(By.XPath("//*[@class='search__table']//*[contains(text(),'Найти')]//..//..//button"))
                 .Click();
             driver.FindElement(By.XPath("//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-0')]"))
                 .SendKeys("1000");

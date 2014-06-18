@@ -25,7 +25,7 @@ namespace VIQA.HtmlElements
         
         public void Input(string text)
         {
-            DoVIAction("Input text " + text + " in text field", () => GetWebElement().SendKeys(text));
+            DoVIAction("Input text '" + text + "' in text field", () => GetWebElement().SendKeys(text));
         }
 
         public void NewInput(string text)

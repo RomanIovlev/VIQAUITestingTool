@@ -26,7 +26,7 @@ namespace VIQA.SiteClasses
         }
 
         public readonly SiteSettings SiteSettings;
-        
+
         private string _domain;
         public string Domain { 
             set

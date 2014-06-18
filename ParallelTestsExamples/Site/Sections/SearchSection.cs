@@ -8,11 +8,11 @@ namespace ParallelTestsExamples.Site.Sections
     public class SearchSection : VIElement
     {
         [Name("Поле Поиска")]
-        [Locate(ByXPath = ".//*[@class='b-form-input__input']")]
+        [Locate(ById = "market_search")]
         public ITextField SearchTextField;
 
         [Name("Кнопка 'Найти'")]
-        [Locate(ByXPath = ".//*[contains(text(),'Найти')]//..//..//input")]
+        [Locate(ByXPath = ".//*[contains(text(),'Найти')]//..//..//button")]
         [ClickLoadsPage]
         public IButton SearchButton;
 

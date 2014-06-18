@@ -8,7 +8,7 @@ namespace CommonTestsWithComplexElements.Site.Pages
     public class HomePage : VIPage
     {
         [Name("Search section")]
-        [Locate(ByClassName = "b-head-search")]
+        [Locate(ByClassName = "search__table")]
         public SearchSection SearchSection;
 
     }
