@@ -85,9 +85,9 @@ namespace VIQA.HtmlElements
         }
         
         private string LotOfFindElementsMessage(ReadOnlyCollection<IWebElement> webElements) {
-            return string.Format("Found {0} elements '{1}' but expected. Please correct locator '{2}'", webElements.Count, FullName, PrintLocator()); } 
+            return string.Format("Find {0} elements '{1}' but expected. Please correct locator '{2}'", webElements.Count, FullName, PrintLocator()); } 
         private string CantFindElementMessage { get {
-            return string.Format("Can't found element '{0}' by selector '{1}'. Please correct locator", FullName, PrintLocator()); } }
+            return string.Format("Can't find element '{0}' by selector '{1}'. Please correct locator", FullName, PrintLocator()); } }
 
         private ReadOnlyCollection<IWebElement> FoundElements;
 
@@ -109,7 +109,8 @@ namespace VIQA.HtmlElements
                     firstTime = false;
                 else
                     Thread.Sleep(Timeouts.RetryActionInMsec);
-                result = waitFunc();
+                try { result = waitFunc(); }
+                catch { result = false; }
             }
             while (!result && !timer.TimeoutPassed(timeoutInSec));
             return result;
