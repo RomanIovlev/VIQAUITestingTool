@@ -14,7 +14,7 @@ namespace VIQA.Common
 
         public static By FillByTemplate(this By by, params object[] args)
         {
-            return by.GetByFunc()(string.Format(by.GetByLocator(), args)); 
+            return by = by.GetByFunc()(string.Format(by.GetByLocator(), args)); 
         }
 
         public static string GetByLocator(this By by)

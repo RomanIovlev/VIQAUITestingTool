@@ -4,7 +4,7 @@ using System.Linq;
 using OpenQA.Selenium;
 using VIQA.HtmlElements.BaseClasses;
 using VIQA.HtmlElements.Interfaces;
-
+using OpenQA.Selenium.Support.UI;
 namespace VIQA.HtmlElements
 {
     public class DropDown : Selector<SelectItem>, IDropDown
@@ -13,9 +13,11 @@ namespace VIQA.HtmlElements
 
         public DropDown() { }
 
+        public DropDown(string name, By byLocator) : base(name, byLocator) { 
+            SelectAction = (selector, value) => new SelectElement(selector.GetWebElement()).SelectByText(value); }
+
         public DropDown(string name, By rootCssSelector, Func<SelectItem> selectorTemplate) : base(name, rootCssSelector, selectorTemplate) { }
         public DropDown(string name, Func<SelectItem> selectorTemplate) : base(name, selectorTemplate) { }
-        public DropDown(string name, By byLocator) : base(name, byLocator) { }
         public DropDown(string name, string cssLocator) : base(name, cssLocator) { }
 
         private new List<string> SelectedItems() { return null; }

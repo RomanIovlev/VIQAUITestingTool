@@ -1,6 +1,8 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using SimpleTests.Site;
+using SimpleTests.Site.Pages;
 using VIQA.Common;
 using VIQA.HAttributes;
 using VIQA.HtmlElements;

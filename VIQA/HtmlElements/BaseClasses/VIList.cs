@@ -14,18 +14,12 @@ namespace VIQA.HtmlElements.BaseClasses
         
         public Dictionary<string, T> Elements = new Dictionary<string, T>();
         
-        public By GetLocator(string value)
-        {
-            var locatorTemplate = CreateElementFunc().Locator;
-            return locatorTemplate.FillByTemplate(value);
-        }
-        
         public T GetVIElementByName(string value)
         {
             if (!Elements.ContainsKey(value))
             {
                 var viElement = CreateElementFunc();
-                viElement.Locator = GetLocator(value);
+                viElement.Locator = viElement.Locator.FillByTemplate(value);
                 Elements.Add(value, (T)viElement.GetVIElement());
             }
             return Elements[value];
@@ -48,6 +42,7 @@ namespace VIQA.HtmlElements.BaseClasses
         public VIList(string name, By bySelector) : base(name)
         {
             CreateElementFunc = () => (T)Activator.CreateInstance(typeof(T), bySelector);
+            Locator = bySelector;
         }
 
         public VIList(string name, Func<T> selectorTemplate) : this(name, null, selectorTemplate) { }
