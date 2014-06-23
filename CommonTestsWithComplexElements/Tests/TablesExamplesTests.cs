@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using VIQA.HtmlElements;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.HtmlElements.SimpleElements;
 using VIQA.SiteClasses;
@@ -116,6 +118,7 @@ namespace CommonTestsWithComplexElements.Tests
 ||John||Doe|80|| 
 ||Adam||Johnson|67||");
         }
+        
     }
 }
 

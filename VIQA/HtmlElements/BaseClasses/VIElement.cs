@@ -69,8 +69,20 @@ namespace VIQA.HtmlElements
 
         #endregion
 
-        protected int WaitTimeoutInSec { get { return _waitTimeoutInSec ?? _defaultWaitTimeoutInSec; } }
-        protected static Action PreviousClickAction;
+        protected int WaitTimeoutInSec
+        {
+            get
+            {
+                if (OpenPageName != null)
+                {
+                    if (OpenPageName != "")
+                        Site.CheckPage(OpenPageName);
+                    OpenPageName = null;
+                    return Timeouts.WaitPageToLoadInSec;
+                }
+                return _waitTimeoutInSec ?? _defaultWaitTimeoutInSec;
+            }
+        }
         
         protected virtual string _typeName { get { return "Element type undefined"; } }
         public string FullName { get { return Name ?? _typeName + " with undefiened Name";} }
@@ -78,19 +90,32 @@ namespace VIQA.HtmlElements
         private IWebElement CheckWebElementIsUnique(ReadOnlyCollection<IWebElement> webElements)
         {
             if (webElements.Count == 1)
-                return WebElement = webElements.First();
+                return webElements.First();
             if (webElements.Any())
                 throw VISite.Alerting.ThrowError(LotOfFindElementsMessage(webElements));
             throw VISite.Alerting.ThrowError(CantFindElementMessage);
         }
+
+        private IWebElement CheckWebElementIsDisplayed(IWebElement webElement)
+        {
+            var timer = new Timer();
+            var timeoutInSec = Site.WebDriverTimeouts.WaitWebElementInSec;
+            while (!timer.TimeoutPassed(timeoutInSec))
+            {
+                try { if (webElement.Displayed) break; }
+                catch { }
+            }
+            if (webElement.Displayed)
+                return webElement;
+            throw VISite.Alerting.ThrowError(string.Format("Found element '{0}' stay invisible '{1}'. Please correct locator", PrintLocator(), timer.TimePassed()));
+        }
+
         
         private string LotOfFindElementsMessage(ReadOnlyCollection<IWebElement> webElements) {
             return string.Format("Find {0} elements '{1}' but expected. Please correct locator '{2}'", webElements.Count, FullName, PrintLocator()); } 
         private string CantFindElementMessage { get {
             return string.Format("Can't find element '{0}' by selector '{1}'. Please correct locator", FullName, PrintLocator()); } }
-
-        private ReadOnlyCollection<IWebElement> FoundElements;
-
+        
         public ReadOnlyCollection<IWebElement> SearchElements(By locator = null)
         {
             try { return SearchContext.FindElements(locator ?? Locator); }
@@ -121,16 +146,18 @@ namespace VIQA.HtmlElements
             return Wait(() => waitFunc(webElement ?? CheckWebElementIsUnique(SearchElements())), timeoutInSec);
         }
 
-        private bool WaitWebElements(int timeout)
+        private ReadOnlyCollection<IWebElement> WaitWebElements(int timeout)
         {
-            FoundElements = null;
-            return Wait(() => {
-                try { FoundElements = (SearchContext != null)
+            ReadOnlyCollection<IWebElement> foundElements = null;
+            return (Wait(() => {
+                try { foundElements = (SearchContext != null)
                         ? SearchElements()
                         : null; 
-                } catch { FoundElements = null; }
-                return FoundElements != null && FoundElements.Any();
-            }, timeout);
+                } catch { foundElements = null; }
+                return foundElements != null && foundElements.Any();
+            }, timeout))
+            ? foundElements
+            : null;
         }
 
         public virtual bool IsPresent
@@ -160,13 +187,13 @@ namespace VIQA.HtmlElements
             }
         }
         
-        public int CashDropTime { get; set; }
+        public int CashDropTimes { get; set; }
 
         private void IsClearCashNeeded()
         {
             if (Site.SiteSettings.UseCache)
             {
-                if (CashDropTime != Site.SiteSettings.CashDropTimes) 
+                if (CashDropTimes != Site.SiteSettings.CashDropTimes) 
                     DropCache();
                 return;
             }
@@ -175,7 +202,7 @@ namespace VIQA.HtmlElements
 
         private void DropCache()
         {
-            CashDropTime = Site.SiteSettings.CashDropTimes;
+            CashDropTimes = Site.SiteSettings.CashDropTimes;
             _webElement = null;
         }
 
@@ -185,24 +212,11 @@ namespace VIQA.HtmlElements
             if (WebElement != null)
                 return WebElement;
             var timeoutInSec = WaitTimeoutInSec;
-            if (OpenPageName != null)
-            {
-                timeoutInSec = Timeouts.WaitPageToLoadInSec;
-                if (OpenPageName != "") 
-                    Site.CheckPage(OpenPageName);
-                OpenPageName = null;
-            }
-            if (!WaitWebElements(timeoutInSec * 1000))
-            {
-                if (PreviousClickAction != null)
-                try
-                {
-                    PreviousClickAction();
-                    WaitWebElements(timeoutInSec);
-                    VISite.Logger.Event("Used Click Previous action");
-                } catch {WaitWebElements(0);}
-            }
-            return CheckWebElementIsUnique(FoundElements);
+            var foundElements = WaitWebElements(timeoutInSec * 1000);
+            if (foundElements == null)
+                VISite.Alerting.ThrowError(CantFindElementMessage);
+            WebElement = CheckWebElementIsUnique(foundElements);
+            return CheckWebElementIsDisplayed(WebElement);
         }
 
         public IVIElement GetVIElement()
@@ -304,7 +318,6 @@ namespace VIQA.HtmlElements
         {
             OpenPageName = null;
             DefaultSite = site;
-            PreviousClickAction = null;
         }
     }
 }

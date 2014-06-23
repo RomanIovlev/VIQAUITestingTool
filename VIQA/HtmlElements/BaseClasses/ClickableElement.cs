@@ -57,8 +57,6 @@ namespace VIQA.HtmlElements
                 {
                     ClickAction(this);
                     clicked = true;
-                    PreviousClickAction = 
-                        () => ClickAction(this);
                     VISite.Logger.Event("Done");
                 }
                 catch

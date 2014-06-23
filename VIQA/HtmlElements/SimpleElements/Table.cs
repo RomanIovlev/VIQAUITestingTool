@@ -135,18 +135,18 @@ namespace VIQA.HtmlElements.SimpleElements
         public TableElementIndexType IndexType = TableElementIndexType.Nums;
         public TableHeadingType HeadingsType = TableHeadingType.ColumnsOnly;
         
-        public Func<T> CreateElementFunc = () => (T)Activator.CreateInstance(typeof(T));
+        public Func<T> CreateCellFunc = () => (T)Activator.CreateInstance(typeof(T));
 
         private T CreateElement()
         {
-            var instance = CreateElementFunc();
+            var instance = CreateCellFunc();
             instance.Context = Context;
             return instance;
         }
         
         public By GetLocator(string col, string row)
         {
-            var cell = CreateElementFunc();
+            var cell = CreateCellFunc();
             var locatorTemplate = (cell.HaveLocator())
                 ? cell.Locator
                 : By.XPath(".//tr[{1}]/td[{0}]");
@@ -230,7 +230,7 @@ namespace VIQA.HtmlElements.SimpleElements
 
         private T CreateElement(string col, string row)
         {
-            var viElement = CreateElementFunc();
+            var viElement = CreateCellFunc();
             viElement.Locator = GetLocator(col, row);
             viElement.Context = Context;
             return (T)viElement.GetVIElement();

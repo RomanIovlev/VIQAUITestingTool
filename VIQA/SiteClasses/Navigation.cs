@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
 using OpenQA.Selenium;
 
 namespace VIQA.SiteClasses
@@ -41,12 +39,14 @@ namespace VIQA.SiteClasses
         {
             VISite.Logger.Event("GoBack to previous page");
             _site.WebDriver.Navigate().Back();
+            _site.SiteSettings.CashDropTimes++;
             _currentPageNum--;
         }
         public void GoForward()
         {
             VISite.Logger.Event("GoForward to next page");
             _site.WebDriver.Navigate().Forward();
+            _site.SiteSettings.CashDropTimes++;
             _currentPageNum++;
         }
 
@@ -54,6 +54,7 @@ namespace VIQA.SiteClasses
         {
             VISite.Logger.Event("Refresh current page");
             _site.WebDriver.Navigate().Refresh();
+            _site.SiteSettings.CashDropTimes++;
         }
     }
 }
