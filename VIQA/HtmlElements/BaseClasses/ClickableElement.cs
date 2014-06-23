@@ -64,6 +64,8 @@ namespace VIQA.HtmlElements
                     Thread.Sleep(Site.WebDriverTimeouts.RetryActionInMsec);
                     VISite.Logger.Event("Done Double Click");
                 }
+            if (!clicked)
+                throw VISite.Alerting.ThrowError(DefaultLogMessage("Failed to click element"));
         }
         
     }
