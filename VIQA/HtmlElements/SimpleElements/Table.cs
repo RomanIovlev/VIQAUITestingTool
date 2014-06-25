@@ -152,7 +152,7 @@ namespace VIQA.HtmlElements.SimpleElements
                 : By.XPath(".//tr[{1}]/td[{0}]");
             var byLocator = locatorTemplate.GetByLocator();
             if (!byLocator.Contains("{0}") && byLocator.Contains("{1}"))
-                throw VISite.Alerting.ThrowError(FullName + ". Bad locator template for table element - " + byLocator + ". Locator template should contains {0} and {1}");
+                throw VISite.Alerting.ThrowError(FullName + ". Bad locator template for table element - " + byLocator + ". LocatorAttribute template should contains {0} and {1}");
             return locatorTemplate.FillByTemplate(col, row);
         }
 

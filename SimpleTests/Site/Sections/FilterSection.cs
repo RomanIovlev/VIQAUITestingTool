@@ -7,15 +7,15 @@ namespace SimpleTests.Site.Sections
     public class FilterSection : VIElement
     {
         [Name("Цена От")]
-        [Locate(ByXPath = ".//*[@class='b-gurufilters__filter-inputs']//input[contains(@id,'-0')]")] 
+        [Locator(ByXPath = ".//*[@class='b-gurufilters__filter-inputs']//input[contains(@id,'-0')]")] 
         public readonly ITextField TextFieldFrom;
 
-        [Name("Цена До"), Locate(ByXPath = ".//*[@class='b-gurufilters__filter-inputs']//input[contains(@id,'-1')]")]
+        [Name("Цена До"), Locator(ByXPath = ".//*[@class='b-gurufilters__filter-inputs']//input[contains(@id,'-1')]")]
         public readonly ITextField TextFieldTo;
 
-        [Name("Wi-fi"), Locate(ByXPath = ".//*[contains(text(),'Wi-Fi')]//..//input")]
+        [Name("Wi-fi"), Locator(ByXPath = ".//*[contains(text(),'Wi-Fi')]//..//input")]
         public readonly ICheckbox WiFiCheckbox;
 
-        public IButton ShowResultsButton { get { return new Button("Показать", "input[value='Показать']"); } }
+        public IButton ShowResultsButton = new Button("Показать", "input[value=Показать]"); 
     }
 }

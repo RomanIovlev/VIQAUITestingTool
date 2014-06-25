@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Reflection;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.PageObjects;
 
 namespace VIQA.HAttributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-    public class LocateAttribute : Attribute
+    public class LocatorAttribute : Attribute
     {
         public string ById { get; set; }
         public string ByName { get; set; }
@@ -37,15 +38,46 @@ namespace VIQA.HAttributes
             return By.Id("Undefined locator");
         }
 
+        private static By GetLocatorFromFindBy(FindsByAttribute fbAttr)
+        {
+            switch (fbAttr.How)
+            {
+                case How.Id:
+                    return By.Id(fbAttr.Using);
+                case How.Name:
+                    return By.Name(fbAttr.Using);
+                case How.ClassName:
+                    return By.ClassName(fbAttr.Using);
+                case How.CssSelector:
+                    return By.CssSelector(fbAttr.Using);
+                case How.XPath:
+                    return By.XPath(fbAttr.Using);
+                case How.TagName:
+                    return By.TagName(fbAttr.Using);
+                case How.LinkText:
+                    return By.LinkText(fbAttr.Using);
+                case How.PartialLinkText:
+                    return By.PartialLinkText(fbAttr.Using);
+                default:
+                    return By.Id("Undefined locator");
+            }
+        }
+
         public static By GetLocator(FieldInfo field)
         {
-            var locates = field.GetCustomAttribute<LocateAttribute>(false);
+            var locates = field.GetCustomAttribute<LocatorAttribute>(false);
             return locates != null ? locates.GetLocator() : null;
+        }
+
+        public static By GetLocatorFomFindsBy(FieldInfo field)
+        {
+            var locates = field.GetCustomAttribute<FindsByAttribute>(false);
+            return locates != null ? GetLocatorFromFindBy(locates) : null;
         }
 
         public static By GetLocator(Object obj)
         {
-            var locates = obj.GetType().GetCustomAttribute<LocateAttribute>(false);
+            var locates = obj.GetType().GetCustomAttribute<LocatorAttribute>(false);
             return locates != null ? locates.GetLocator() : null;
         }
     }

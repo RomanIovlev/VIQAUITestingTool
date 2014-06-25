@@ -8,7 +8,7 @@ namespace SimpleTests.Site.Pages
     public class ProductPage : VIPage
     {
         [Name("Filter section")]
-        [Locate(ByClassName = "b-gurufilters")]
+        [Locator(ByClassName = "b-gurufilters")]
         public FilterSection FilterSection;
     }
 }

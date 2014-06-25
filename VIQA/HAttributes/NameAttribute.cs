@@ -6,20 +6,20 @@ namespace VIQA.HAttributes
     [AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = false)]
     public class NameAttribute : Attribute
     {
-        public string Name;
+        private readonly string _name;
 
-        public NameAttribute(string name) { Name = name; }
+        public NameAttribute(string name) { _name = name; }
 
         public static string GetName(FieldInfo field)
         {
             var name = field.GetCustomAttribute<NameAttribute>(false);
-            return name != null ? name.Name : "";
+            return name != null ? name._name : "";
         }
 
         public static string GetName(Object obj)
         {
             var name = obj.GetType().GetCustomAttribute<NameAttribute>(false);
-            return name != null ? name.Name : "";
+            return name != null ? name._name : "";
         }
     }
 }

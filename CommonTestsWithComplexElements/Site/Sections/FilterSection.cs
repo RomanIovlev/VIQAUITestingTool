@@ -2,6 +2,7 @@
 using System.Linq;
 using CommonTestsWithComplexElements.Data;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.PageObjects;
 using VIQA;
 using VIQA.HAttributes;
 using VIQA.HtmlElements;
@@ -13,16 +14,16 @@ namespace CommonTestsWithComplexElements.Site.Sections
     public class FilterSection : VIElement
     {
         [Name("Цена От")] 
-        [Locate(ByXPath = ".//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-0')]")] 
+        [Locator(ByXPath = ".//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-0')]")] 
         [FillFromField("CostRange.From")]
         public readonly ITextField TextFieldFrom;
 
-        [Name("Цена До"), Locate(ByXPath = ".//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-1')]")]
+        [Name("Цена До"), FindsBy(How = How.XPath, Using = ".//*[@class='b-gurufilters__filter-inputs']/input[contains(@id,'-1')]")]
         public readonly ITextField TextFieldTo = new TextField {
             FillRule = ToFillRule<Filter>(filter => (filter.CostRange != null) ? (int?)filter.CostRange.To : null)
         };
 
-        [Name("Wi-fi"), Locate(ByXPath = ".//*[contains(text(),'Wi-Fi')]//..//input"), FillFromField("Wifi")] 
+        [Name("Wi-fi"), Locator(ByXPath = ".//*[contains(text(),'Wi-Fi')]//..//input"), FillFromField("Wifi")] 
         public readonly ICheckbox WiFiCheckbox;
 
         public readonly RadioButtons SensorScreenRadioButtons = new RadioButtons("Сенсорный экран",
@@ -59,6 +60,6 @@ namespace CommonTestsWithComplexElements.Site.Sections
                     elements.ForEach(el => { if (el.IsChecked()) el.Click(); })
         };
 
-        public IButton ShowResultsButton { get { return new Button("Показать", "input[value='Показать']"); } }
+        public IButton ShowResultsButton = new Button("Показать", "input[value='Показать']"); 
     }
 }

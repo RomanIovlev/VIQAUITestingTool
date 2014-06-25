@@ -110,54 +110,40 @@ namespace VIQA.SiteClasses
 
         public bool CheckUrl(PageCheckType checkType, bool throwError = false)
         {
-            if (checkType == PageCheckType.NoCheck) return true;
-            if (string.IsNullOrEmpty(Url))
-            {
-                VISite.Alerting.ThrowError(string.Format("Page '{0}' url is empty. Please set Url for this page", Name));
-                return false;
-            }
-            VISite.Logger.Event(string.Format("Check page '{0}' url {1} '{2}'", Name, checkType == PageCheckType.Equal ? "equal to " : "contains", Url));
-            var timer = new Timer();
-            while (!((checkType == PageCheckType.Equal) ? WebDriver.Url == Url : WebDriver.Url.Contains(Url)))
-                if (timer.TimeoutPassed(Site.WebDriverTimeouts.WaitPageToLoadInSec*1000))
-                {
-                    var errorMsg = string.Format("Failed to check page url'{0}'." + 
-                        "Actual: '{1}'".FromNewLine() + 
-                        "Expected: '{2}'".FromNewLine() +
-                        "CheckType: " + checkType, Name, WebDriver.Url, Url);
-                    if (throwError)
-                        throw VISite.Alerting.ThrowError(errorMsg);
-                    VISite.Logger.Error(errorMsg);
-                    return false;
-                }
-            return true;
+            return CheckPageAttribute(checkType, throwError, "url", WebDriver.Url, Url);
         }
-
+        
         public bool CheckTitle(PageCheckType checkType, bool throwError = false)
         {
+            return CheckPageAttribute(checkType, throwError, "title", WebDriver.Title, Title);
+        }
+        private bool CheckPageAttribute(PageCheckType checkType, bool throwError, string checkWhat, string actual, string expected)
+        {
             if (checkType == PageCheckType.NoCheck) return true;
-            if (string.IsNullOrEmpty(Title))
+            if (string.IsNullOrEmpty(expected))
             {
-                VISite.Alerting.ThrowError(string.Format("Page '{0}' title is empty. Please set Title for this page", Name));
+                VISite.Alerting.ThrowError(string.Format("Page '{0}' {1} is empty. Please set {1} for this page", Name, checkWhat));
                 return false;
             }
-            VISite.Logger.Event(string.Format("Check page '{0}' title {1} '{2}'", Name, checkType == PageCheckType.Equal ? "equal to " : "contains", Title));
-            var timer = new Timer();
-            while (!((checkType == PageCheckType.Equal) ? WebDriver.Title == Title : WebDriver.Title.Contains(Title)))
-                if (timer.TimeoutPassed(Site.WebDriverTimeouts.WaitPageToLoadInSec * 1000))
-                {
-                    var errorMsg = string.Format("Failed to check page title '{0}'." +
-                        "Actual: '{1}'".FromNewLine() +
-                        "Expected: '{2}'".FromNewLine() +
-                        "CheckType: " + checkType, Name, WebDriver.Title, Title);
-                    if (throwError)
-                        throw VISite.Alerting.ThrowError(errorMsg);
-                    VISite.Logger.Error(errorMsg);
-                    return false;
-                }
-            return true;
-        }
+            VISite.Logger.Event(string.Format("Check page '{0}' {1} {2} '{3}'", Name, checkWhat, checkType == PageCheckType.Equal ? "equal to " : "contains", expected));
+            var result =
+                // new Timer(Site.WebDriverTimeouts.WaitPageToLoadInSec, Site.WebDriverTimeouts.RetryActionInMsec).Wait(
+                //() => 
+                    (checkType == PageCheckType.Equal) 
+                    ? actual == expected 
+                    : actual.Contains(expected);
 
+            if (result) return true;
+            var errorMsg = string.Format("Failed to check page {0} '{1}'." +
+                "Actual: '{2}'".FromNewLine() +
+                "Expected: '{3}'".FromNewLine() +
+                "CheckType: '{4}'", checkWhat, Name, actual, expected, checkType);
+            if (throwError)
+                throw VISite.Alerting.ThrowError(errorMsg);
+            VISite.Logger.Error(errorMsg);
+            return false;
+        }
+        
         public Navigation Navigate { get { return Site.Navigate; } } 
 
         public IWebDriver WebDriver { get { return Site.WebDriver; } }

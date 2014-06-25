@@ -8,7 +8,7 @@ namespace CommonTestsWithComplexElements.Site.Pages
     public class ProductPage : VIPage
     {
         [Name("Filter section")]
-        [Locate(ByXPath = "//*[@class='b-gurufilters']")]
+        [Locator(ByXPath = "//*[@class='b-gurufilters']")]
         public FilterSection FilterSection;
     }
 }

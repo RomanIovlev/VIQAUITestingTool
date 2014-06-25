@@ -21,7 +21,7 @@ namespace VIQA.SiteClasses
         public static IAlerting Alerting;
 
         public IWebDriverTimeouts WebDriverTimeouts {
-            get { return SiteSettings.WebDriverTimeouts ?? new DefaultWebDriverTimeouts(); }
+            get { return SiteSettings.WebDriverTimeouts = SiteSettings.WebDriverTimeouts ?? new DefaultWebDriverTimeouts(); }
             set { SiteSettings.WebDriverTimeouts = value; }
         }
 

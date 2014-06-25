@@ -29,7 +29,11 @@ namespace VIQA.HtmlElements
             instance.Name = (!string.IsNullOrEmpty(name))
                 ? name
                 : viElement.Name;
-            var locator = LocateAttribute.GetLocator(viElement);
+            //var frameName = FrameAttribute.GetFrameName(viElement);
+            //if (!string.IsNullOrEmpty(frameName))
+            //    instance.FrameName = frameName;
+            var locator = LocatorAttribute.GetLocator(viElement) 
+                ?? LocatorAttribute.GetLocatorFomFindsBy(viElement);
             if (locator != null)
                 instance.Locator = locator;
             if (_locator != null)

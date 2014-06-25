@@ -8,7 +8,7 @@ namespace ParallelTestsExamples.Site.Pages
     public class HomePage : VIPage
     {
         [Name("Search section")]
-        [Locate(ByClassName = "search__table")]
+        [Locator(ByClassName = "search__table")]
         public SearchSection SearchSection;
 
     }

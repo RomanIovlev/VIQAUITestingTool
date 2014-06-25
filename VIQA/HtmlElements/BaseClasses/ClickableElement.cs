@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Threading;
 using OpenQA.Selenium;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
-using Timer = VIQA.Common.Timer;
 
 namespace VIQA.HtmlElements
 {
@@ -50,20 +48,15 @@ namespace VIQA.HtmlElements
 
         private void SmartClickAction()
         {
-            var clicked = false;
-            var timer = new Timer();
-            while (!clicked && !timer.TimeoutPassed(WaitTimeoutInSec * Site.WebDriverTimeouts.WaitWebElementInSec))
-                try
-                {
-                    ClickAction(this);
-                    clicked = true;
-                    VISite.Logger.Event("Done");
-                }
-                catch
-                {
-                    Thread.Sleep(Site.WebDriverTimeouts.RetryActionInMsec);
-                    VISite.Logger.Event("Done Double Click");
-                }
+            var clicked = Timer.Wait(() =>
+            {
+                ClickAction(this);
+                VISite.Logger.Event("Done");
+                return true;
+            }); 
+            if (!clicked)
+                throw VISite.Alerting.ThrowError(DefaultLogMessage("Failed to click element"));
+
         }
         
     }

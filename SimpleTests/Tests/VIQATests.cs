@@ -1,12 +1,9 @@
-﻿using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using SimpleTests.Site;
-using SimpleTests.Site.Pages;
 using VIQA.Common;
 using VIQA.HAttributes;
 using VIQA.HtmlElements;
-using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
 
 namespace SimpleTests.Tests
@@ -26,7 +23,8 @@ namespace SimpleTests.Tests
             var site = new YandexMarketSite { UseBrowser = BrowserType.Chrome };
             site.HomePage.Open();
             site.HomePage.SearchSection.SearchProduct("IPhone");
-            Assert.IsNotNull(site.WebDriver.FindElement(By.XPath("//a[contains(text(),'iPhone')]")));
+            CheckIPhone(site.WebDriver);
+            VISite.KillAllRunWebDrivers();
         }
 
         [Test]
@@ -55,6 +53,7 @@ namespace SimpleTests.Tests
             new ClickableElement("Процессор", By.XPath("//*[@class='b-gurufilters']//*[contains(text(),'Процессор')]//..//i"))
                 .Click();
             new Button("Показать", "input[value='Показать']").Click();
+            CheckIPhone(site.WebDriver);
             VISite.KillAllRunWebDrivers();
         }
 
@@ -70,12 +69,18 @@ namespace SimpleTests.Tests
             {
                 var _ = YandexMarket.ProductPage.FilterSection;
                 _.TextFieldFrom.Input("1000");
-                _.TextFieldTo.Input("2000");
+                _.TextFieldTo.Input("20000");
                 _.WiFiCheckbox.Check();
                 _.ShowResultsButton.Click();
             }
 
             YandexMarket.ProductPage.CheckUrl(PageCheckType.Contains);
+            CheckIPhone(YandexMarket.WebDriver);
+        }
+
+        private void CheckIPhone(IWebDriver driver)
+        {
+            Assert.IsNotNull(driver.FindElement(By.XPath("//a[contains(text(),'iPhone')]")));
         }
 
         #region Common tests data

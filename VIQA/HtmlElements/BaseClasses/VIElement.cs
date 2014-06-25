@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 using VIQA.Common;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
@@ -27,7 +25,7 @@ namespace VIQA.HtmlElements
         
         private string PrintLocator()
         {
-            return string.Format("Context: '{0}'. Locator: '{1}'.", 
+            return string.Format("Context: '{0}'. LocatorAttribute: '{1}'.", 
                 Context != null ? Context.ToString() : "null", 
                 _locator != null ? _locator.ToString() : "null");
         }
@@ -41,9 +39,13 @@ namespace VIQA.HtmlElements
                     : _locator.FillByTemplate(TemplateId);
                 if (locator != null)
                     return locator;
-                throw VISite.Alerting.ThrowError(DefaultLogMessage("Locator cannot be null"));
+                throw VISite.Alerting.ThrowError(DefaultLogMessage("LocatorAttribute cannot be null"));
             }
         }
+
+        //public string FrameName;
+        protected Timer Timer { get { return new Timer(WaitTimeoutInSec * 1000, Site.WebDriverTimeouts.RetryActionInMsec); } }
+
         public bool HaveLocator() { return _locator != null; }
 
         public IWebDriver WebDriver { get { return Site.WebDriver; } }
@@ -55,7 +57,7 @@ namespace VIQA.HtmlElements
             get { return _webElement; }
         }
 
-        private int _defaultWaitTimeoutInSec { get { return Timeouts.WaitWebElementInSec; } }
+        private int DefaultWaitTimeoutInSec { get { return Timeouts.WaitWebElementInSec; } }
         
         #region Temp Settings
         public void SetWaitTimeout(int waitTimeoutInSec) { _waitTimeoutInSec = waitTimeoutInSec; }
@@ -69,7 +71,7 @@ namespace VIQA.HtmlElements
 
         #endregion
 
-        protected int WaitTimeoutInSec
+        private int WaitTimeoutInSec
         {
             get
             {
@@ -80,7 +82,7 @@ namespace VIQA.HtmlElements
                     OpenPageName = null;
                     return Timeouts.WaitPageToLoadInSec;
                 }
-                return _waitTimeoutInSec ?? _defaultWaitTimeoutInSec;
+                return _waitTimeoutInSec ?? DefaultWaitTimeoutInSec;
             }
         }
         
@@ -95,21 +97,7 @@ namespace VIQA.HtmlElements
                 throw VISite.Alerting.ThrowError(LotOfFindElementsMessage(webElements));
             throw VISite.Alerting.ThrowError(CantFindElementMessage);
         }
-
-        private IWebElement CheckWebElementIsDisplayed(IWebElement webElement)
-        {
-            var timer = new Timer();
-            var timeoutInSec = Site.WebDriverTimeouts.WaitWebElementInSec;
-            while (!timer.TimeoutPassed(timeoutInSec))
-            {
-                try { if (webElement.Displayed) break; }
-                catch { }
-            }
-            if (webElement.Displayed)
-                return webElement;
-            throw VISite.Alerting.ThrowError(string.Format("Found element '{0}' stay invisible '{1}'. Please correct locator", PrintLocator(), timer.TimePassed()));
-        }
-
+        
         
         private string LotOfFindElementsMessage(ReadOnlyCollection<IWebElement> webElements) {
             return string.Format("Find {0} elements '{1}' but expected. Please correct locator '{2}'", webElements.Count, FullName, PrintLocator()); } 
@@ -121,43 +109,32 @@ namespace VIQA.HtmlElements
             try { return SearchContext.FindElements(locator ?? Locator); }
             catch { throw VISite.Alerting.ThrowError(CantFindElementMessage);}
         }
-        private bool Wait(Func<bool> waitFunc, int timeoutInSec = -1)
+
+        public bool WaitElementState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, Timer timer = null)
         {
-            var firstTime = true;
-            if (timeoutInSec < 0)
-                timeoutInSec = Site.WebDriverTimeouts.WaitWebElementInSec;
-            var timer = new Timer();
-            var result = false;
-            do
-            {
-                if (firstTime)
-                    firstTime = false;
-                else
-                    Thread.Sleep(Timeouts.RetryActionInMsec);
-                try { result = waitFunc(); }
-                catch { result = false; }
-            }
-            while (!result && !timer.TimeoutPassed(timeoutInSec));
-            return result;
+            return (timer ?? Timer).Wait(() => waitFunc(webElement ?? CheckWebElementIsUnique(SearchElements())));
         }
 
-        public bool WaitElementState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, int timeoutInSec = -1)
+        public IWebElement WaitElementWithState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, Timer timer = null, string msg = "")
         {
-            return Wait(() => waitFunc(webElement ?? CheckWebElementIsUnique(SearchElements())), timeoutInSec);
+            if (WaitElementState(waitFunc, webElement, timer))
+                return WebElement;
+            throw VISite.Alerting.ThrowError(msg);
+
         }
 
-        private ReadOnlyCollection<IWebElement> WaitWebElements(int timeout)
+        private ReadOnlyCollection<IWebElement> WaitWebElements()
         {
             ReadOnlyCollection<IWebElement> foundElements = null;
-            return (Wait(() => {
-                try { foundElements = (SearchContext != null)
+            return Timer.Wait(() =>
+            {
+                foundElements = (SearchContext != null)
                         ? SearchElements()
                         : null; 
-                } catch { foundElements = null; }
                 return foundElements != null && foundElements.Any();
-            }, timeout))
-            ? foundElements
-            : null;
+            })
+                ? foundElements
+                : null;
         }
 
         public virtual bool IsPresent
@@ -212,13 +189,17 @@ namespace VIQA.HtmlElements
             if (WebElement != null)
                 return WebElement;
             var timeoutInSec = WaitTimeoutInSec;
-            var foundElements = WaitWebElements(timeoutInSec * 1000);
+            //if (!string.IsNullOrEmpty(FrameName))
+            //    WebDriver.SwitchTo().Frame(FrameName);
+            //else
+            //    WebDriver.SwitchTo().DefaultContent();
+            var foundElements = WaitWebElements();
             if (foundElements == null)
                 VISite.Alerting.ThrowError(CantFindElementMessage);
             WebElement = CheckWebElementIsUnique(foundElements);
-            return CheckWebElementIsDisplayed(WebElement);
+            return WaitElementWithState(el => el.Displayed, WebElement, msg: DefaultLogMessage(("Found element stay invisible.")));
         }
-
+        
         public IVIElement GetVIElement()
         {
             WebElement = GetWebElement();
@@ -246,7 +227,7 @@ namespace VIQA.HtmlElements
         
         public string DefaultLogMessage(string text)
         {
-            return text + string.Format(" (Name: '{0}', Type: '{1}', Locator: '{2}')", FullName, _typeName, PrintLocator());
+            return text + string.Format(" (Name: '{0}', Type: '{1}', LocatorAttribute: '{2}')", FullName, _typeName, PrintLocator());
         }
 
         private Func<string, Func<Object>, Func<Object, string>, Object> _defaultViActionR
