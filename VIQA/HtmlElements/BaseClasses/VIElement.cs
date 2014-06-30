@@ -18,7 +18,7 @@ namespace VIQA.HtmlElements
             {
                 if (Context == null)
                     return WebDriver;
-                ISearchContext element = WebDriver;
+                ISearchContext element = WebDriver.SwitchTo().DefaultContent();
                 foreach (var locator in Context)
                 {
                     var elements = element.FindElements(locator.Value2);
@@ -150,11 +150,15 @@ namespace VIQA.HtmlElements
         {
             get
             {
-                WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
-                var elements = SearchElements();
-                WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
-                CheckWebElementIsUnique(elements);
-                return true; 
+                try
+                {
+                    WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
+                    var elements = SearchElements();
+                    WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
+                    CheckWebElementIsUnique(elements);
+                    return true; 
+                }
+                catch { return false; }
             }
         }
 
@@ -162,15 +166,14 @@ namespace VIQA.HtmlElements
         {
             get
             {
-                WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
-                var elements = SearchElements();
-                WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
-                try { return CheckWebElementIsUnique(elements).Displayed; }
-                catch (Exception ex)
+                try
                 {
-                    VISite.Logger.Event("IsDisplayed Failed with exception: " + ex);
-                    return false;
+                    WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
+                    var elements = SearchElements();
+                    WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
+                    return CheckWebElementIsUnique(elements).Displayed;
                 }
+                catch { return false; }
             }
         }
         
