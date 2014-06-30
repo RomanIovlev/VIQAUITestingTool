@@ -73,13 +73,7 @@ namespace VIQA.HtmlElements.BaseClasses
         {
             if (GetAllElementsFunc == null)
                 throw VISite.Alerting.ThrowError("GetListOfValuesFunc not set for " + Name);
-            ISearchContext context;
-            if (Context == null)
-                return WebDriver;
-            var countOfElements = WebDriver.FindElements(Context).Count;
-            if (countOfElements == 1)
-                return WebDriver.FindElements(Context).First();
-            throw VISite.Alerting.ThrowError(Name + "Find elements by Context failed. Found " + countOfElements + " elements");
+            return SearchContext;
         }
 
     }

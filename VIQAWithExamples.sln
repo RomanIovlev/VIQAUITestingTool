@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3_ParallelTestsExamples", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "4_TelerikExamplesTests", "TelerikExamplesTests\4_TelerikExamplesTests.csproj", "{40A46070-A6E8-4198-8A26-BD084C59895B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "0_W3CSchools Tests", "0_W3CSchools Tests\0_W3CSchools Tests.csproj", "{6312EAA0-9A09-4311-88DE-E72F3CADA591}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{40A46070-A6E8-4198-8A26-BD084C59895B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40A46070-A6E8-4198-8A26-BD084C59895B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40A46070-A6E8-4198-8A26-BD084C59895B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6312EAA0-9A09-4311-88DE-E72F3CADA591}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6312EAA0-9A09-4311-88DE-E72F3CADA591}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6312EAA0-9A09-4311-88DE-E72F3CADA591}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6312EAA0-9A09-4311-88DE-E72F3CADA591}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

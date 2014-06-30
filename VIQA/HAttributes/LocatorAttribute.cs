@@ -38,7 +38,7 @@ namespace VIQA.HAttributes
             return By.Id("Undefined locator");
         }
 
-        private static By GetLocatorFromFindBy(FindsByAttribute fbAttr)
+        public static By GetLocatorFromFindBy(FindsByAttribute fbAttr)
         {
             switch (fbAttr.How)
             {
@@ -63,6 +63,7 @@ namespace VIQA.HAttributes
             }
         }
 
+
         public static By GetLocator(FieldInfo field)
         {
             var locates = field.GetCustomAttribute<LocatorAttribute>(false);
@@ -72,7 +73,7 @@ namespace VIQA.HAttributes
         public static By GetLocatorFomFindsBy(FieldInfo field)
         {
             var locates = field.GetCustomAttribute<FindsByAttribute>(false);
-            return locates != null ? GetLocatorFromFindBy(locates) : null;
+            return locates != null ? LocatorAttribute.GetLocatorFromFindBy(locates) : null;
         }
 
         public static By GetLocator(Object obj)

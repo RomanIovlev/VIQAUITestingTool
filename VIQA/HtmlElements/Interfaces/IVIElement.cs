@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using OpenQA.Selenium;
-using VIQA.Common;
 using VIQA.SiteClasses;
 
 namespace VIQA.HtmlElements.Interfaces
@@ -13,7 +13,9 @@ namespace VIQA.HtmlElements.Interfaces
         bool IsPresent { get; }
         bool IsDisplayed { get; }
         List<T> GetElements<T>();
-        bool WaitElementState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, Timer timer = null);
+        bool WaitElementState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, double timeoutInSec = -1, int retryTimeoutInMSec = -1);
+        IWebElement WaitElementWithState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, double timeoutInSec = -1, int retryTimeoutInMSec = -1, string msg = "");
+        ReadOnlyCollection<IWebElement> SearchElements(By locator = null);
         By Locator { get; set; }
         void SetWaitTimeout(int waitTimeoutInSec);
         VISite Site { get; set; }

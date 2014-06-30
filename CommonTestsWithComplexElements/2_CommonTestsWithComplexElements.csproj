@@ -69,7 +69,6 @@
     <Compile Include="Site\Sections\FilterSection.cs" />
     <Compile Include="Site\Sections\SearchSection.cs" />
     <Compile Include="Site\YandexMarketSite.cs" />
-    <Compile Include="Tests\TablesExamplesTests.cs" />
     <Compile Include="Tests\VIQAFormsTests.cs" />
     <Compile Include="Tests\VIQATests.cs" />
   </ItemGroup>

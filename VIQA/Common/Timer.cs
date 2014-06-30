@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
-using VIQA.SiteClasses;
 
 namespace VIQA.Common
 {
@@ -34,11 +33,13 @@ namespace VIQA.Common
 
         public bool Wait(Func<bool> waitFunc)
         {
-            bool result;
-            while(!(result = TryGetResult(waitFunc)) && !TimeoutPassed())
-            { Thread.Sleep(_retryTimeoutInMSec); }
-            VISite.Logger.Event(TimePassed().ToString());
-            return result;
+            while (!TimeoutPassed())
+            {
+                if (TryGetResult(waitFunc))
+                    return true;
+                Thread.Sleep(_retryTimeoutInMSec);
+            }
+            return false;
         }
 
         private static bool TryGetResult(Func<bool> waitFunc)

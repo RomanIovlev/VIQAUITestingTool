@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenQA.Selenium;
 using VIQA.Common;
+using VIQA.Common.Pairs;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
 
@@ -42,7 +43,7 @@ namespace VIQA.HtmlElements.SimpleElements
         {
             set { _getColumnNamesFunc = value; }
             get { return _getColumnNamesFunc ??
-                (table => table.SearchElements(By.XPath(".//th")).Select(el => el.Text).ToList());
+                (table => table.GetWebElement().FindElements(By.XPath(".//th")).Select(el => el.Text).ToList());
             }
         }
 
@@ -70,7 +71,7 @@ namespace VIQA.HtmlElements.SimpleElements
                 return _columnNames.Count;
             return ColumnIndex != null
                 ? ColumnIndex.Count
-                : SearchElements(By.XPath(".//th")).Count();
+                : GetWebElement().FindElements(By.XPath(".//th")).Count();
         }
 
         private List<string> TryGenerateNumColumnNames()
@@ -91,7 +92,7 @@ namespace VIQA.HtmlElements.SimpleElements
             get
             {
                 return _getRowNamesFunc ??
-                    (table => table.SearchElements(By.XPath(".//tr/td[1]")).Select(el => el.Text).ToList());
+                    (table => table.GetWebElement().FindElements(By.XPath(".//tr/td[1]")).Select(el => el.Text).ToList());
             }
         }
 
@@ -135,24 +136,24 @@ namespace VIQA.HtmlElements.SimpleElements
         public TableElementIndexType IndexType = TableElementIndexType.Nums;
         public TableHeadingType HeadingsType = TableHeadingType.ColumnsOnly;
         
-        public Func<T> CreateCellFunc = () => (T)Activator.CreateInstance(typeof(T));
+        private readonly Func<T> _createCellFunc = () => (T)Activator.CreateInstance(typeof(T));
 
         private T CreateElement()
         {
-            var instance = CreateCellFunc();
-            instance.Context = Context;
+            var instance = _createCellFunc();
+            instance.Context = new Pairs<ContextType, By>(ContextType.Locator, Locator, Context);
             return instance;
         }
         
         public By GetLocator(string col, string row)
         {
-            var cell = CreateCellFunc();
+            var cell = CreateElement();
             var locatorTemplate = (cell.HaveLocator())
                 ? cell.Locator
                 : By.XPath(".//tr[{1}]/td[{0}]");
             var byLocator = locatorTemplate.GetByLocator();
             if (!byLocator.Contains("{0}") && byLocator.Contains("{1}"))
-                throw VISite.Alerting.ThrowError(FullName + ". Bad locator template for table element - " + byLocator + ". LocatorAttribute template should contains {0} and {1}");
+                throw VISite.Alerting.ThrowError(FullName + ". Bad locator template for table element - " + byLocator + ". Locator template should contains {0} and {1}");
             return locatorTemplate.FillByTemplate(col, row);
         }
 
@@ -230,9 +231,9 @@ namespace VIQA.HtmlElements.SimpleElements
 
         private T CreateElement(string col, string row)
         {
-            var viElement = CreateCellFunc();
+            var viElement = _createCellFunc();
             viElement.Locator = GetLocator(col, row);
-            viElement.Context = Context;
+            viElement.Context = new Pairs<ContextType, By>(ContextType.Locator, Locator, Context);
             return (T)viElement.GetVIElement();
         }
 
