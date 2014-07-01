@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using OpenQA.Selenium;
+using VIQA.Common;
 
 namespace VIQA.SiteClasses
 {
@@ -29,7 +30,9 @@ namespace VIQA.SiteClasses
         {
             VISite.Logger.Event("Open page: " + page.Url);
             WebDriver.Navigate().GoToUrl(page.Url);
-            WindowHandle = WebDriver.CurrentWindowHandle;
+            if (!new Timer(_site.WebDriverTimeouts.WaitPageToLoadInSec*1000, _site.WebDriverTimeouts.RetryActionInMsec)
+                .Wait(() => { WindowHandle = WebDriver.CurrentWindowHandle; return true; }))
+                WindowHandle = WebDriver.CurrentWindowHandle;
             _site.SiteSettings.CashDropTimes++;
             PagesHistory.Add(page);
             _currentPageNum++;

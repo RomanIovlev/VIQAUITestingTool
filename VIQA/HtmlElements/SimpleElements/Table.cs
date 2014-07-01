@@ -18,32 +18,30 @@ namespace VIQA.HtmlElements.SimpleElements
     {
         protected override string _typeName { get { return "Table"; } }
 
-        private Dictionary<string, Dictionary<string, T>> _allElements;
+        private Dictionary<string, Dictionary<string, T>> _allCells;
         public Dictionary<string, Dictionary<string, T>> AllElements
         {
-            set { _allElements = value; }
+            set { _allCells = value; }
+            get { return _allCells ?? Cells; }
+        }
+
+        public Dictionary<string, Dictionary<string, T>> Cells
+        {
             get
             {
-                if (_allElements != null)
-                    return _allElements;
-                return GetAllElements();
+                return _allCells = ColumnNames
+                    .ToDictionary(columnName => columnName, columnName =>
+                        RowNames.ToDictionary(rowName => rowName, rowName =>
+                            Cell(columnName, rowName)));
             }
         }
 
-        public Dictionary<string, Dictionary<string, T>> GetAllElements()
-        {
-            return _allElements = ColumnNames
-                .ToDictionary(columnName => columnName, columnName =>
-                    RowNames.ToDictionary(rowName => rowName, rowName =>
-                        GetVIElementXY(columnName, rowName)));
-        }
-
-		private Func<Table<T>, List<string>> _getColumnNamesFunc;
-        public Func<Table<T>, List<string>> GetColumnNamesFunc
+		private Func<IWebElement, List<string>> _getColumnNamesFunc;
+        public Func<IWebElement, List<string>> GetColumnNamesFunc
         {
             set { _getColumnNamesFunc = value; }
             get { return _getColumnNamesFunc ??
-                (table => table.GetWebElement().FindElements(By.XPath(".//th")).Select(el => el.Text).ToList());
+                (table => table.FindElements(By.XPath(".//th")).Select(el => el.Text).ToList());
             }
         }
 
@@ -57,7 +55,7 @@ namespace VIQA.HtmlElements.SimpleElements
                     return _columnNames;
                 if (HaveColumnNames)
                 {
-                    _columnNames = DoVIAction("GetColumnNames", () => GetColumnNamesFunc(this));
+                    _columnNames = DoVIAction("GetColumnNames", () => GetColumnNamesFunc(GetWebElement()));
                     if (_columnNames != null && _columnNames.Any())
                         return _columnNames;
                 }
@@ -85,14 +83,14 @@ namespace VIQA.HtmlElements.SimpleElements
         private bool HaveColumnNames { get { return new[] { TableHeadingType.ColumnsOnly, TableHeadingType.RowsAndColumns }.Contains(HeadingsType); } }
         private bool HaveRowNames { get { return new[] { TableHeadingType.RowsOnly, TableHeadingType.RowsAndColumns }.Contains(HeadingsType); } }
 
-        private Func<Table<T>, List<string>> _getRowNamesFunc;
-        public Func<Table<T>, List<string>> GetRowNamesFunc
+        private Func<IWebElement, List<string>> _getRowNamesFunc;
+        public Func<IWebElement, List<string>> GetRowNamesFunc
         {
             set { _getRowNamesFunc = value; }
             get
             {
                 return _getRowNamesFunc ??
-                    (table => table.GetWebElement().FindElements(By.XPath(".//tr/td[1]")).Select(el => el.Text).ToList());
+                    (table => table.FindElements(By.XPath(".//tr/td[1]")).Select(el => el.Text).ToList());
             }
         }
 
@@ -106,7 +104,7 @@ namespace VIQA.HtmlElements.SimpleElements
                     return _rowNames;
                 if (HaveRowNames)
                 {
-                    _rowNames = DoVIAction("GetRowNames", () => GetRowNamesFunc(this));
+                    _rowNames = DoVIAction("GetRowNames", () => GetRowNamesFunc(GetWebElement()));
                     if (_rowNames != null && _rowNames.Any())
                         return _rowNames;
                 }
@@ -120,7 +118,7 @@ namespace VIQA.HtmlElements.SimpleElements
                 return _rowNames.Count;
             return RowIndex != null
                 ? RowIndex.Count
-                : SearchElements(By.XPath(".//tr/td[1]")).Count();
+                : GetWebElement().FindElements(By.XPath(".//tr/td[1]")).Count();
         }
         private List<string> TryGenerateNumRowNames()
         {
@@ -136,30 +134,14 @@ namespace VIQA.HtmlElements.SimpleElements
         public TableElementIndexType IndexType = TableElementIndexType.Nums;
         public TableHeadingType HeadingsType = TableHeadingType.ColumnsOnly;
         
-        private readonly Func<T> _createCellFunc = () => (T)Activator.CreateInstance(typeof(T));
+        public Func<T> CellTemplate = () => (T)Activator.CreateInstance(typeof(T));
+        private By _cellLocatorTemplate;
 
-        private T CreateElement()
+        private T CreateCell()
         {
-            var instance = _createCellFunc();
+            var instance = CellTemplate();
             instance.Context = new Pairs<ContextType, By>(ContextType.Locator, Locator, Context);
             return instance;
-        }
-        
-        public By GetLocator(string col, string row)
-        {
-            var cell = CreateElement();
-            var locatorTemplate = (cell.HaveLocator())
-                ? cell.Locator
-                : By.XPath(".//tr[{1}]/td[{0}]");
-            var byLocator = locatorTemplate.GetByLocator();
-            if (!byLocator.Contains("{0}") && byLocator.Contains("{1}"))
-                throw VISite.Alerting.ThrowError(FullName + ". Bad locator template for table element - " + byLocator + ". Locator template should contains {0} and {1}");
-            return locatorTemplate.FillByTemplate(col, row);
-        }
-
-        public T GetVIElementXY(int colNum, int rowNum)
-        {
-            return GetVIElementXY(GetColNameByIndex(colNum), GetRowNameByIndex(rowNum));
         }
         
         private string GetColNameByIndex(int index)
@@ -175,19 +157,24 @@ namespace VIQA.HtmlElements.SimpleElements
                 ? RowNames[index - 1]
                 : index.ToString();
         }
+        
+        public T Cell(int colNum, int rowNum)
+        {
+            return Cell(GetColNameByIndex(colNum), GetRowNameByIndex(rowNum));
+        }
 
-        public T GetVIElementXY(string colName, string rowName)
+        public T Cell(string colName, string rowName)
         {
             var colIndex = GetColumnIndex(colName);
             var rowIndex = GetRowIndex(rowName);
-            if (_allElements == null)
-                _allElements = new Dictionary<string, Dictionary<string, T>> { { colName, new Dictionary<string, T> { { rowName, CreateElement(colIndex, rowIndex) } } } };
+            if (_allCells == null)
+                _allCells = new Dictionary<string, Dictionary<string, T>> { { colName, new Dictionary<string, T> { { rowName, CreateCell(colIndex, rowIndex) } } } };
             else 
-                if (!_allElements.ContainsKey(colName))
-                    _allElements.Add(colName, new Dictionary<string, T> { { rowName, CreateElement(colIndex, rowIndex) } });
-                else if (!_allElements[colName].ContainsKey(rowName))
-                    _allElements[colName].Add(rowName, CreateElement(colIndex, rowIndex));
-            return _allElements[colName][rowName];
+                if (!_allCells.ContainsKey(colName))
+                    _allCells.Add(colName, new Dictionary<string, T> { { rowName, CreateCell(colIndex, rowIndex) } });
+                else if (!_allCells[colName].ContainsKey(rowName))
+                    _allCells[colName].Add(rowName, CreateCell(colIndex, rowIndex));
+            return _allCells[colName][rowName];
         }
 
         private string GetColumnIndex(string name)
@@ -214,10 +201,10 @@ namespace VIQA.HtmlElements.SimpleElements
                 : (nameIndex + 1).ToString();
         }
         
-        private List<string> GetNumList(int count)
+        private List<string> GetNumList(int count, int from = 1)
         {
             var result = new List<string>();
-            for (int i = 1; i <= count; i++)
+            for (int i = from; i < count + from; i++)
                 result.Add(i.ToString());
             return result;
         }
@@ -229,16 +216,25 @@ namespace VIQA.HtmlElements.SimpleElements
 
         public void SetValue<T>(T value) {}
 
-        private T CreateElement(string col, string row)
+        private T CreateCell(string col, string row)
         {
-            var viElement = _createCellFunc();
-            viElement.Locator = GetLocator(col, row);
-            viElement.Context = new Pairs<ContextType, By>(ContextType.Locator, Locator, Context);
-            return (T)viElement.GetVIElement();
+            var cell = CreateCell();
+
+            if (_cellLocatorTemplate == null)
+                _cellLocatorTemplate = (cell.HaveLocator())
+                    ? cell.Locator
+                    : By.XPath(".//tr[{1}]/td[{0}]");
+            if (!cell.HaveLocator())
+                cell.Locator = (_cellLocatorTemplate ?? By.XPath(".//tr[{1}]/td[{0}]")).FillByTemplate(col, row);
+            return (T)cell.GetVIElement();
         }
 
         public Table() { }
-        public Table(string name) : base(name) { }
+        public Table(string name = null, By tableLocator = null, By cellLocatorTemplate = null) : base(name)
+        {
+            Locator = tableLocator;
+            _cellLocatorTemplate = cellLocatorTemplate;
+        }
 
     }
 }

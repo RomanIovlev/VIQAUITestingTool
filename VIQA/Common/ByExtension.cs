@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenQA.Selenium;
+using VIQA.SiteClasses;
 
 namespace VIQA.Common
 {
@@ -14,7 +15,11 @@ namespace VIQA.Common
 
         public static By FillByTemplate(this By by, params object[] args)
         {
-            return by = by.GetByFunc()(string.Format(by.GetByLocator(), args)); 
+            var byLocator = by.GetByLocator();
+            int i = 0;
+            if (args.Any(el => !byLocator.Contains("{" + i++ + "}")))
+                throw VISite.Alerting.ThrowError("Bad locator template for element - " + byLocator + ". Missed " + "{" + (i - 1) + "}");
+            return by.GetByFunc()(string.Format(by.GetByLocator(), args)); 
         }
 
         public static string GetByLocator(this By by)

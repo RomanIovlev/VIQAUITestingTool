@@ -26,12 +26,12 @@ namespace W3CSchools_Tests.Tests
             ITable table = new Table
             {
                 Locator = By.XPath("//*[text()='HTML Table Example:']//..//table[1]"),
-                RowIndex = new List<int> { 2, 3, 4, 5 }
+                RowIndex = new List<int> { 2, 3, 4, 5}
             };
             Assert.AreEqual(table.ColumnNames.Count, 3);
             Assert.AreEqual(table.RowNames.Count, 4);
-            Assert.AreEqual(table.GetVIElementXY(1, 2).Value, "Eve");
-            var AllElements = table.GetAllElements();
+            Assert.AreEqual(table.Cell(1, 2).Value, "Eve");
+            var AllElements = table.Cells;
             Assert.AreEqual(AllElements.Count, 3);
             Assert.AreEqual(AllElements.Last().Value.Count, 4);
             Assert.AreEqual(table.Value, 
@@ -50,8 +50,8 @@ namespace W3CSchools_Tests.Tests
             var table = w3CPage.TableColNamesRowNames;
             Assert.AreEqual(table.ColumnNames.Count, 2);
             Assert.AreEqual(table.RowNames.Count, 4);
-            Assert.AreEqual(table.GetVIElementXY(1, 2).Value, "Jackson");
-            var AllElements = table.GetAllElements();
+            Assert.AreEqual(table.Cell(1, 2).Value, "Jackson");
+            var AllElements = table.Cells;
             Assert.AreEqual(AllElements.Count, 2);
             Assert.AreEqual(AllElements.Last().Value.Count, 4);
             Assert.AreEqual(table.Value,
@@ -74,8 +74,8 @@ namespace W3CSchools_Tests.Tests
             };
             Assert.AreEqual(table.ColumnNames.Count, 3);
             Assert.AreEqual(table.RowNames.Count, 4);
-            Assert.AreEqual(table.GetVIElementXY(1, 2).Value, "Eve");
-            var AllElements = table.GetAllElements();
+            Assert.AreEqual(table.Cell(1, 2).Value, "Eve");
+            var AllElements = table.Cells;
             Assert.AreEqual(AllElements.Count, 3);
             Assert.AreEqual(AllElements.Last().Value.Count, 4);
             Assert.AreEqual(table.Value,
@@ -94,8 +94,8 @@ namespace W3CSchools_Tests.Tests
             var table = w3cPage.TableColIndexRowNames;
             Assert.AreEqual(table.ColumnNames.Count, 2);
             Assert.AreEqual(table.RowNames.Count, 4);
-            Assert.AreEqual(table.GetVIElementXY(1, 2).Value, "Jackson");
-            var AllElements = table.GetAllElements();
+            Assert.AreEqual(table.Cell(1, 2).Value, "Jackson");
+            var AllElements = table.Cells;
             Assert.AreEqual(AllElements.Count, 2);
             Assert.AreEqual(AllElements.Last().Value.Count, 4);
             Assert.AreEqual(table.Value,

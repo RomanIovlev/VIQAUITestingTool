@@ -21,7 +21,7 @@ namespace VIQA.SiteClasses
                     ? site.Domain
                     : (url.Contains("http://"))
                         ? url
-                        : site.Domain + url.TrimStart('/');
+                        : site.Domain.TrimEnd('/') + "/"+ url.TrimStart('/');
         }
 
         public string Title { get; set; }
@@ -110,7 +110,7 @@ namespace VIQA.SiteClasses
 
         public bool CheckUrl(PageCheckType checkType, bool throwError = false)
         {
-            return CheckPageAttribute(checkType, throwError, "url", WebDriver.Url, Url);
+            return CheckPageAttribute(checkType, throwError, "url", WebDriver.Url.TrimEnd('/'), Url.TrimEnd('/'));
         }
         
         public bool CheckTitle(PageCheckType checkType, bool throwError = false)

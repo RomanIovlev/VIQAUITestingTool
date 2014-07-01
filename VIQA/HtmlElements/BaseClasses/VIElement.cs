@@ -6,6 +6,7 @@ using OpenQA.Selenium;
 using VIQA.Common;
 using VIQA.Common.Pairs;
 using VIQA.HtmlElements.Interfaces;
+using VIQA.HtmlElements.SimpleElements;
 using VIQA.SiteClasses;
 
 namespace VIQA.HtmlElements
@@ -51,7 +52,6 @@ namespace VIQA.HtmlElements
             }
         }
 
-        //public string FrameName;
         protected Timer Timer { get { return new Timer(WaitTimeoutInSec * 1000, Site.WebDriverTimeouts.RetryActionInMsec); } }
 
         public bool HaveLocator() { return _locator != null; }
@@ -297,6 +297,7 @@ namespace VIQA.HtmlElements
             { typeof(IVIElement), typeof(VIElement) },
             { typeof(IRadioButtons), typeof(RadioButtons) },
             { typeof(IDropDown), typeof(DropDown) },
+            { typeof(ITable), typeof(Table) },
         };
 
         public static readonly Func<string, string, bool> DefaultCompareFunc = (a, e) => a == e;
