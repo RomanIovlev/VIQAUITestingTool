@@ -1,5 +1,4 @@
-﻿using System;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using VIQA.HtmlElements.Interfaces;
 
 namespace VIQA.HtmlElements

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using VIQA.HtmlElements.Interfaces;
@@ -26,7 +25,7 @@ namespace W3CSchools_Tests.Tests
             ITable table = new Table
             {
                 Locator = By.XPath("//*[text()='HTML Table Example:']//..//table[1]"),
-                RowIndex = new List<int> { 2, 3, 4, 5}
+                StartRowIndex = 2
             };
             Assert.AreEqual(table.ColumnNames.Count, 3);
             Assert.AreEqual(table.RowNames.Count, 4);
@@ -70,7 +69,7 @@ namespace W3CSchools_Tests.Tests
             {
                 Locator = By.XPath("//*[text()='HTML Table Example:']//..//table[1]"),
                 HeadingsType = TableHeadingType.NoHeadings,
-                RowIndex = new List<int> { 2, 3, 4, 5 }
+                StartRowIndex = 2
             };
             Assert.AreEqual(table.ColumnNames.Count, 3);
             Assert.AreEqual(table.RowNames.Count, 4);

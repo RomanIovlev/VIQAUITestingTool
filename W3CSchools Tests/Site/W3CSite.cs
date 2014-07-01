@@ -4,7 +4,8 @@ using W3CSchools_Tests.Site.Pages;
 
 namespace W3CSchools_Tests.Site
 {
-    [Site(Domain = "http://www.w3schools.com/")]
+    [Site(Domain = "http://www.w3schools.com/", DemoMode = false)]
+    [DemoSettings(FrameColor = "blue")]
     public class W3CSite : VISite
     {
         [Page(Url = "http://www.w3schools.com/html/html_tables.asp")]

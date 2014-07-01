@@ -7,5 +7,7 @@ namespace VIQA.SiteClasses
         public IWebDriverTimeouts WebDriverTimeouts;
         public int CashDropTimes = -1;
         public bool UseCache = true;
+        public HighlightSettings DemoSettings;
+
     }
 }

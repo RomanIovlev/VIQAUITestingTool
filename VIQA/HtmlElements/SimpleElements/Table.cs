@@ -53,33 +53,15 @@ namespace VIQA.HtmlElements.SimpleElements
             {
                 if (_columnNames != null)
                     return _columnNames;
-                if (HaveColumnNames)
-                {
-                    _columnNames = DoVIAction("GetColumnNames", () => GetColumnNamesFunc(GetWebElement()));
-                    if (_columnNames != null && _columnNames.Any())
-                        return _columnNames;
-                }
-                return TryGenerateNumColumnNames();
+                _columnNames = DoVIAction("GetColumnNames", () => GetColumnNamesFunc(GetWebElement()));
+                if (_columnNames == null || !_columnNames.Any())
+                    throw VISite.Alerting.ThrowError("Table have 0 columns. Please Specify ColumnNames or GetColumnNamesFunc");
+                if (!HaveColumnNames)
+                    _columnNames = GetNumList(_columnNames.Count);
+                return _columnNames;
             }
         }
-
-        private int GetColCount()
-        {
-            if (_columnNames != null)
-                return _columnNames.Count;
-            return ColumnIndex != null
-                ? ColumnIndex.Count
-                : GetWebElement().FindElements(By.XPath(".//th")).Count();
-        }
-
-        private List<string> TryGenerateNumColumnNames()
-        {
-            var colCount = GetColCount();
-            if (colCount > 0)
-                return _columnNames = GetNumList(colCount);
-            throw VISite.Alerting.ThrowError("Table have 0 columns. Please Specify ColumnNames or GetColumnNamesFunc");
-        }
-
+        
         private bool HaveColumnNames { get { return new[] { TableHeadingType.ColumnsOnly, TableHeadingType.RowsAndColumns }.Contains(HeadingsType); } }
         private bool HaveRowNames { get { return new[] { TableHeadingType.RowsOnly, TableHeadingType.RowsAndColumns }.Contains(HeadingsType); } }
 
@@ -93,7 +75,7 @@ namespace VIQA.HtmlElements.SimpleElements
                     (table => table.FindElements(By.XPath(".//tr/td[1]")).Select(el => el.Text).ToList());
             }
         }
-
+        
         private List<string> _rowNames;
         public List<string> RowNames
         {
@@ -102,34 +84,17 @@ namespace VIQA.HtmlElements.SimpleElements
             {
                 if (_rowNames != null)
                     return _rowNames;
-                if (HaveRowNames)
-                {
-                    _rowNames = DoVIAction("GetRowNames", () => GetRowNamesFunc(GetWebElement()));
-                    if (_rowNames != null && _rowNames.Any())
-                        return _rowNames;
-                }
-                return TryGenerateNumRowNames();
+                _rowNames = DoVIAction("GetRowNames", () => GetRowNamesFunc(GetWebElement()));
+                if (_rowNames == null || !_rowNames.Any())
+                    throw VISite.Alerting.ThrowError("Table have 0 rows. Please Specify RowNames or GetRowNamesFunc");
+                if (!HaveRowNames)
+                    _rowNames = GetNumList(_rowNames.Count);
+                return _rowNames;
             }
         }
-
-        private int GetRowsCount()
-        {
-            if (_rowNames != null)
-                return _rowNames.Count;
-            return RowIndex != null
-                ? RowIndex.Count
-                : GetWebElement().FindElements(By.XPath(".//tr/td[1]")).Count();
-        }
-        private List<string> TryGenerateNumRowNames()
-        {
-            var rowCount = GetRowsCount();
-            if (rowCount > 0)
-                return _rowNames = GetNumList(rowCount);
-            throw VISite.Alerting.ThrowError("Table have 0 rows. Please Specify RowNames or GetRowNamesFunc");
-        }
-
-        public List<int> ColumnIndex;
-        public List<int> RowIndex;
+        
+        public int StartColumnIndex = 1;
+        public int StartRowIndex = 1;
 
         public TableElementIndexType IndexType = TableElementIndexType.Nums;
         public TableHeadingType HeadingsType = TableHeadingType.ColumnsOnly;
@@ -183,10 +148,8 @@ namespace VIQA.HtmlElements.SimpleElements
             if (ColumnNames != null && ColumnNames.Contains(name))
                 nameIndex = ColumnNames.IndexOf(name);
             else
-                throw VISite.Alerting.ThrowError("Can't Get Column named:" + name + ". ColumnNames " + ((ColumnNames == null) ? "is Null" : ("not contains element (" + ColumnNames.Print() + ")")));
-            return (ColumnIndex != null)
-                ? ColumnIndex[nameIndex].ToString()
-                : (nameIndex + 1).ToString();
+                throw VISite.Alerting.ThrowError("Can't Get Column: '" + name + "'. " + ((ColumnNames == null) ? "ColumnNames is Null" : ("Available ColumnNames: " + ColumnNames.Print(format: "'{0}'") + ")")));
+            return (nameIndex + StartColumnIndex).ToString();
         }
 
         private string GetRowIndex(string name)
@@ -195,10 +158,8 @@ namespace VIQA.HtmlElements.SimpleElements
             if (RowNames != null && RowNames.Contains(name))
                 nameIndex = RowNames.IndexOf(name);
             else
-                throw VISite.Alerting.ThrowError("Can't Get Row named:" + name + ". RowNames " + ((RowNames == null) ? "is Null" : ("not contains element (" + RowNames.Print() + ")")));
-            return (RowIndex != null)
-                ? RowIndex[nameIndex].ToString()
-                : (nameIndex + 1).ToString();
+                throw VISite.Alerting.ThrowError("Can't Get Row: '" + name + "'. " + ((RowNames == null) ? "RowNames is Null" : ("Available RowNames: " + RowNames.Print(format:"'{0}'") + ")")));
+            return (nameIndex + StartRowIndex).ToString();
         }
         
         private List<string> GetNumList(int count, int from = 1)

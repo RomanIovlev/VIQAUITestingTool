@@ -75,6 +75,8 @@ namespace VIQA.SiteClasses
                     isMain = site.IsMain;
                 if (site.UseCache)
                     SiteSettings.UseCache = site.UseCache;
+                if (site.DemoMode)
+                    SiteSettings.DemoSettings = DemoSettingsAttribute.Get(this);
             }
             if (!isMain) return;
             VIElement.Init(this);

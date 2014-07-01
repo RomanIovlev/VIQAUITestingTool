@@ -69,6 +69,7 @@
     <Compile Include="Common\Timer.cs" />
     <Compile Include="Common\VIAction.cs" />
     <Compile Include="HAttributes\ClickLoadsPageAttribute.cs" />
+    <Compile Include="HAttributes\DemoSettingsAttribute.cs" />
     <Compile Include="HAttributes\FillFromFieldAttribute.cs" />
     <Compile Include="HAttributes\LocatorAttribute.cs" />
     <Compile Include="HAttributes\PageAttribute.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="HtmlElements\Interfaces\IVIElement.cs" />
     <Compile Include="HtmlElements\Interfaces\IVIList.cs" />
     <Compile Include="HtmlElements\SimpleElements\Table.cs" />
+    <Compile Include="SiteClasses\HighlightSettings.cs" />
     <Compile Include="SiteClasses\Navigation.cs" />
     <Compile Include="SiteClasses\SiteSettings.cs" />
     <Compile Include="SiteClasses\VISite.cs" />

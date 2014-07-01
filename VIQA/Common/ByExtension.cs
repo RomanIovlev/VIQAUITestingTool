@@ -16,10 +16,10 @@ namespace VIQA.Common
         public static By FillByTemplate(this By by, params object[] args)
         {
             var byLocator = by.GetByLocator();
-            int i = 0;
-            if (args.Any(el => !byLocator.Contains("{" + i++ + "}")))
-                throw VISite.Alerting.ThrowError("Bad locator template for element - " + byLocator + ". Missed " + "{" + (i - 1) + "}");
-            return by.GetByFunc()(string.Format(by.GetByLocator(), args)); 
+            try { byLocator = string.Format(by.GetByLocator(), args); }
+            catch { throw VISite.Alerting.ThrowError("Bad locator template '" + byLocator + "'. Args: " + args.Select(el => el.ToString()).Print(format:"'{0}'")+ "."); }
+
+            return by.GetByFunc()(byLocator); 
         }
 
         public static string GetByLocator(this By by)

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using OpenQA.Selenium;
 using VIQA.Common;
 using VIQA.Common.Pairs;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.HtmlElements.SimpleElements;
 using VIQA.SiteClasses;
+using Timer = VIQA.Common.Timer;
 
 namespace VIQA.HtmlElements
 {
@@ -246,6 +248,9 @@ namespace VIQA.HtmlElements
                 {
                     VISite.Logger.Event(DefaultLogMessage(text));
                     var result = viAction();
+                    var demoModeSettings = Site.SiteSettings.DemoSettings;
+                    if (demoModeSettings != null)
+                        Highlight(demoModeSettings);
                     if (logResult != null)
                         VISite.Logger.Event(logResult(result));
                     return result;
@@ -273,6 +278,9 @@ namespace VIQA.HtmlElements
             {
                 VISite.Logger.Event(viElement.DefaultLogMessage(text));
                 viAction();
+                var demoMode = viElement.Site.SiteSettings.DemoSettings;
+                if (demoMode != null)
+                    viElement.Highlight(demoMode);
             });
         
         protected void DoVIAction(string logActionName, Action viAction)
@@ -308,6 +316,27 @@ namespace VIQA.HtmlElements
         {
             OpenPageName = null;
             DefaultSite = site;
+        }
+
+        public void SetAttribute(string attributeName, string value)
+        {
+            var javascript = WebDriver as IJavaScriptExecutor;
+            if (javascript != null)
+                javascript.ExecuteScript("arguments[0].setAttribute(arguments[1], arguments[2])", GetWebElement(), attributeName, value);
+        }
+
+        public void Highlight(string bgColor = "yellow", string frameColor = "red", int timeoutInSec = 1)
+        {
+            Highlight(new HighlightSettings(bgColor, frameColor, timeoutInSec));
+        }
+
+        public void Highlight(HighlightSettings highlightSettings)
+        {
+            highlightSettings = highlightSettings ?? new HighlightSettings();
+            var orig = GetWebElement().GetAttribute("style");
+            SetAttribute("style", string.Format("border: 3px solid {0}; background-color: {1};", highlightSettings.FrameColor, highlightSettings.BgColor));
+            Thread.Sleep(highlightSettings.TimeoutInSec * 1000);
+            SetAttribute("style", orig);
         }
     }
 }
