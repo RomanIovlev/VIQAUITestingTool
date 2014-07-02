@@ -173,7 +173,7 @@ namespace VIQA.HtmlElements
                 : obj.ToString();
         }
 
-        protected void InitSubElements()
+        public void InitSubElements()
         {
             GetElements().ForEach(SetViElement);
         }

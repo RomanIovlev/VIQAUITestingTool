@@ -1,9 +1,12 @@
 ﻿using System.Linq;
+using System.Threading;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.HtmlElements.SimpleElements;
+using VIQA.SiteClasses;
 using W3CSchools_Tests.Site;
+using Timer = VIQA.Common.Timer;
 
 namespace W3CSchools_Tests.Tests
 {    

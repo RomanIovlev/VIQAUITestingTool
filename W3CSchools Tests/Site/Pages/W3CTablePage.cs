@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using OpenQA.Selenium;
 using VIQA.HAttributes;
+using VIQA.HtmlElements;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.HtmlElements.SimpleElements;
 using VIQA.SiteClasses;

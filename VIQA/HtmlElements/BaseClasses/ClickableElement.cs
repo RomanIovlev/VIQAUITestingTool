@@ -51,7 +51,7 @@ namespace VIQA.HtmlElements
             var clicked = Timer.Wait(() =>
             {
                 ClickAction(this);
-                VISite.Logger.Event("Done");
+                VISite.Logger.Event(DefaultLogMessage("Done Click"));
                 return true;
             }); 
             if (!clicked)

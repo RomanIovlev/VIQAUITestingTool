@@ -85,14 +85,12 @@ namespace VIQA.HtmlElements
         {
             get
             {
-                if (OpenPageName != null)
-                {
-                    if (OpenPageName != "")
-                        Site.CheckPage(OpenPageName);
-                    OpenPageName = null;
-                    return Timeouts.WaitPageToLoadInSec;
-                }
-                return _waitTimeoutInSec ?? DefaultWaitTimeoutInSec;
+                if (OpenPageName == null) 
+                    return _waitTimeoutInSec ?? DefaultWaitTimeoutInSec;
+                if (OpenPageName != "")
+                    Site.CheckPage(OpenPageName);
+                OpenPageName = null;
+                return Timeouts.WaitPageToLoadInSec;
             }
         }
         
@@ -110,9 +108,9 @@ namespace VIQA.HtmlElements
         
         
         private string LotOfFindElementsMessage(ReadOnlyCollection<IWebElement> webElements) {
-            return string.Format("Find {0} elements '{1}' but expected. Please correct locator '{2}'", webElements.Count, FullName, PrintLocator()); } 
+            return string.Format("Find {0} elements '{1}' but expected 1. Please correct locator '{2}'", webElements.Count, Name, PrintLocator()); } 
         private string CantFindElementMessage { get {
-            return string.Format("Can't find element '{0}' by selector '{1}'. Please correct locator", FullName, PrintLocator()); } }
+            return string.Format("Can't find element '{0}' by selector '{1}'. Please correct locator", Name, PrintLocator()); } }
         
         public ReadOnlyCollection<IWebElement> SearchElements(By locator = null)
         {

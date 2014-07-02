@@ -104,21 +104,22 @@ namespace VIQA.HtmlElements.SimpleElements
 
         private T CreateCell()
         {
-            var instance = CellTemplate();
-            instance.Context = new Pairs<ContextType, By>(ContextType.Locator, Locator, Context);
-            return instance;
+            var cell = CellTemplate();
+            cell.Context = new Pairs<ContextType, By>(ContextType.Locator, Locator, Context);
+            cell.InitSubElements();
+            return cell;
         }
         
         private string GetColNameByIndex(int index)
         {
-            return new[] { TableHeadingType.ColumnsOnly, TableHeadingType.RowsAndColumns }.Contains(HeadingsType) 
+            return HaveColumnNames 
                 ? ColumnNames[index - 1] 
                 : index.ToString();
         }
 
         private string GetRowNameByIndex(int index)
         {
-            return new[] { TableHeadingType.RowsOnly, TableHeadingType.RowsAndColumns }.Contains(HeadingsType)
+            return HaveRowNames
                 ? RowNames[index - 1]
                 : index.ToString();
         }
