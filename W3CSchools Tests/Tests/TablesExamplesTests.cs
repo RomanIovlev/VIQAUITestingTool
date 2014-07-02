@@ -30,6 +30,7 @@ namespace W3CSchools_Tests.Tests
                 Locator = By.XPath("//*[text()='HTML Table Example:']//..//table[1]"),
                 StartRowIndex = 2
             };
+            var res = new Timer(200000).Wait(() => { VISite.Alerting.ThrowError("Error"); return true;} );
             Assert.AreEqual(table.ColumnNames.Count, 3);
             Assert.AreEqual(table.RowNames.Count, 4);
             Assert.AreEqual(table.Cell(1, 2).Value, "Eve");

@@ -106,7 +106,6 @@ namespace VIQA.HtmlElements.SimpleElements
         {
             var cell = CellTemplate();
             cell.Context = new Pairs<ContextType, By>(ContextType.Locator, Locator, Context);
-            cell.InitSubElements();
             return cell;
         }
         
@@ -188,6 +187,7 @@ namespace VIQA.HtmlElements.SimpleElements
                     : By.XPath(".//tr[{1}]/td[{0}]");
             if (!cell.HaveLocator())
                 cell.Locator = (_cellLocatorTemplate ?? By.XPath(".//tr[{1}]/td[{0}]")).FillByTemplate(col, row);
+            cell.InitSubElements();
             return (T)cell.GetVIElement();
         }
 
