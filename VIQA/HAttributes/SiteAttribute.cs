@@ -10,6 +10,7 @@ namespace VIQA.HAttributes
         public bool UseCache { get; set; }
         public bool IsMain { get; set; }
         public bool DemoMode { get; set; }
+        public bool ScreenshotAlert { get; set; }
 
         public SiteAttribute() { IsMain = true; UseCache = true; }
 

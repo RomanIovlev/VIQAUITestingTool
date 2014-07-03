@@ -27,7 +27,7 @@ namespace W3CSchools_Tests.Tests
             ITable table = new Table
             {
                 Locator = By.XPath("//*[text()='HTML Table Example:']//..//table[1]"),
-                StartRowIndex = 2
+                StartRowIndex = 2,
             };
             Assert.AreEqual(table.ColumnNames.Print(), "Firstname, Lastname, Points");
             Assert.AreEqual(table.RowNames.Print(), "1, 2, 3, 4");
@@ -48,9 +48,9 @@ namespace W3CSchools_Tests.Tests
             { var cell = table.FindFirstCellWithValue("Doe");
             Assert.AreEqual(cell.X + ":" + cell.Y, "2:3"); }
 
-            Assert.AreEqual(table.FindCellInRow(3, "Doe").ColumnName, "Lastname");
+            Assert.AreEqual(table.FindCellInRow(3, "Doe").X, 2);
             Assert.AreEqual(table.FindCellInRow("3", "Doe").X, 2);
-            Assert.AreEqual(table.FindCellInColumn(2, "Doe").RowName, "3");
+            Assert.AreEqual(table.FindCellInColumn(2, "Doe").Y, 3);
             Assert.AreEqual(table.FindCellInColumn("Lastname", "Doe").Y, 3);
 
             Assert.AreEqual(table.FindRowByColumnValue(2, "Doe").Print(), "John, Doe, 80");
@@ -97,9 +97,9 @@ namespace W3CSchools_Tests.Tests
             { var cell = table.FindFirstCellWithValue("Doe");
             Assert.AreEqual(cell.X + ":" + cell.Y, "1:3"); }
 
-            Assert.AreEqual(table.FindCellInRow(3, "Doe").ColumnName, "Lastname");
+            Assert.AreEqual(table.FindCellInRow(3, "Doe").X, 1);
             Assert.AreEqual(table.FindCellInRow("John", "Doe").X, 1);
-            Assert.AreEqual(table.FindCellInColumn(1, "Doe").RowName, "John");
+            Assert.AreEqual(table.FindCellInColumn(1, "Doe").Y, 3);
             Assert.AreEqual(table.FindCellInColumn("Lastname", "Doe").Y, 3);
 
             Assert.AreEqual(table.FindRowByColumnValue(1, "Doe").Print(), "Doe, 80");
@@ -152,9 +152,9 @@ namespace W3CSchools_Tests.Tests
                 Assert.AreEqual(cell.X + ":" + cell.Y, "2:3");
             }
 
-            Assert.AreEqual(table.FindCellInRow(3, "Doe").ColumnName, "2");
+            Assert.AreEqual(table.FindCellInRow(3, "Doe").X, 2);
             Assert.AreEqual(table.FindCellInRow("3", "Doe").X, 2);
-            Assert.AreEqual(table.FindCellInColumn(2, "Doe").RowName, "3");
+            Assert.AreEqual(table.FindCellInColumn(2, "Doe").Y, 3);
             Assert.AreEqual(table.FindCellInColumn("2", "Doe").Y, 3);
 
             Assert.AreEqual(table.FindRowByColumnValue(2, "Doe").Print(), "John, Doe, 80");
@@ -204,9 +204,9 @@ namespace W3CSchools_Tests.Tests
                 Assert.AreEqual(cell.X + ":" + cell.Y, "1:3");
             }
 
-            Assert.AreEqual(table.FindCellInRow(3, "Doe").ColumnName, "1");
+            Assert.AreEqual(table.FindCellInRow(3, "Doe").X, 1);
             Assert.AreEqual(table.FindCellInRow("John", "Doe").X, 1);
-            Assert.AreEqual(table.FindCellInColumn(1, "Doe").RowName, "John");
+            Assert.AreEqual(table.FindCellInColumn(1, "Doe").Y, 3);
             Assert.AreEqual(table.FindCellInColumn("1", "Doe").Y, 3);
 
             Assert.AreEqual(table.FindRowByColumnValue(1, "Doe").Print(), "Doe, 80");

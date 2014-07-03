@@ -20,7 +20,7 @@ namespace VIQA.HtmlElements.Interfaces
         Cell<T> FindFirstCellWithValue(string value);
         Cell<T> FindCellInColumn(int colIndex, string value);
         List<Cell<T>> FindCellsInColumn(int colIndex, Regex regex);
-        Cell<T> FindCellInColumn(string colname, string value);
+        Cell<T> FindCellInColumn(string colName, string value);
         List<Cell<T>> FindCellsInColumn(string colname, Regex regex);
         Cell<T> FindCellInRow(int rowIndex, string value);
         List<Cell<T>> FindCellsInRow(int rowIndex, Regex regex);

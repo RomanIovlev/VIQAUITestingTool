@@ -63,7 +63,6 @@ namespace VIQA.SiteClasses
             Name = NameAttribute.GetName(this);
             WebDriverFunc = webDriver;
             Logger = Logger ?? new DefaultLogger();
-            Alerting = Alerting ?? new DefaultAllert();
             Navigate = new Navigation(this);
             var site = SiteAttribute.Get(this);
             SiteSettings = new SiteSettings();
@@ -77,7 +76,13 @@ namespace VIQA.SiteClasses
                     SiteSettings.UseCache = site.UseCache;
                 if (site.DemoMode)
                     SiteSettings.DemoSettings = DemoSettingsAttribute.Get(this);
+                if (site.ScreenshotAlert)
+                    SiteSettings.ScreenshotAlert = true;
             }
+            if (Alerting == null)
+                Alerting = (SiteSettings.ScreenshotAlert)
+                    ? new ScreenshotAlert(this)
+                    : (IAlerting)new DefaultAllert();
             if (!isMain) return;
             VIElement.Init(this);
             VIPage.Init(this);

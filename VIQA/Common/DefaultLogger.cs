@@ -21,9 +21,9 @@ namespace VIQA.Common
 
         public DefaultLogger()
         {
-            var appSetting = GetValidUrl(ConfigurationSettings.AppSettings["VILogPath"]);
-            if (!string.IsNullOrEmpty(appSetting))
-                LogDirectoryRoot = appSetting;
+            var logRoot = GetValidUrl(ConfigurationSettings.AppSettings["VILogPath"]);
+            if (!string.IsNullOrEmpty(logRoot))
+                LogDirectoryRoot = logRoot;
         }
 
         public DefaultLogger(string path)
@@ -31,7 +31,7 @@ namespace VIQA.Common
             LogDirectoryRoot = path;
         }
 
-        private string GetValidUrl(string logPath)
+        public static string GetValidUrl(string logPath)
         {
             if (string.IsNullOrEmpty(logPath))
                 return "";
@@ -58,7 +58,7 @@ namespace VIQA.Common
             }
         }
 
-        private void CreateDirectory(string directoryName)
+        public static void CreateDirectory(string directoryName)
         {
             if (!File.Exists(directoryName))
                 Directory.CreateDirectory(directoryName);

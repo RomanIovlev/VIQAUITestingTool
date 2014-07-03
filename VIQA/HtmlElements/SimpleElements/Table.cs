@@ -34,7 +34,7 @@ namespace VIQA.HtmlElements.SimpleElements
         public List<Cell<T>> GetColumn(int colIndex)
         {
             var result = new List<Cell<T>>();
-            for (int rowIndex = 1; rowIndex <= RowNames.Length; rowIndex++)
+            for (int rowIndex = 1; rowIndex <= RowCount; rowIndex++)
                 result.Add(Cell(colIndex, rowIndex));
             return result.ToList();
         }
@@ -47,7 +47,7 @@ namespace VIQA.HtmlElements.SimpleElements
         public List<Cell<T>> GetRow(int rowIndex)
         {
             var result = new List<Cell<T>>();
-            for (int colIndex = 1; colIndex <= ColumnNames.Length; colIndex++)
+            for (int colIndex = 1; colIndex <= ColCount; colIndex++)
                 result.Add(Cell(colIndex, rowIndex));
             return result.ToList();
         }
@@ -65,6 +65,13 @@ namespace VIQA.HtmlElements.SimpleElements
             }
         }
 
+        private int? _colCount;
+        public int ColCount
+        {
+            set { _colCount = value; }
+            get { return _colCount ?? (int)(_colCount = ColumnNames.Length); }
+        }
+
         private string[] _columnNames;
         public string[] ColumnNames
         {
@@ -76,8 +83,9 @@ namespace VIQA.HtmlElements.SimpleElements
                 _columnNames = DoVIAction("GetColumnNames", () => GetColumnNamesFunc(GetWebElement()));
                 if (_columnNames == null || !_columnNames.Any())
                     throw VISite.Alerting.ThrowError("Table have 0 columns. Please Specify ColumnNames or GetColumnNamesFunc");
+                ColCount = _columnNames.Length;
                 if (!HaveColumnNames)
-                    _columnNames = GetNumList(_columnNames.Length);
+                    _columnNames = GetNumList(ColCount);
                 return _columnNames;
             }
         }
@@ -95,7 +103,13 @@ namespace VIQA.HtmlElements.SimpleElements
                     (table => table.FindElements(By.XPath(".//tr/td[1]")).Select(el => el.Text).ToArray());
             }
         }
-        
+
+        private int? _rowCount;
+        public int RowCount { 
+            set { _rowCount = value; }
+            get { return _rowCount ?? (int)(_rowCount = RowNames.Length); }
+        }
+
         private string[] _rowNames;
         public string[] RowNames
         {
@@ -107,8 +121,9 @@ namespace VIQA.HtmlElements.SimpleElements
                 _rowNames = DoVIAction("GetRowNames", () => GetRowNamesFunc(GetWebElement()));
                 if (_rowNames == null || !_rowNames.Any())
                     throw VISite.Alerting.ThrowError("Table have 0 rows. Please Specify RowNames or GetRowNamesFunc");
+                RowCount = _rowNames.Length;
                 if (!HaveRowNames)
-                    _rowNames = GetNumList(_rowNames.Length);
+                    _rowNames = GetNumList(RowCount);
                 return _rowNames;
             }
         }
@@ -129,23 +144,11 @@ namespace VIQA.HtmlElements.SimpleElements
             return cell;
         }
         
-        private string GetColNameByIndex(int index)
-        {
-            return HaveColumnNames 
-                ? ColumnNames[index - 1] 
-                : index.ToString();
-        }
-
-        private string GetRowNameByIndex(int index)
-        {
-            return HaveRowNames
-                ? RowNames[index - 1]
-                : index.ToString();
-        }
-        
         public Cell<T> Cell(int colNum, int rowNum)
         {
-            return Cell(GetColNameByIndex(colNum), GetRowNameByIndex(rowNum));
+            var colIndex = colNum + StartColumnIndex - 1;
+            var rowIndex = rowNum + StartRowIndex - 1;
+            return CreateCell(colIndex, rowIndex, colNum, rowNum);
         }
 
         public Cell<T> Cell(string colName, string rowName)
@@ -172,15 +175,29 @@ namespace VIQA.HtmlElements.SimpleElements
             return Cells.SelectMany(col => col.Value.Where(row => regex.IsMatch(row.Value.Value)).Select(row => row.Value)).ToList();
         }
 
+        private  bool GetCellFromValue(int colIndex, int rowIndex, string value, out Cell<T> cell)
+        {
+            cell = Cell(colIndex, rowIndex);
+            return cell.Value == value;
+        }
+
         public Cell<T> FindFirstCellWithValue(string value)
         {
-            return (from column in Cells from row in column.Value.Where(row => row.Value.Value == value) 
-                    select row.Value).FirstOrDefault();
+            Cell<T> cell;
+            for (int colIndex = 1; colIndex <= ColCount; colIndex++)
+                for (int rowIndex = 1; rowIndex <= RowCount; rowIndex++)
+                    if (GetCellFromValue(colIndex, rowIndex, value, out cell))
+                        return cell;
+            return null;
         }
 
         public Cell<T> FindCellInColumn(int colIndex, string value)
         {
-            return GetColumn(colIndex).First(cell => cell.Value == value);
+            Cell<T> cell;
+            for (int rowIndex = 1; rowIndex <= RowCount; rowIndex++)
+                if (GetCellFromValue(colIndex, rowIndex, value, out cell))
+                    return cell;
+            return null;
         }
 
         public List<Cell<T>> FindCellsInColumn(int colIndex, Regex regex)
@@ -188,9 +205,14 @@ namespace VIQA.HtmlElements.SimpleElements
             return GetColumn(colIndex).Where(cell => regex.IsMatch(cell.Value)).ToList();
         }
 
-        public Cell<T> FindCellInColumn(string colname, string value)
+        public Cell<T> FindCellInColumn(string colName, string value)
         {
-            return GetColumn(colname).First(cell => cell.Value == value);
+            Cell<T> cell;
+            var colIndex = Array.IndexOf(ColumnNames, colName) + 1;
+            for (int rowIndex = 1; rowIndex <= RowCount; rowIndex++)
+                if (GetCellFromValue(colIndex, rowIndex, value, out cell))
+                    return cell;
+            return null;
         }
 
         public List<Cell<T>> FindCellsInColumn(string colname, Regex regex)
@@ -200,7 +222,11 @@ namespace VIQA.HtmlElements.SimpleElements
 
         public Cell<T> FindCellInRow(int rowIndex, string value)
         {
-            return GetRow(rowIndex).First(cell => cell.Value == value);
+            Cell<T> cell;
+            for (int colIndex = 1; colIndex <= ColCount; colIndex++)
+                if (GetCellFromValue(colIndex, rowIndex, value, out cell))
+                    return cell;
+            return null;
         }
 
         public List<Cell<T>> FindCellsInRow(int rowIndex, Regex regex)
@@ -210,7 +236,12 @@ namespace VIQA.HtmlElements.SimpleElements
 
         public Cell<T> FindCellInRow(string rowName, string value)
         {
-            return GetRow(rowName).First(cell => cell.Value == value);
+            Cell<T> cell;
+            var rowIndex = Array.IndexOf(RowNames, rowName) + 1;
+            for (int colIndex = 1; colIndex <= ColCount; colIndex++)
+                if (GetCellFromValue(colIndex, rowIndex, value, out cell))
+                    return cell;
+            return null;
         }
 
         public List<Cell<T>> FindCellsInRow(string rowName, Regex regex)
@@ -220,46 +251,46 @@ namespace VIQA.HtmlElements.SimpleElements
 
         public List<Cell<T>> FindColumnByRowValue(int rowIndex, string value)
         {
-            var columnCell = GetRow(rowIndex).FirstOrDefault(cell => cell.Value == value);
-            return columnCell != null ? GetColumn(columnCell.ColumnName) : null;
+            var columnCell = FindCellInRow(rowIndex, value);
+            return columnCell != null ? GetColumn(columnCell.X) : null;
         }
 
         public List<Cell<T>> FindColumnByRowValue(string rowName, string value)
         {
-            var columnCell = GetRow(rowName).FirstOrDefault(cell => cell.Value == value);
-            return columnCell != null ? GetColumn(columnCell.ColumnName) : null;
+            var columnCell = FindCellInRow(rowName, value);
+            return columnCell != null ? GetColumn(columnCell.X) : null;
         }
 
         public List<Cell<T>> FindRowByColumnValue(int colIndex, string value)
         {
-            var rowCell = GetColumn(colIndex).FirstOrDefault(cell => cell.Value == value);
-            return rowCell != null ? GetRow(rowCell.RowName) : null;
+            var rowCell = FindCellInColumn(colIndex, value);
+            return rowCell != null ? GetRow(rowCell.Y) : null;
         }
 
         public List<Cell<T>> FindRowByColumnValue(string colName, string value)
         {
-            var rowCell = GetColumn(colName).FirstOrDefault(cell => cell.Value == value);
-            return rowCell != null ? GetRow(rowCell.RowName) : null;
+            var rowCell = FindCellInColumn(colName, value);
+            return rowCell != null ? GetRow(rowCell.Y) : null;
         }
 
-        private string GetColumnIndex(string name)
+        private int GetColumnIndex(string name)
         {
             int nameIndex;
             if (ColumnNames != null && ColumnNames.Contains(name))
                 nameIndex = Array.IndexOf(ColumnNames, name);
             else
                 throw VISite.Alerting.ThrowError("Can't Get Column: '" + name + "'. " + ((ColumnNames == null) ? "ColumnNames is Null" : ("Available ColumnNames: " + ColumnNames.Print(format: "'{0}'") + ")")));
-            return (nameIndex + StartColumnIndex).ToString();
+            return nameIndex + StartColumnIndex;
         }
 
-        private string GetRowIndex(string name)
+        private int GetRowIndex(string name)
         {
             int nameIndex;
             if (RowNames != null && RowNames.Contains(name))
                 nameIndex = Array.IndexOf(RowNames,name);
             else
                 throw VISite.Alerting.ThrowError("Can't Get Row: '" + name + "'. " + ((RowNames == null) ? "RowNames is Null" : ("Available RowNames: " + RowNames.Print(format:"'{0}'") + ")")));
-            return (nameIndex + StartRowIndex).ToString();
+            return nameIndex + StartRowIndex;
         }
         
         private string[] GetNumList(int count, int from = 1)
@@ -277,7 +308,13 @@ namespace VIQA.HtmlElements.SimpleElements
 
         public void SetValue<T1>(T1 value) { }
 
-        private Cell<T> CreateCell(string colIndex, string rowIndex, string colName, string rowName)
+
+        private Cell<T> CreateCell(int colIndex, int rowIndex, string colName, string rowName)
+        {
+            return CreateCell(colIndex, rowIndex, Array.IndexOf(ColumnNames, colName) + 1, Array.IndexOf(RowNames, rowName) + 1, colName, rowName);
+        }
+
+        private Cell<T> CreateCell(int colIndex, int rowIndex, int colNum, int rowNum, string colName = "", string rowName = "")
         {
             var cell = CreateCell();
 
@@ -288,7 +325,7 @@ namespace VIQA.HtmlElements.SimpleElements
             if (!cell.HaveLocator())
                 cell.Locator = (_cellLocatorTemplate ?? By.XPath(".//tr[{1}]/td[{0}]")).FillByTemplate(colIndex, rowIndex);
             cell.InitSubElements();
-            return new Cell<T>(cell.GetVIElement(), Array.IndexOf(ColumnNames, colName) + 1, Array.IndexOf(RowNames, rowName) + 1, colName, rowName);
+            return new Cell<T>(cell.GetVIElement(), colNum, rowNum, colName, rowName);
         }
 
         public Table() { }
