@@ -164,7 +164,7 @@ namespace VIQA.HtmlElements.SimpleElements
         
         public List<Cell<T>> FindCellsWithValue(string value)
         {
-            return Cells.SelectMany(col => col.Value.Where(row => row.Value.Value == value).Select(row => row.Value)).ToList();
+            return FindCellsWithValue(new Regex("^" + value + "$"));
         }
 
         public List<Cell<T>> FindCellsWithValue(Regex regex)
@@ -183,9 +183,19 @@ namespace VIQA.HtmlElements.SimpleElements
             return GetColumn(colIndex).First(cell => cell.Value == value);
         }
 
+        public List<Cell<T>> FindCellsInColumn(int colIndex, Regex regex)
+        {
+            return GetColumn(colIndex).Where(cell => regex.IsMatch(cell.Value)).ToList();
+        }
+
         public Cell<T> FindCellInColumn(string colname, string value)
         {
             return GetColumn(colname).First(cell => cell.Value == value);
+        }
+
+        public List<Cell<T>> FindCellsInColumn(string colname, Regex regex)
+        {
+            return GetColumn(colname).Where(cell => regex.IsMatch(cell.Value)).ToList();
         }
 
         public Cell<T> FindCellInRow(int rowIndex, string value)
@@ -193,9 +203,19 @@ namespace VIQA.HtmlElements.SimpleElements
             return GetRow(rowIndex).First(cell => cell.Value == value);
         }
 
+        public List<Cell<T>> FindCellsInRow(int rowIndex, Regex regex)
+        {
+            return GetRow(rowIndex).Where(cell => regex.IsMatch(cell.Value)).ToList();
+        }
+
         public Cell<T> FindCellInRow(string rowName, string value)
         {
             return GetRow(rowName).First(cell => cell.Value == value);
+        }
+
+        public List<Cell<T>> FindCellsInRow(string rowName, Regex regex)
+        {
+            return GetRow(rowName).Where(cell => regex.IsMatch(cell.Value)).ToList();
         }
 
         public List<Cell<T>> FindColumnByRowValue(int rowIndex, string value)

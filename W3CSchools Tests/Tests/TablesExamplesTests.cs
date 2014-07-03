@@ -58,6 +58,12 @@ namespace W3CSchools_Tests.Tests
             Assert.AreEqual(table.FindColumnByRowValue(3, "Doe").Print(), "Smith, Jackson, Doe, Johnson");
             Assert.AreEqual(table.FindColumnByRowValue("3", "Doe").Print(), "Smith, Jackson, Doe, Johnson");
 
+            Assert.AreEqual(table.FindCellsWithValue(new Regex("John")).Print(), "John, Johnson");
+            Assert.AreEqual(table.FindCellsInColumn(2, new Regex("son")).Print(), "Jackson, Johnson");
+            Assert.AreEqual(table.FindCellsInColumn("Lastname", new Regex("son")).Print(), "Jackson, Johnson");
+            Assert.AreEqual(table.FindCellsInRow(3, new Regex("o")).Print(), "John, Doe");
+            Assert.AreEqual(table.FindCellsInRow("3", new Regex("o")).Print(), "John, Doe");
+
             Assert.AreEqual(table.Value, 
 @"||X|Firstname|Lastname|Points|| 
 ||1||Jill|Smith|50|| 
@@ -88,7 +94,6 @@ namespace W3CSchools_Tests.Tests
             Assert.AreEqual(table.GetColumn("Points").Print(), "50, 94, 80, 67");
 
             Assert.AreEqual(table.FindCellsWithValue("Doe").Count, 1);
-            Assert.AreEqual(table.FindCellsWithValue(new Regex("John")).Print(), "Johnson");
             { var cell = table.FindFirstCellWithValue("Doe");
             Assert.AreEqual(cell.X + ":" + cell.Y, "1:3"); }
 
@@ -101,6 +106,12 @@ namespace W3CSchools_Tests.Tests
             Assert.AreEqual(table.FindRowByColumnValue("Lastname", "Doe").Print(), "Doe, 80");
             Assert.AreEqual(table.FindColumnByRowValue(3, "Doe").Print(), "Smith, Jackson, Doe, Johnson");
             Assert.AreEqual(table.FindColumnByRowValue("John", "Doe").Print(), "Smith, Jackson, Doe, Johnson");
+            
+            Assert.AreEqual(table.FindCellsWithValue(new Regex("John")).Print(), "Johnson");
+            Assert.AreEqual(table.FindCellsInColumn(1, new Regex("son")).Print(), "Jackson, Johnson");
+            Assert.AreEqual(table.FindCellsInColumn("Lastname", new Regex("son")).Print(), "Jackson, Johnson");
+            Assert.AreEqual(table.FindCellsInRow(3, new Regex("o")).Print(), "Doe");
+            Assert.AreEqual(table.FindCellsInRow("John", new Regex("o")).Print(), "Doe");
 
             Assert.AreEqual(table.Value,
 @"||X|Lastname|Points|| 
@@ -151,6 +162,12 @@ namespace W3CSchools_Tests.Tests
             Assert.AreEqual(table.FindColumnByRowValue(3, "Doe").Print(), "Smith, Jackson, Doe, Johnson");
             Assert.AreEqual(table.FindColumnByRowValue("3", "Doe").Print(), "Smith, Jackson, Doe, Johnson");
 
+            Assert.AreEqual(table.FindCellsWithValue(new Regex("John")).Print(), "John, Johnson");
+            Assert.AreEqual(table.FindCellsInColumn(2, new Regex("son")).Print(), "Jackson, Johnson");
+            Assert.AreEqual(table.FindCellsInColumn("2", new Regex("son")).Print(), "Jackson, Johnson");
+            Assert.AreEqual(table.FindCellsInRow(3, new Regex("o")).Print(), "John, Doe");
+            Assert.AreEqual(table.FindCellsInRow("3", new Regex("o")).Print(), "John, Doe");
+
             Assert.AreEqual(table.Value,
 @"||X|1|2|3|| 
 ||1||Jill|Smith|50|| 
@@ -196,6 +213,12 @@ namespace W3CSchools_Tests.Tests
             Assert.AreEqual(table.FindRowByColumnValue("1", "Doe").Print(), "Doe, 80");
             Assert.AreEqual(table.FindColumnByRowValue(3, "Doe").Print(), "Smith, Jackson, Doe, Johnson");
             Assert.AreEqual(table.FindColumnByRowValue("John", "Doe").Print(), "Smith, Jackson, Doe, Johnson");
+
+            Assert.AreEqual(table.FindCellsWithValue(new Regex("John")).Print(), "Johnson");
+            Assert.AreEqual(table.FindCellsInColumn(1, new Regex("son")).Print(), "Jackson, Johnson");
+            Assert.AreEqual(table.FindCellsInColumn("1", new Regex("son")).Print(), "Jackson, Johnson");
+            Assert.AreEqual(table.FindCellsInRow(3, new Regex("o")).Print(), "Doe");
+            Assert.AreEqual(table.FindCellsInRow("John", new Regex("o")).Print(), "Doe");
 
             Assert.AreEqual(table.Value,
 @"||X|1|2|| 

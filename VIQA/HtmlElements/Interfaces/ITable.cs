@@ -19,9 +19,13 @@ namespace VIQA.HtmlElements.Interfaces
         List<Cell<T>> FindCellsWithValue(Regex regex);
         Cell<T> FindFirstCellWithValue(string value);
         Cell<T> FindCellInColumn(int colIndex, string value);
+        List<Cell<T>> FindCellsInColumn(int colIndex, Regex regex);
         Cell<T> FindCellInColumn(string colname, string value);
+        List<Cell<T>> FindCellsInColumn(string colname, Regex regex);
         Cell<T> FindCellInRow(int rowIndex, string value);
+        List<Cell<T>> FindCellsInRow(int rowIndex, Regex regex);
         Cell<T> FindCellInRow(string rowName, string value);
+        List<Cell<T>> FindCellsInRow(string rowName, Regex regex);
         List<Cell<T>> FindColumnByRowValue(int rowIndex, string value);
         List<Cell<T>> FindColumnByRowValue(string rowName, string value);
         List<Cell<T>> FindRowByColumnValue(int colIndex, string value);
