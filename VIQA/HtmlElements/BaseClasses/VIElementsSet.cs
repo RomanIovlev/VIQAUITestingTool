@@ -20,7 +20,9 @@ namespace VIQA.HtmlElements
         protected bool IsSiteSet { get { return _site != null; } }
         public VISite Site { get { return _site = _site ?? (DefaultSite ?? new VISite()); } set { _site = value; } }
         public static VISite DefaultSite { set; get; }
-        
+
+        public bool HaveLocator() { return _locator != null; }
+
         private void SetViElement(FieldInfo viElement)
         {
             var instance = (VIElement) viElement.GetValue(this) ??

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using OpenQA.Selenium;
-using VIQA.HAttributes;
-using VIQA.HtmlElements;
+﻿using VIQA.HAttributes;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.HtmlElements.SimpleElements;
 using VIQA.SiteClasses;
@@ -13,7 +10,7 @@ namespace W3CSchools_Tests.Site.Pages
         [Locator(ByXPath = "//*[text()='HTML Table Example:']//..//table[1]")]
         public ITable TableColNamesRowNames = new Table
         {
-            ColumnNames = new List<string> { "Lastname", "Points" },
+            ColumnNames = new [] { "Lastname", "Points" },
             HeadingsType = TableHeadingType.RowsAndColumns,
             StartColumnIndex = 2,
             StartRowIndex = 2
@@ -23,7 +20,7 @@ namespace W3CSchools_Tests.Site.Pages
         public ITable TableColIndexRowNames = new Table
         {
             HeadingsType = TableHeadingType.RowsOnly,
-            ColumnNames = new List<string> { "1", "2" },
+            ColumnNames = new [] { "1", "2" },
             StartColumnIndex = 2,
             StartRowIndex = 2
         };

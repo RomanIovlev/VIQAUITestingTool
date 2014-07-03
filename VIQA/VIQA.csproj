@@ -95,6 +95,7 @@
     <Compile Include="HtmlElements\Interfaces\ITextField.cs" />
     <Compile Include="HtmlElements\Interfaces\IVIElement.cs" />
     <Compile Include="HtmlElements\Interfaces\IVIList.cs" />
+    <Compile Include="HtmlElements\SimpleElements\Cell.cs" />
     <Compile Include="HtmlElements\SimpleElements\Table.cs" />
     <Compile Include="SiteClasses\HighlightSettings.cs" />
     <Compile Include="SiteClasses\Navigation.cs" />

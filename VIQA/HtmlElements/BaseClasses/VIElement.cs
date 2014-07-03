@@ -56,8 +56,6 @@ namespace VIQA.HtmlElements
 
         protected Timer Timer { get { return new Timer(WaitTimeoutInSec * 1000, Site.WebDriverTimeouts.RetryActionInMsec); } }
 
-        public bool HaveLocator() { return _locator != null; }
-
         public IWebDriver WebDriver { get { return Site.WebDriver; } }
         public IWebDriverTimeouts Timeouts { get { return Site.WebDriverTimeouts; }}
         private IWebElement _webElement;

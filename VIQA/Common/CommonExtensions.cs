@@ -33,6 +33,11 @@ namespace VIQA.Common
         {
             return (list != null) ? string.Join(separator, list.Select(el => string.Format(format, el))) : "";
         }
+        
+        public static string Print(this IEnumerable<IHaveValue> list, string separator = ", ", string format = "{0}")
+        {
+            return (list != null) ? string.Join(separator, list.Select(el => string.Format(format, el.Value))) : "";
+        }
 
         public static string ToString(this IEnumerable<string> list, string separator = ", ", string format = "{0}")
         {
