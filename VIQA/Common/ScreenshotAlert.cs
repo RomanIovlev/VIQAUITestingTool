@@ -11,31 +11,39 @@ namespace VIQA.Common
     public class ScreenshotAlert : IAlerting
     {
         private readonly VISite _site;
-        private readonly string _path = "/../.Screenshots";
+        public readonly string LogDirectory;
+        public string FileName;
+        public ImageFormat ImgFormat = ImageFormat.Png;
 
         public ScreenshotAlert(VISite site)
         {
             _site = site;
             var imgRoot = DefaultLogger.GetValidUrl(ConfigurationSettings.AppSettings["VIScreenshotsPath"]);
-            if (!string.IsNullOrEmpty(imgRoot))
-                _path = imgRoot;
-            var logDirectory = DefaultLogger.GetValidUrl(_path) + "\\";
-            DefaultLogger.CreateDirectory(logDirectory);
-            _path = logDirectory + "Fail_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".jpg";
+            LogDirectory = (!string.IsNullOrEmpty(imgRoot))
+                ? imgRoot
+                : "/../.Log/.Screenshots";
+            var fileName = DefaultLogger.GetValidUrl(ConfigurationSettings.AppSettings["VIScreenshotsFileName"]);
+            FileName = (!string.IsNullOrEmpty(fileName))
+                ? fileName
+                : TestContext.CurrentContext.Test.Name + "_fail_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+
+            LogDirectory = DefaultLogger.GetValidUrl(LogDirectory) + "\\";
+            DefaultLogger.CreateDirectory(LogDirectory);
         }
 
         public Exception ThrowError(string errorMsg)
         {
             VISite.Logger.Error(errorMsg);
-            TakeScreenshot();
+            TakeScreenshot(LogDirectory, FileName, ImgFormat);
+            VISite.Logger.Error("Add Screenshot: " + LogDirectory + FileName);
             Assert.Fail(errorMsg);
             return new Exception(errorMsg);
         }
 
-        public void TakeScreenshot()
+        public void TakeScreenshot(string path, string outputFileName, ImageFormat imgFormat)
         {
             var screenshot = ((ITakesScreenshot)_site.WebDriver).GetScreenshot();
-            screenshot.SaveAsFile(_path, ImageFormat.Jpeg);
+            screenshot.SaveAsFile(path + outputFileName + "." + imgFormat, ImgFormat);
         }
 
     }

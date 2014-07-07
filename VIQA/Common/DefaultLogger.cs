@@ -12,7 +12,7 @@ namespace VIQA.Common
         private static readonly string _logFileFormat = "{0}_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log";
         private static readonly ConcurrentDictionary<string, object> LogFileSyncRoots = new ConcurrentDictionary<string, object>();
         private static readonly string LogRecordTemplate = Environment.NewLine + "[{0}] {1}: {2}" + Environment.NewLine;
-        private string LogDirectoryRoot = ".Log\\";
+        private string LogDirectoryRoot = "/../.Log/";
 
         private static string GetLogRecord(string typeName, string msg)
         {

@@ -20,17 +20,11 @@ namespace SimpleTests.Tests
         [Test]
         public void VIQASimpleExampleTest()
         {
-            //var site = new YandexMarketSite { UseBrowser = BrowserType.Chrome };
-
-            var site = new VISite { Domain = "http://ya.ru/" };
-            VISite.Alerting = new ScreenshotAlert(site);
+            var site = new YandexMarketSite { UseBrowser = BrowserType.Chrome };
             site.HomePage.Open();
-            VISite.Alerting.ThrowError("Error");
-
-            //site.HomePage.Open();
-            //site.HomePage.SearchSection.SearchProduct("IPhone");
-            //CheckIPhone(site.WebDriver);
-            //VISite.KillAllRunWebDrivers();
+            site.HomePage.SearchSection.SearchProduct("IPhone");
+            CheckIPhone(site.WebDriver);
+            VISite.KillAllRunWebDrivers();
         }
 
         [Test]
