@@ -8,7 +8,6 @@ namespace VIQA.SiteClasses
         public int CashDropTimes = -1;
         public bool UseCache = true;
         public HighlightSettings DemoSettings;
-        public bool ScreenshotAlert;
 
     }
 }

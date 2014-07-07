@@ -76,13 +76,11 @@ namespace VIQA.SiteClasses
                     SiteSettings.UseCache = site.UseCache;
                 if (site.DemoMode)
                     SiteSettings.DemoSettings = DemoSettingsAttribute.Get(this);
-                if (site.ScreenshotAlert)
-                    SiteSettings.ScreenshotAlert = true;
+                if (Alerting == null) 
+                    Alerting = (site.ScreenshotAlert)
+                        ? new ScreenshotAlert(this)
+                        : (IAlerting)new DefaultAllert(); 
             }
-            if (Alerting == null)
-                Alerting = (SiteSettings.ScreenshotAlert)
-                    ? new ScreenshotAlert(this)
-                    : (IAlerting)new DefaultAllert();
             if (!isMain) return;
             VIElement.Init(this);
             VIPage.Init(this);

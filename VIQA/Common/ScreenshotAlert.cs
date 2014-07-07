@@ -11,13 +11,13 @@ namespace VIQA.Common
     public class ScreenshotAlert : IAlerting
     {
         private readonly VISite _site;
-        private readonly string _path = ".Screenshots\\";
+        private readonly string _path = "/../.Screenshots";
 
         public ScreenshotAlert(VISite site)
         {
             _site = site;
             var imgRoot = DefaultLogger.GetValidUrl(ConfigurationSettings.AppSettings["VIScreenshotsPath"]);
-            if (!string.IsNullOrEmpty(_path))
+            if (!string.IsNullOrEmpty(imgRoot))
                 _path = imgRoot;
             var logDirectory = DefaultLogger.GetValidUrl(_path) + "\\";
             DefaultLogger.CreateDirectory(logDirectory);
@@ -27,12 +27,16 @@ namespace VIQA.Common
         public Exception ThrowError(string errorMsg)
         {
             VISite.Logger.Error(errorMsg);
-
-            var screenshot = ((ITakesScreenshot) _site.WebDriver).GetScreenshot();
-            screenshot.SaveAsFile(_path, ImageFormat.Jpeg);
-
+            TakeScreenshot();
             Assert.Fail(errorMsg);
             return new Exception(errorMsg);
         }
+
+        public void TakeScreenshot()
+        {
+            var screenshot = ((ITakesScreenshot)_site.WebDriver).GetScreenshot();
+            screenshot.SaveAsFile(_path, ImageFormat.Jpeg);
+        }
+
     }
 }
