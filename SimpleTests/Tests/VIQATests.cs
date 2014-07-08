@@ -16,8 +16,7 @@ namespace SimpleTests.Tests
         public void Init() { VISite.KillAllRunWebDrivers(); }
 
         [TearDown]
-        public void TestCleanup() { }
-
+        public void TestCleanup() { } 
         [Test]
         public void VIQASimpleExampleTest()
         {
