@@ -24,7 +24,7 @@ namespace VIQA.Common
                 ? imgRoot
                 : "/../.Logs/.Screenshots";
             _fileName = DefaultLogger.GetValidUrl(ConfigurationSettings.AppSettings["VIScreenshotsFileName"]);
-            if (!string.IsNullOrEmpty(_fileName))
+            if (string.IsNullOrEmpty(_fileName))
                 _fileName = FileName();
             LogDirectory = DefaultLogger.GetValidUrl(LogDirectory);
             DefaultLogger.CreateDirectory(LogDirectory);
@@ -47,8 +47,8 @@ namespace VIQA.Common
                 outputFileName = _fileName;
             if (imgFormat == null)
                 imgFormat = ImgFormat;
-            var screenshot = ((ITakesScreenshot)_site.WebDriver).GetScreenshot();
             var screenshotPath = path + outputFileName + "." + imgFormat;
+            var screenshot = ((ITakesScreenshot)_site.WebDriver).GetScreenshot();
             screenshot.SaveAsFile(screenshotPath, ImgFormat);
             VISite.Logger.Error("Add Screenshot: " + screenshotPath);
         }

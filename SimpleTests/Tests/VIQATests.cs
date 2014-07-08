@@ -1,6 +1,8 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using SimpleTests.Site;
+using VIQA.Common;
 using VIQA.HAttributes;
 using VIQA.HtmlElements;
 using VIQA.SiteClasses;
@@ -15,7 +17,7 @@ namespace SimpleTests.Tests
 
         [TearDown]
         public void TestCleanup() { }
-        
+
         [Test]
         public void VIQASimpleExampleTest()
         {
