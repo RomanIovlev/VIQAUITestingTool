@@ -68,6 +68,7 @@
     <Compile Include="Site\Sections\SearchSection.cs" />
     <Compile Include="Site\YandexMarketSite.cs" />
     <Compile Include="Tests\BadSeleniumTest.cs" />
+    <Compile Include="Tests\LogIerarchyTest.cs" />
     <Compile Include="Tests\VIQATests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Management;
 using System.Reflection;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
@@ -25,6 +27,9 @@ namespace VIQA.SiteClasses
             set { SiteSettings.WebDriverTimeouts = value; }
         }
 
+        private static string _runId;
+        public static string RunId { 
+            get { return _runId ?? (_runId = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")); }}
         public readonly SiteSettings SiteSettings;
 
         private string _domain;
@@ -62,7 +67,8 @@ namespace VIQA.SiteClasses
         {
             Name = NameAttribute.GetName(this);
             WebDriverFunc = webDriver;
-            Logger = Logger ?? new DefaultLogger();
+            Logger = new DefaultLogger();
+            ((DefaultLogger) Logger).LogFileFormat = () => "{0}_" + RunId + ".log";
             Navigate = new Navigation(this);
             var site = SiteAttribute.Get(this);
             SiteSettings = new SiteSettings();
@@ -78,12 +84,24 @@ namespace VIQA.SiteClasses
                     SiteSettings.DemoSettings = DemoSettingsAttribute.Get(this);
                 if (Alerting == null) 
                     Alerting = (site.ScreenshotAlert)
-                        ? new ScreenshotAlert(this)
+                        ? getScreenshotAlert()
                         : (IAlerting)new DefaultAllert(); 
             }
             if (!isMain) return;
             VIElement.Init(this);
             VIPage.Init(this);
+        }
+
+        private ScreenshotAlert getScreenshotAlert()
+        {
+            var alert = new ScreenshotAlert(this);
+            alert.FileName = () => TestContext.CurrentContext.Test.Name + "_fail_" + RunId;
+            return alert;
+        }
+
+        public void TakeScreenshot(string path = null, string outputFileName = null, ImageFormat imgFormat = null)
+        {
+            new ScreenshotAlert(this).TakeScreenshot(path, outputFileName, imgFormat);
         }
 
         public IEnumerable<FieldInfo> PagesFields {  get  { 
@@ -115,10 +133,9 @@ namespace VIQA.SiteClasses
                     return Pages.First(page => page.IsHomePage);
                 if (homePagesCount == 0)
                     return new VIPage { Url = Domain };
-                else
-                    throw Alerting.ThrowError(
-                        "Site have more than one HomePage. Please specify only one HomePage. Current HomePages: " +
-                        Pages.Where(page => page.IsHomePage).Select(page => page.Name));
+                throw Alerting.ThrowError(
+                    "Site have more than one HomePage. Please specify only one HomePage. Current HomePages: " +
+                    Pages.Where(page => page.IsHomePage).Select(page => page.Name));
             }
         }
 

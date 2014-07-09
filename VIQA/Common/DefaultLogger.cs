@@ -9,10 +9,11 @@ namespace VIQA.Common
 {
     public class DefaultLogger : ILogger
     {
-        private static readonly string _logFileFormat = "{0}_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log";
+        public Func<string> LogFileFormat = () => "{0}_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log";
         private static readonly ConcurrentDictionary<string, object> LogFileSyncRoots = new ConcurrentDictionary<string, object>();
         private static readonly string LogRecordTemplate = Environment.NewLine + "[{0}] {1}: {2}" + Environment.NewLine;
-        private string LogDirectoryRoot = "/../.Logs/";
+        public Func<string> LogDirectoryRoot = () => "/../.Logs/";
+        public bool CreateFoldersForLogTypes = true;
 
         private static string GetLogRecord(string typeName, string msg)
         {
@@ -23,12 +24,12 @@ namespace VIQA.Common
         {
             var logRoot = GetValidUrl(ConfigurationSettings.AppSettings["VILogPath"]);
             if (!string.IsNullOrEmpty(logRoot))
-                LogDirectoryRoot = logRoot;
+                LogDirectoryRoot = () => logRoot;
         }
 
         public DefaultLogger(string path)
         {
-            LogDirectoryRoot = path;
+            LogDirectoryRoot = () => path;
         }
 
         public static string GetValidUrl(string logPath)
@@ -47,9 +48,9 @@ namespace VIQA.Common
 
         private void InLog(string fileName, string typeName, string msg)
         {
-            var logDirectory = GetValidUrl(LogDirectoryRoot) + fileName + "s\\";
+            var logDirectory = GetValidUrl(LogDirectoryRoot()) + (CreateFoldersForLogTypes ? fileName + "s\\" : "");
             CreateDirectory(logDirectory);
-            var logFileName = logDirectory + string.Format(_logFileFormat, fileName);
+            var logFileName = logDirectory + string.Format(LogFileFormat(), fileName);
 
             var logFileSyncRoot = LogFileSyncRoots.GetOrAdd(logFileName, s => s);
             lock (logFileSyncRoot)

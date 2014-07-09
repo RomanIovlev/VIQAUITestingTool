@@ -16,7 +16,7 @@ namespace VIQA.Common
         public Func<string> FileName
         {
             set { _fileName = value; }
-            get { return () => TestContext.CurrentContext.Test.Name + "_fail_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"); }
+            get { return () => TestContext.CurrentContext.Test.Name + "_fail_" + VISite.RunId; }
         }
 
         public ImageFormat ImgFormat = ImageFormat.Jpeg;
@@ -59,7 +59,7 @@ namespace VIQA.Common
             var screenshotPath = path + outputFileName + "." + imgFormat;
             var screenshot = ((ITakesScreenshot)_site.WebDriver).GetScreenshot();
             screenshot.SaveAsFile(screenshotPath, ImgFormat);
-            VISite.Logger.Error("Add Screenshot: " + screenshotPath);
+            VISite.Logger.Event("Add Screenshot: " + screenshotPath);
         }
 
     }
