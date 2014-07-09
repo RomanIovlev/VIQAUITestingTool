@@ -23,6 +23,14 @@ namespace VIQA.Common
             return s + " " + Environment.NewLine;
         }
 
+        public static string CutTestData(this string str)
+        {
+            int index = str.IndexOf('(');
+                return (index > 0)
+                ? str.Substring(0, index)
+                : str;
+        }
+
         public static T GetVIElement<T>(this T element) where T: IVIElement
         {
             element.GetWebElement();

@@ -95,7 +95,7 @@ namespace VIQA.SiteClasses
         private ScreenshotAlert getScreenshotAlert()
         {
             var alert = new ScreenshotAlert(this);
-            alert.FileName = () => TestContext.CurrentContext.Test.Name + "_fail_" + RunId;
+            alert.FileName = () => TestContext.CurrentContext.Test.Name.CutTestData() + "_fail_" + RunId;
             return alert;
         }
 

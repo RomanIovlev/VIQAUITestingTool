@@ -16,7 +16,7 @@ namespace VIQA.Common
         public Func<string> FileName
         {
             set { _fileName = value; }
-            get { return () => TestContext.CurrentContext.Test.Name + "_fail_" + VISite.RunId; }
+            get { return () => TestContext.CurrentContext.Test.Name.CutTestData() + "_fail_" + VISite.RunId; }
         }
 
         public ImageFormat ImgFormat = ImageFormat.Jpeg;
