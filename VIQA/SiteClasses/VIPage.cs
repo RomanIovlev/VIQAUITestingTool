@@ -110,32 +110,34 @@ namespace VIQA.SiteClasses
 
         public bool CheckUrl(PageCheckType checkType, bool throwError = false)
         {
-            return CheckPageAttribute(checkType, throwError, "url", WebDriver.Url.TrimEnd('/'), Url.TrimEnd('/'));
+            return CheckPageAttribute(checkType, throwError, "url", 
+                WebDriver.Url.ToLower().TrimEnd('/'), Url.ToLower().TrimEnd('/'));
         }
         
         public bool CheckTitle(PageCheckType checkType, bool throwError = false)
         {
-            return CheckPageAttribute(checkType, throwError, "title", WebDriver.Title, Title);
+            return CheckPageAttribute(checkType, throwError, "title", 
+                WebDriver.Title, Title);
         }
         private bool CheckPageAttribute(PageCheckType checkType, bool throwError, string checkWhat, string actual, string expected)
         {
             if (checkType == PageCheckType.NoCheck) return true;
             if (string.IsNullOrEmpty(expected))
             {
-                VISite.Alerting.ThrowError(string.Format("Page '{0}' {1} is empty. Please set {1} for this page", Name, checkWhat));
+                VISite.Alerting.ThrowError(string.Format("Page '{0}' {1} is empty. Please set {1} for this page", 
+                    Name, checkWhat));
                 return false;
             }
-            VISite.Logger.Event(string.Format("Check page '{0}' {1} {2} '{3}'", Name, checkWhat, checkType == PageCheckType.Equal ? "equal to " : "contains", expected));
+            VISite.Logger.Event(string.Format("Check page '{0}' {1} {2} '{3}'", 
+                Name, checkWhat, checkType == PageCheckType.Equal ? "equal to " : "contains", expected));
             var result =
-                // new Timer(Site.WebDriverTimeouts.WaitPageToLoadInSec, Site.WebDriverTimeouts.RetryActionInMsec).Wait(
-                //() => 
                     (checkType == PageCheckType.Equal) 
                     ? actual == expected 
                     : actual.Contains(expected);
 
             if (result) return true;
             var errorMsg = string.Format("Failed to check page {0} '{1}'." +
-                "Actual: '{2}'".FromNewLine() +
+                "Actual:   '{2}'".FromNewLine() +
                 "Expected: '{3}'".FromNewLine() +
                 "CheckType: '{4}'", checkWhat, Name, actual, expected, checkType);
             if (throwError)
