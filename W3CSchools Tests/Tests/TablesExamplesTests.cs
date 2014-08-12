@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using VIQA.Common;
+using VIQA.HtmlElements;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.HtmlElements.SimpleElements;
 using W3CSchools_Tests.Site;
@@ -19,39 +19,38 @@ namespace W3CSchools_Tests.Tests
         public void TestCleanup() { }
 
         public static W3CSite W3CSite = new W3CSite();
-
+        
         [Test]
         public void TableColNamesRowIndexTest()
         {
             W3CSite.W3CPageTable.Open();
             ITable table = new Table
             {
+                Rows = new Rows<TextElement> { StartIndex = 2},
                 Locator = By.XPath("//*[text()='HTML Table Example:']//..//table[1]"),
-                StartRowIndex = 2,
             };
-            Assert.AreEqual(table.ColumnNames.Print(), "Firstname, Lastname, Points");
-            Assert.AreEqual(table.RowNames.Print(), "1, 2, 3, 4");
+            Assert.AreEqual(table.Columns.Headers.Print(), "Firstname, Lastname, Points");
+            Assert.AreEqual(table.Rows.Headers.Print(), "1, 2, 3, 4");
             Assert.AreEqual(table.Cell(1, 2).Value, "Eve");
             Assert.AreEqual(table.Cell("Firstname", "2").Value, "Eve");
 
-            var allCells = table.Cells;
-            Assert.AreEqual(allCells.Count, 3);
-            Assert.AreEqual(allCells.Last().Value.Count, 4);
+            Assert.AreEqual(table.Columns.Count, 3);
+            Assert.AreEqual(table.Rows.Count, 4);
 
-            Assert.AreEqual(table.GetRow(2).Print(), "Eve, Jackson, 94");
-            Assert.AreEqual(table.GetRow("2").Print(), "Eve, Jackson, 94");
-            Assert.AreEqual(table.GetColumn(3).Print(), "50, 94, 80, 67");
-            Assert.AreEqual(table.GetColumn("Points").Print(), "50, 94, 80, 67");
+            Assert.AreEqual(table.Rows[2].Print(), "Eve, Jackson, 94");
+            Assert.AreEqual(table.Rows["2"].Print(), "Eve, Jackson, 94");
+            Assert.AreEqual(table.Columns[3].Print(), "50, 94, 80, 67");
+            Assert.AreEqual(table.Columns["Points"].Print(), "50, 94, 80, 67");
 
             Assert.AreEqual(table.FindCellsWithValue("Doe").Count, 1);
             Assert.AreEqual(table.FindCellsWithValue(new Regex("John")).Print(), "John, Johnson");
             { var cell = table.FindFirstCellWithValue("Doe");
-            Assert.AreEqual(cell.X + ":" + cell.Y, "2:3"); }
+            Assert.AreEqual(cell.ColumnNum + ":" + cell.RowNum, "2:3"); }
 
-            Assert.AreEqual(table.FindCellInRow(3, "Doe").X, 2);
-            Assert.AreEqual(table.FindCellInRow("3", "Doe").X, 2);
-            Assert.AreEqual(table.FindCellInColumn(2, "Doe").Y, 3);
-            Assert.AreEqual(table.FindCellInColumn("Lastname", "Doe").Y, 3);
+            Assert.AreEqual(table.FindCellInRow(3, "Doe").ColumnNum, 2);
+            Assert.AreEqual(table.FindCellInRow("3", "Doe").ColumnNum, 2);
+            Assert.AreEqual(table.FindCellInColumn(2, "Doe").RowNum, 3);
+            Assert.AreEqual(table.FindCellInColumn("Lastname", "Doe").RowNum, 3);
 
             Assert.AreEqual(table.FindRowByColumnValue(2, "Doe").Print(), "John, Doe, 80");
             Assert.AreEqual(table.FindRowByColumnValue("Lastname", "Doe").Print(), "John, Doe, 80");
@@ -79,28 +78,27 @@ namespace W3CSchools_Tests.Tests
             w3CPage.Open();
             var table = w3CPage.TableColNamesRowNames;
 
-            Assert.AreEqual(table.ColumnNames.Print(), "Lastname, Points");
-            Assert.AreEqual(table.RowNames.Print(), "Jill, Eve, John, Adam");
+            Assert.AreEqual(table.Columns.Headers.Print(), "Lastname, Points");
+            Assert.AreEqual(table.Rows.Headers.Print(), "Jill, Eve, John, Adam");
             Assert.AreEqual(table.Cell(1, 2).Value, "Jackson");
             Assert.AreEqual(table.Cell("Lastname", "Eve").Value, "Jackson");
 
-            var allCells = table.Cells;
-            Assert.AreEqual(allCells.Count, 2);
-            Assert.AreEqual(allCells.Last().Value.Count, 4);
+            Assert.AreEqual(table.Columns.Count, 2);
+            Assert.AreEqual(table.Rows.Count, 4);
 
-            Assert.AreEqual(table.GetRow(2).Print(), "Jackson, 94");
-            Assert.AreEqual(table.GetRow("Eve").Print(), "Jackson, 94");
-            Assert.AreEqual(table.GetColumn(2).Print(), "50, 94, 80, 67");
-            Assert.AreEqual(table.GetColumn("Points").Print(), "50, 94, 80, 67");
+            Assert.AreEqual(table.Rows[2].Print(), "Jackson, 94");
+            Assert.AreEqual(table.Rows["Eve"].Print(), "Jackson, 94");
+            Assert.AreEqual(table.Columns[2].Print(), "50, 94, 80, 67");
+            Assert.AreEqual(table.Columns["Points"].Print(), "50, 94, 80, 67");
 
             Assert.AreEqual(table.FindCellsWithValue("Doe").Count, 1);
             { var cell = table.FindFirstCellWithValue("Doe");
-            Assert.AreEqual(cell.X + ":" + cell.Y, "1:3"); }
+            Assert.AreEqual(cell.ColumnNum + ":" + cell.RowNum, "1:3"); }
 
-            Assert.AreEqual(table.FindCellInRow(3, "Doe").X, 1);
-            Assert.AreEqual(table.FindCellInRow("John", "Doe").X, 1);
-            Assert.AreEqual(table.FindCellInColumn(1, "Doe").Y, 3);
-            Assert.AreEqual(table.FindCellInColumn("Lastname", "Doe").Y, 3);
+            Assert.AreEqual(table.FindCellInRow(3, "Doe").ColumnNum, 1);
+            Assert.AreEqual(table.FindCellInRow("John", "Doe").ColumnNum, 1);
+            Assert.AreEqual(table.FindCellInColumn(1, "Doe").RowNum, 3);
+            Assert.AreEqual(table.FindCellInColumn("Lastname", "Doe").RowNum, 3);
 
             Assert.AreEqual(table.FindRowByColumnValue(1, "Doe").Print(), "Doe, 80");
             Assert.AreEqual(table.FindRowByColumnValue("Lastname", "Doe").Print(), "Doe, 80");
@@ -127,35 +125,34 @@ namespace W3CSchools_Tests.Tests
             W3CSite.W3CPageTable.Open();
             ITable table = new Table
             {
+                Columns = new Columns<TextElement> { HaveHeaders = false },
+                Rows = new Rows<TextElement> { StartIndex = 2, HaveHeaders = false },
                 Locator = By.XPath("//*[text()='HTML Table Example:']//..//table[1]"),
-                HeadingsType = TableHeadingType.NoHeadings,
-                StartRowIndex = 2
             };
-            Assert.AreEqual(table.ColumnNames.Print(), "1, 2, 3");
-            Assert.AreEqual(table.RowNames.Print(), "1, 2, 3, 4");
+            Assert.AreEqual(table.Columns.Headers.Print(), "1, 2, 3");
+            Assert.AreEqual(table.Rows.Headers.Print(), "1, 2, 3, 4");
             Assert.AreEqual(table.Cell(1, 2).Value, "Eve");
             Assert.AreEqual(table.Cell("1", "2").Value, "Eve");
 
-            var allCells = table.Cells;
-            Assert.AreEqual(allCells.Count, 3);
-            Assert.AreEqual(allCells.Last().Value.Count, 4);
+            Assert.AreEqual(table.Columns.Count, 3);
+            Assert.AreEqual(table.Rows.Count, 4);
 
-            Assert.AreEqual(table.GetRow(2).Print(), "Eve, Jackson, 94");
-            Assert.AreEqual(table.GetRow("2").Print(), "Eve, Jackson, 94");
-            Assert.AreEqual(table.GetColumn(3).Print(), "50, 94, 80, 67");
-            Assert.AreEqual(table.GetColumn("3").Print(), "50, 94, 80, 67");
+            Assert.AreEqual(table.Rows[2].Print(), "Eve, Jackson, 94");
+            Assert.AreEqual(table.Rows["2"].Print(), "Eve, Jackson, 94");
+            Assert.AreEqual(table.Columns[3].Print(), "50, 94, 80, 67");
+            Assert.AreEqual(table.Columns["3"].Print(), "50, 94, 80, 67");
 
             Assert.AreEqual(table.FindCellsWithValue("Doe").Count, 1);
             Assert.AreEqual(table.FindCellsWithValue(new Regex("John")).Print(), "John, Johnson");
             {
                 var cell = table.FindFirstCellWithValue("Doe");
-                Assert.AreEqual(cell.X + ":" + cell.Y, "2:3");
+                Assert.AreEqual(cell.ColumnNum + ":" + cell.RowNum, "2:3");
             }
 
-            Assert.AreEqual(table.FindCellInRow(3, "Doe").X, 2);
-            Assert.AreEqual(table.FindCellInRow("3", "Doe").X, 2);
-            Assert.AreEqual(table.FindCellInColumn(2, "Doe").Y, 3);
-            Assert.AreEqual(table.FindCellInColumn("2", "Doe").Y, 3);
+            Assert.AreEqual(table.FindCellInRow(3, "Doe").ColumnNum, 2);
+            Assert.AreEqual(table.FindCellInRow("3", "Doe").ColumnNum, 2);
+            Assert.AreEqual(table.FindCellInColumn(2, "Doe").RowNum, 3);
+            Assert.AreEqual(table.FindCellInColumn("2", "Doe").RowNum, 3);
 
             Assert.AreEqual(table.FindRowByColumnValue(2, "Doe").Print(), "John, Doe, 80");
             Assert.AreEqual(table.FindRowByColumnValue("2", "Doe").Print(), "John, Doe, 80");
@@ -183,31 +180,30 @@ namespace W3CSchools_Tests.Tests
             w3cPage.Open();
             var table = w3cPage.TableColIndexRowNames;
 
-            Assert.AreEqual(table.ColumnNames.Print(), "1, 2");
-            Assert.AreEqual(table.RowNames.Print(), "Jill, Eve, John, Adam");
+            Assert.AreEqual(table.Columns.Headers.Print(), "1, 2");
+            Assert.AreEqual(table.Rows.Headers.Print(), "Jill, Eve, John, Adam");
             Assert.AreEqual(table.Cell(1, 2).Value, "Jackson");
             Assert.AreEqual(table.Cell("1", "Eve").Value, "Jackson");
 
-            var allCells = table.Cells;
-            Assert.AreEqual(allCells.Count, 2);
-            Assert.AreEqual(allCells.Last().Value.Count, 4);
+            Assert.AreEqual(table.Columns.Count, 2);
+            Assert.AreEqual(table.Rows.Count, 4);
 
-            Assert.AreEqual(table.GetRow(2).Print(), "Jackson, 94");
-            Assert.AreEqual(table.GetRow("Eve").Print(), "Jackson, 94");
-            Assert.AreEqual(table.GetColumn(2).Print(), "50, 94, 80, 67");
-            Assert.AreEqual(table.GetColumn("2").Print(), "50, 94, 80, 67");
+            Assert.AreEqual(table.Rows[2].Print(), "Jackson, 94");
+            Assert.AreEqual(table.Rows["Eve"].Print(), "Jackson, 94");
+            Assert.AreEqual(table.Columns[2].Print(), "50, 94, 80, 67");
+            Assert.AreEqual(table.Columns["2"].Print(), "50, 94, 80, 67");
 
             Assert.AreEqual(table.FindCellsWithValue("Doe").Count, 1);
             Assert.AreEqual(table.FindCellsWithValue(new Regex("John")).Print(), "Johnson");
             {
                 var cell = table.FindFirstCellWithValue("Doe");
-                Assert.AreEqual(cell.X + ":" + cell.Y, "1:3");
+                Assert.AreEqual(cell.ColumnNum + ":" + cell.RowNum, "1:3");
             }
 
-            Assert.AreEqual(table.FindCellInRow(3, "Doe").X, 1);
-            Assert.AreEqual(table.FindCellInRow("John", "Doe").X, 1);
-            Assert.AreEqual(table.FindCellInColumn(1, "Doe").Y, 3);
-            Assert.AreEqual(table.FindCellInColumn("1", "Doe").Y, 3);
+            Assert.AreEqual(table.FindCellInRow(3, "Doe").ColumnNum, 1);
+            Assert.AreEqual(table.FindCellInRow("John", "Doe").ColumnNum, 1);
+            Assert.AreEqual(table.FindCellInColumn(1, "Doe").RowNum, 3);
+            Assert.AreEqual(table.FindCellInColumn("1", "Doe").RowNum, 3);
 
             Assert.AreEqual(table.FindRowByColumnValue(1, "Doe").Print(), "Doe, 80");
             Assert.AreEqual(table.FindRowByColumnValue("1", "Doe").Print(), "Doe, 80");

@@ -6,20 +6,29 @@ namespace VIQA.HtmlElements.SimpleElements
     {
         public readonly T Element;
         public string Value { get { return Element.Value; } }
-        public readonly int X;
-        public readonly int Y;
-        public readonly string ColumnName;
-        public readonly string RowName;
+        public int ColumnNum;
+        public int RowNum;
+        public string ColumnName;
+        public string RowName;
 
         public void SetValue<T1>(T1 value) { Element.SetValue(value); }
 
-        public Cell(T element, int x, int y, string colName, string rowName)
+        public Cell(T element, int columnNum, int rowNum, string colName, string rowName)
         {
             Element = element;
-            X = x;
-            Y = y;
+            ColumnNum = columnNum;
+            RowNum = rowNum;
             ColumnName = colName;
             RowName = rowName;
+        }
+
+        public Cell<T> UpdateData(string colName, string rowName)
+        {
+            if (string.IsNullOrEmpty(ColumnName) && !string.IsNullOrEmpty(colName))
+                ColumnName = colName;
+            if (string.IsNullOrEmpty(RowName) && !string.IsNullOrEmpty(rowName))
+                RowName = rowName;
+            return this;
         }
     }
 }

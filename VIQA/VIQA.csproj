@@ -59,14 +59,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Columns.cs" />
     <Compile Include="Common\CommonExtensions.cs" />
     <Compile Include="Common\DefaultAllert.cs" />
     <Compile Include="Common\DefaultLogger.cs" />
+    <Compile Include="Common\ITableLine.cs" />
     <Compile Include="Common\Named.cs" />
     <Compile Include="Common\Pairs\Pair.cs" />
     <Compile Include="Common\Pairs\Pairs.cs" />
     <Compile Include="Common\Pairs\PairsExtentions.cs" />
+    <Compile Include="Common\Rows.cs" />
     <Compile Include="Common\ScreenshotAlert.cs" />
+    <Compile Include="Common\TableLine.cs" />
     <Compile Include="Common\Timer.cs" />
     <Compile Include="Common\VIAction.cs" />
     <Compile Include="HAttributes\ClickLoadsPageAttribute.cs" />

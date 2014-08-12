@@ -258,8 +258,8 @@ namespace VIQA.HtmlElements
             set { _viActionR = value; }
             get { return _viActionR ?? _defaultViActionR; }
         }
-        
-        protected T DoVIAction<T>(string logActionName, Func<T> viAction, Func<T, string> logResult = null)
+
+        public T DoVIAction<T>(string logActionName, Func<T> viAction, Func<T, string> logResult = null)
         {
             try { return (T)VIActionR(logActionName, () => viAction(), res => logResult != null ? logResult((T)res) : null); }
             catch (Exception ex)
@@ -278,8 +278,8 @@ namespace VIQA.HtmlElements
                 if (demoMode != null)
                     viElement.Highlight(demoMode);
             });
-        
-        protected void DoVIAction(string logActionName, Action viAction)
+
+        public void DoVIAction(string logActionName, Action viAction)
         {
             try { DoViAction.Action(this, logActionName, viAction); }
             catch (Exception ex)

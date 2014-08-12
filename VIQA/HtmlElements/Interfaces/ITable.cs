@@ -1,20 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using VIQA.Common;
 using VIQA.HtmlElements.SimpleElements;
 
 namespace VIQA.HtmlElements.Interfaces
 {
     public interface ITable<T> : IHaveValue where T : VIElementsSet, IHaveValue
     {
-        Dictionary<string, Dictionary<string, Cell<T>>> Cells { get; }
         Cell<T> Cell(int colNum, int rowNum);
+        Cell<T> Cell(string colName, int rowNum);
+        Cell<T> Cell(int colNum, string rowName);
         Cell<T> Cell(string colName, string rowName);
-
-        List<Cell<T>> GetColumn(int colIndex);
-        List<Cell<T>> GetColumn(string colName);
-        List<Cell<T>> GetRow(int rowIndex);
-        List<Cell<T>> GetRow(string rowName);
-
+        
         List<Cell<T>> FindCellsWithValue(string value);
         List<Cell<T>> FindCellsWithValue(Regex regex);
         Cell<T> FindFirstCellWithValue(string value);
@@ -31,8 +28,8 @@ namespace VIQA.HtmlElements.Interfaces
         List<Cell<T>> FindRowByColumnValue(int colIndex, string value);
         List<Cell<T>> FindRowByColumnValue(string colName, string value);
 
-        string[] ColumnNames { get; }
-        string[] RowNames { get; }
+        Columns<T> Columns { get; }
+        Rows<T> Rows { get; }
     }
 
     public interface ITable : ITable<TextElement> { }
