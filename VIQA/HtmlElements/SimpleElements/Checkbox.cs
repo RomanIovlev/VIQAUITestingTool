@@ -63,7 +63,7 @@ namespace VIQA.HtmlElements
         }
         public bool IsChecked()
         {
-            return DoVIAction("IsChecked", 
+            return DoVIActionResult("IsChecked", 
                 () => IsSelectedFunc(), 
                 isChecked => "Checkbox is " + (isChecked ? "checked" : "unchecked"));
         }

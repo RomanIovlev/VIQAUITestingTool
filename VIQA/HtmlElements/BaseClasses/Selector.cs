@@ -62,7 +62,7 @@ namespace VIQA.HtmlElements
         
         public List<string> GetListOfValues()
         {
-            return DoVIAction(Name + ". GetListOfValues",
+            return DoVIActionResult(Name + ". GetListOfValues",
                 () => GetAllElements().Select(pair => pair.Key).ToList(), 
                 values => FullName + " have following values: " + values.Print());
         }
@@ -74,7 +74,7 @@ namespace VIQA.HtmlElements
         }
 
         public List<string> SelectedItems { get { 
-            return DoVIAction(Name + ". SelectedItems",
+            return DoVIActionResult(Name + ". SelectedItems",
                 () => GetAllElements().Where(pair => pair.Value.IsSelected()).Select(pair => pair.Key).ToList(),
                 values => FullName + " values are selected: " + values.Print());
         } }

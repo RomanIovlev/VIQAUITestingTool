@@ -27,7 +27,7 @@ namespace VIQA.HtmlElements
         private new List<string> SelectedItems() { return null; }
         
         public string SelectedItem { get {
-            return DoVIAction(Name + ". SelectedItems",
+            return DoVIActionResult(Name + ". SelectedItems",
                 () => (ListOfValues == null)
                     ? GetAllElements().First(pair => pair.Value.IsSelected()).Key
                     : ListOfValues.First(name => GetVIElementByName(name).IsSelected()),

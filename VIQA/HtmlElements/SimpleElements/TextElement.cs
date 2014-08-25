@@ -36,7 +36,7 @@ namespace VIQA.HtmlElements
 
         public string Text
         {
-            get { return DoVIAction("Get text", GetTextFunc, text => text); }
+            get { return DoVIActionResult("Get text", GetTextFunc, text => text); }
         }
 
         public void SetValue<T>(T value) { }

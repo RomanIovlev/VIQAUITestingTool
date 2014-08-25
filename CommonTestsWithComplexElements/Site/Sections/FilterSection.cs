@@ -28,12 +28,12 @@ namespace CommonTestsWithComplexElements.Site.Sections
 
         public readonly RadioButtons SensorScreenRadioButtons = new RadioButtons("Сенсорный экран",
             () => new RadioButton(By.XPath(".//*[contains(text(),'Сенсорный экран')]//..//..//*[text()='{0}']//..//input[@type='radio']"))) {
-                DoViAction = new VIAction<Action<VIElement, string, Action>>((viElement, text, viAction) => {
+                VIAction = (viElement, text, viAction) => {
                     VISite.Logger.Event(viElement.DefaultLogMessage(text));
                     if (!new VIElement("", By.XPath(".//*[contains(text(),'Сенсорный экран')]//..//..//*[contains(text(),'да'" + ")]")) { Context = viElement.Context }.IsDisplayed)
                         new ClickableElement("Сенсорный экран", By.XPath(".//*[contains(text(),'Сенсорный экран')]//..//i")) { Context = viElement.Context }.Click();
                     viAction.Invoke();
-                }),
+                },
                 FillRule = ToFillRule<Filter>(filter => filter.SensorScreen),
                 GetAllElementsFunc = driver => 
                     driver.FindElements(By.XPath(".//*[contains(text(),'Сенсорный экран')]//..//..//li//label")).ToDictionary(
@@ -45,13 +45,13 @@ namespace CommonTestsWithComplexElements.Site.Sections
         public readonly ICheckList PlatformTypesChecklist = new CheckList("Платформа",
             () => new Checkbox(By.XPath(".//*[contains(text(),'Платформа')]//..//..//*[text()='{0} ']//..//input[@type='checkbox']")))
             {
-                DoViAction = new VIAction<Action<VIElement, string, Action>>((viElement, text, viAction) => {
+                VIAction = (viElement, text, viAction) => {
                     VISite.Logger.Event(viElement.DefaultLogMessage(text));
                     if (!new Checkbox("'Платформа' Android", By.XPath(".//*[contains(text(),'Платформа')]//..//..//*[contains(text(),'Android')]")) { Context = viElement.Context }.IsDisplayed)
                         new ClickableElement("Платформа",
                             By.XPath(".//*[contains(text(),'Платформа')]//..//i")) { Context = viElement.Context }.Click();
                     viAction.Invoke();
-                    }),
+                    },
                 GetAllElementsFunc = driver =>
                     driver.FindElements(By.XPath(".//*[contains(text(),'Платформа')]//..//..//li//label")).ToDictionary(
                         webEl => webEl.FindElement(By.TagName("span")).Text, 

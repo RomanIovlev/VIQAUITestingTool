@@ -82,10 +82,11 @@ namespace VIQA.HtmlElements
                 });
         }
 
-        public bool CompareValuesWith(Object data, Func<string, string, bool> compareFunc = null)
+        public bool CompareValuesWith(Object data, out string resultText, Func<string, string, bool> compareFunc = null)
         {
             VISite.Logger.Event("Check Form values: '" + Name + "'".LineBreak() + "With data: " + data);
             var result = true;
+            resultText = "";
             compareFunc = compareFunc ?? VIElement.DefaultCompareFunc;
             var elements = GethValueElements.Select(_ => _.Value).Where(_ => _.FillRule != null);
             foreach (var element in elements) {
@@ -95,21 +96,44 @@ namespace VIQA.HtmlElements
                     var expectedEnum = expected as IEnumerable<Object>;
                     if (expectedEnum == null)
                     {
-                        if (compareFunc(element.Value, expected.ToString()))
-                            continue;
+                        if (!compareFunc(element.Value, expected.ToString()))
+                        {
+                            GetResult(string.Format("Error in CompareValuesWith for element '{0}'. Actual: {1}; Expected: {2}",
+                                    element.Name, element.Value, expected), out result, out resultText);
+                            break;
+                        }
                     }
                     else
                     {
-                        var expecctedList = expectedEnum.ToList();
-                        if (expecctedList.Count(el => element.Value.Contains(el.ToString())) == expecctedList.Count())
-                        continue;
+                        var expecctedList = expectedEnum.Select(el => el.ToString()).ToArray();
+                        var actualList = element.Value.Split(',').Select(el => el.Trim()).ToArray();
+                        if (actualList.Count() != expecctedList.Count())
+                        {
+                            GetResult(string.Format("Error in CompareValuesWith for element '{0}'. Different Count of Elements: {1}(Actual), {2}(Expected); Actual List: {3}; Expected List: {4}",
+                                element.Name, actualList.Count(), expecctedList.Count(), element.Value, expecctedList.Print()), out result, out resultText);
+                            break;
+                            
+                        }
+                        Array.Sort(expecctedList);
+                        Array.Sort(actualList);
+                        if (actualList.Print() != expecctedList.Print())
+                        {
+                            GetResult(string.Format("Error in CompareValuesWith for element '{0}'. Actual: {1}; Expected: {2}", element.Name, element.Value, expecctedList.Print()), 
+                                out result, out resultText);
+                            break;
+                        }
                     }
-                    result = false;
-                    break;
                 }
-                catch (Exception ex) { VISite.Alerting.ThrowError("Error in CompareValuesWith. Element '" + element.Name + "'. Exception: " + ex); }
+                catch (Exception ex) { VISite.Alerting.ThrowError("Error in CompareValuesWith for element '" + element.Name + "'. Exception: " + ex); }
             }
             return result;
+        }
+
+        private void GetResult(string msg, out bool result, out string resultText)
+        {
+            VISite.Alerting.ThrowError(msg);
+            result = false;
+            resultText = msg;
         }
 
         public void FillSubElement(string name, string value)

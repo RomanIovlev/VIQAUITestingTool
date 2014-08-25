@@ -14,6 +14,7 @@ namespace VIQA.Common
         public Rows()
         {
             GetHeadersFunc = t => t.FindElements(By.XPath(".//tr/td[1]")).Select(el => el.Text).ToArray();
+            GetHeadersFunc = t => t.FindElements(By.XPath(".//tr/td[1]")).Select(el => el.Text).ToArray();
             HaveHeaders = false;
             ElementIndex = ElementIndexType.Nums;
         }
@@ -51,23 +52,6 @@ namespace VIQA.Common
                     return result.ToList();
                 }
                 catch (Exception ex) { throw GetRowsException(num.ToString(), ex); } 
-            }
-        }
-
-        public override string[] Headers
-        {
-            set { _headers = value; }
-            get
-            {
-                if (_headers != null)
-                    return _headers;
-                _headers = Table.DoVIAction("Get Rows Headers", () => GetHeadersFunc(Table.GetWebElement()));
-                if (_headers == null || !_headers.Any())
-                    throw VISite.Alerting.ThrowError("Table have 0 rows. Please Specify RowHeaders or GetRowHeadersFunc");
-                Count = _headers.Length;
-                if (!HaveHeaders)
-                    _headers = GetNumList(Count);
-                return _headers;
             }
         }
     }

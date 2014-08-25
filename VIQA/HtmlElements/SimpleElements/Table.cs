@@ -10,7 +10,14 @@ using VIQA.SiteClasses;
 
 namespace VIQA.HtmlElements.SimpleElements
 {
-    public class Table : Table<TextElement>, ITable { }
+    public class Table : Table<TextElement>, ITable
+    {
+        public Table() { }
+
+        public Table(By tableLocator) : base(tableLocator) { }
+
+        public Table(string name = null, By tableLocator = null, By cellLocatorTemplate = null) : base(name, tableLocator, cellLocatorTemplate) { }
+    }
     
     public class Table<T> : VIElement, ITable<T> where T : VIElementsSet, IHaveValue
     {
@@ -34,6 +41,23 @@ namespace VIQA.HtmlElements.SimpleElements
 
         public Func<IWebElement, string[]> GetColumnHeadersFunc { set { Columns.GetHeadersFunc = value; } }
         public Func<IWebElement, string[]> GetRowHeadersFunc { set { Rows.GetHeadersFunc = value; } }
+
+        public Func<IWebElement, string[]> GetFooterFunc;
+        protected string[] _footer;
+        public string[] Footer
+        {
+            set { _footer = value; }
+            get
+            {
+                if (_footer != null)
+                    return _footer;
+                _footer = DoVIActionResult("Get Footer", () => GetFooterFunc(GetWebElement()));
+                if (_footer == null || !_footer.Any())
+                    return default(string[]);
+                Columns.Count = _footer.Length;
+                return _footer;
+            }
+        }
         
         public Func<T> CellTemplate = () => (T)Activator.CreateInstance(typeof(T));
 
@@ -244,13 +268,17 @@ namespace VIQA.HtmlElements.SimpleElements
         {
             Columns.Table = this;
             Rows.Table = this;
+            GetFooterFunc = t => t.FindElements(By.XPath(".//tfoot/tr/td")).Select(el => el.Text).ToArray();
         }
 
-        public Table(string name = null, By tableLocator = null, By cellLocatorTemplate = null) : base(name)
+        public Table(By tableLocator) : this()
         {
-            Columns.Table = this;
-            Rows.Table = this;
+            Locator = tableLocator;
+        }
 
+        public Table(string name = null, By tableLocator = null, By cellLocatorTemplate = null) : this()
+        {
+            Name = name;
             Locator = tableLocator;
             _cellLocatorTemplate = cellLocatorTemplate;
         }

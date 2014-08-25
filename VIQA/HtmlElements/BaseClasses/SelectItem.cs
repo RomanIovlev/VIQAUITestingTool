@@ -24,7 +24,7 @@ namespace VIQA.HtmlElements.BaseClasses
 
         public bool IsSelected()
         {
-            return DoVIAction(Name + " isSelected", () => IsSelectedFunc(this), val => val.ToString());
+            return DoVIActionResult(Name + " isSelected", () => IsSelectedFunc(this), val => val.ToString());
         }
 
         public string Value { get { return IsSelected().ToString(); } }

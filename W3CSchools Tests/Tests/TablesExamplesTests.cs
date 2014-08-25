@@ -1,10 +1,13 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using VIQA.Common;
+using VIQA.Common.Pairs;
 using VIQA.HtmlElements;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.HtmlElements.SimpleElements;
+using VIQA.SiteClasses;
 using W3CSchools_Tests.Site;
 
 namespace W3CSchools_Tests.Tests
@@ -223,7 +226,17 @@ namespace W3CSchools_Tests.Tests
 ||John||Doe|80|| 
 ||Adam||Johnson|67||");
         }
-        
+
+        [Test]
+        public void FooterTest()
+        {
+            var page = new VIPage { Url = "http://www.w3schools.com/tags/tag_tfoot.asp" };
+            page.Open();
+            new ClickableElement(By.XPath(".//a[contains(text(),'Try it Yourself')]")).Click();
+            ITable table = new Table(By.XPath("//table")){
+                Context = new Pairs<ContextType, By>(ContextType.Frame, By.Id("iframeResult"))};
+            Assert.AreEqual(table.Footer.Print(), "Sum, $180");
+        }
     }
 }
 

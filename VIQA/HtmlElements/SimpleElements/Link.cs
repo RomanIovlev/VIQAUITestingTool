@@ -22,7 +22,7 @@ namespace VIQA.HtmlElements
 
         public string Reference
         {
-            get { return DoVIAction("Get Reference", () => GetWebElement().GetAttribute("href"), href => "Get href of link '" + href + "'"); }
+            get { return DoVIActionResult("Get Reference", () => GetWebElement().GetAttribute("href"), href => "Get href of link '" + href + "'"); }
         }
 
     }

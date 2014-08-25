@@ -125,7 +125,8 @@ namespace VIQA.HtmlElements
 
         public bool WaitElementState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, double timeoutInSec = -1, int retryTimeoutInMSec = -1)
         {
-            return GetTimer(timeoutInSec, retryTimeoutInMSec).Wait(() => waitFunc(webElement ?? CheckWebElementIsUnique(SearchElements())));
+            return GetTimer(timeoutInSec, retryTimeoutInMSec)
+                .Wait(() => waitFunc(webElement ?? CheckWebElementIsUnique(SearchElements())));
         }
 
         public IWebElement WaitElementWithState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, double timeoutInSec = -1, int retryTimeoutInMSec = -1, string msg = "")
@@ -219,11 +220,7 @@ namespace VIQA.HtmlElements
             DefaultNameFunc = () => _typeName + " with by selector " + PrintLocator();
         }
 
-        public VIElement(string name)
-        {
-            Name = name;
-        }
-
+        public VIElement(string name) { Name = name; }
         public VIElement(string name, string cssSelector) : this(name) { Locator = By.CssSelector(cssSelector); }
         public VIElement(string name, By byLocator) : this(name) { Locator = byLocator; }
         public VIElement(By byLocator) : this() { Locator = byLocator; }
@@ -236,40 +233,41 @@ namespace VIQA.HtmlElements
             return text + string.Format(" (Name: '{0}', Type: '{1}', LocatorAttribute: '{2}')", FullName, _typeName, PrintLocator());
         }
 
-        private Func<string, Func<Object>, Func<Object, string>, Object> _defaultViActionR
-        {
-            get
-            {
-                return (text, viAction, logResult) =>
-                {
-                    VISite.Logger.Event(DefaultLogMessage(text));
-                    var result = viAction();
-                    var demoModeSettings = Site.SiteSettings.DemoSettings;
-                    if (demoModeSettings != null)
-                        Highlight(demoModeSettings);
-                    if (logResult != null)
-                        VISite.Logger.Event(logResult(result));
-                    return result;
-                }; } }
 
-        private Func<string, Func<Object>, Func<Object, string>, Object> _viActionR;
-        public Func<string, Func<Object>, Func<Object, string>, Object> VIActionR
+        #region ViActions
+        // Result Actions
+        public static Func<VIElement, string, Func<Object>, Func<Object, string>, Object> DefaultViActionResult = 
+            (viElement, text, viAction, logResult) =>
+                {
+                    VISite.Logger.Event(viElement.DefaultLogMessage(text));
+                    var result = viAction();
+                    var demoModeSettings = viElement.Site.SiteSettings.DemoSettings;
+                    if (demoModeSettings != null)
+                        viElement.Highlight(demoModeSettings);
+                    var strResult = logResult(result);
+                    if (strResult != null)
+                        VISite.Logger.Event(strResult);
+                    return result;
+                }; 
+
+        private Func<VIElement, string, Func<Object>, Func<Object, string>, Object> _viActionResult;
+        public Func<VIElement, string, Func<Object>, Func<Object, string>, Object> VIActionResult
         {
-            set { _viActionR = value; }
-            get { return _viActionR ?? _defaultViActionR; }
+            set { _viActionResult = value; }
+            get { return _viActionResult ?? DefaultViActionResult; }
         }
 
-        public T DoVIAction<T>(string logActionName, Func<T> viAction, Func<T, string> logResult = null)
+        public T DoVIActionResult<T>(string logActionName, Func<T> viAction, Func<T, string> logResult = null)
         {
-            try { return (T)VIActionR(logActionName, () => viAction(), res => logResult != null ? logResult((T)res) : null); }
+            try { return (T)VIActionResult(this, logActionName, () => viAction(), res => logResult != null ? logResult((T)res) : null); }
             catch (Exception ex)
             {
                 throw VISite.Alerting.ThrowError(string.Format("Failed to do '{0}' action. Exception: {1}", logActionName, ex));
             }
         }
 
-        //----
-        public VIAction<Action<VIElement, string, Action>> DoViAction = new VIAction<Action<VIElement, string, Action>>(
+        // NoResult Actions
+        public static Action<VIElement, string, Action> DefaultVIAction = 
             (viElement, text, viAction) =>
             {
                 VISite.Logger.Event(viElement.DefaultLogMessage(text));
@@ -277,16 +275,24 @@ namespace VIQA.HtmlElements
                 var demoMode = viElement.Site.SiteSettings.DemoSettings;
                 if (demoMode != null)
                     viElement.Highlight(demoMode);
-            });
+            };
+
+        private Action<VIElement, string, Action> viAction;
+        public Action<VIElement, string, Action> VIAction
+        {
+            set { viAction = value; }
+            private get { return viAction ?? DefaultVIAction; }
+        }
 
         public void DoVIAction(string logActionName, Action viAction)
         {
-            try { DoViAction.Action(this, logActionName, viAction); }
+            try { VIAction(this, logActionName, viAction); }
             catch (Exception ex)
             {
                 throw VISite.Alerting.ThrowError(string.Format("Failed to do '{0}' action. Exception: {1}", logActionName, ex));
             }
         }
+        #endregion
 
         public static readonly Dictionary<Type, Type> InterfaceTypeMap = new Dictionary<Type, Type>
         {

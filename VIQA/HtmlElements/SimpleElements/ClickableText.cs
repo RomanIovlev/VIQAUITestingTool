@@ -27,7 +27,7 @@ namespace VIQA.HtmlElements
         }
 
         public string Text { get {
-            return DoVIAction("Get text", () => TextElement.GetTextFunc(), text => text);
+            return DoVIActionResult("Get text", () => TextElement.GetTextFunc(), text => text);
         } }
         
     }

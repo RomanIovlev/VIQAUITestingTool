@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using OpenQA.Selenium;
 using VIQA.HtmlElements.Interfaces;
 using VIQA.SiteClasses;
@@ -40,6 +41,13 @@ namespace VIQA.HtmlElements
         {
             DoVIAction("Click", () => {
                 SmartClickAction();
+                var windowHandles = WebDriver.WindowHandles;
+                if (windowHandles.Count > 1)
+                {
+                    var windowHandle = windowHandles.Last();
+                    Site.Navigate.WindowHandle = windowHandle;
+                    WebDriver.SwitchTo().Window(windowHandle);
+                }
                 if (string.IsNullOrEmpty(ClickLoadsPage)) return;
                 OpenPageName = ClickLoadsPage;
                 Site.SiteSettings.CashDropTimes ++;

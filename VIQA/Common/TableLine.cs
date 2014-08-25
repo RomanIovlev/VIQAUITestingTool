@@ -12,9 +12,7 @@ namespace VIQA.Common
     {
         public virtual List<Cell<T>> this[string name] { get { return null; } }
         public virtual List<Cell<T>> this[int num] { get { return null; } }
-        public Func<IWebElement, string[]> GetHeadersFunc; 
-        protected string[] _headers;
-        public virtual string[] Headers { get; set; }
+        public Func<IWebElement, string[]> GetHeadersFunc;
         public int StartIndex = 1;
         public bool HaveHeaders;
         public ElementIndexType ElementIndex;
@@ -30,6 +28,24 @@ namespace VIQA.Common
                 if (_count != null)
                     return (int)_count;
                 return Headers != null ? Headers.Length : 0;
+            }
+        }
+
+        protected string[] _headers;
+        public string[] Headers
+        {
+            set { _headers = value; }
+            get
+            {
+                if (_headers != null)
+                    return _headers;
+                _headers = Table.DoVIActionResult("Get Rows Headers", () => GetHeadersFunc(Table.GetWebElement()));
+                if (_headers == null || !_headers.Any())
+                    return default(string[]);
+                Count = _headers.Length;
+                if (!HaveHeaders)
+                    _headers = GetNumList(Count);
+                return _headers;
             }
         }
 

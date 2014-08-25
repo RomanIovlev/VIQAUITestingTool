@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using VIQA.HtmlElements;
 using VIQA.SiteClasses;
 
 namespace CommonTestsWithComplexElements

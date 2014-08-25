@@ -23,7 +23,7 @@ namespace VIQA.HtmlElements.Interfaces
         void FillSubElements(Dictionary<IHaveValue, Object> values);
         void FillSubElements(Dictionary<string, Object> values);
         void FillSubElements(Object data);
-        bool CompareValuesWith(Object data, Func<string, string, bool> compareFunc = null);
+        bool CompareValuesWith(Object data, out string resultText, Func<string, string, bool> compareFunc = null);
         void FillSubElement(string name, string value);
     }
 }

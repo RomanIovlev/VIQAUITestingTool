@@ -28,9 +28,10 @@ namespace CommonTestsWithComplexElements.Tests
                 var _ = YandexMarket.ProductPage.FilterSection;
                 _.FillSubElements(filter);
                 // Check that all fields correctly filled
-                Assert.IsTrue(_.CompareValuesWith(filter));
+                string compareResult;
+                Assert.IsTrue(_.CompareValuesWith(filter, out compareResult), compareResult);
                 // or with custom output
-                _.CompareValuesWith(filter, (a, e) =>
+                _.CompareValuesWith(filter, out compareResult, (a, e) =>
                 {
                     VISite.Logger.Event(string.Format("Compare Actual: {0}; Expected: {1}", a, e));
                     Assert.AreEqual(a, e);

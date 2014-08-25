@@ -62,13 +62,13 @@ namespace VIQA.HtmlElements
 
         public List<string> GetListOfChecked()
         {
-            return DoVIAction("GetListOfChecked elements",
+            return DoVIActionResult("GetListOfChecked elements",
                 () => SelectedItems, result => "Checkboxes list. GetListOfChecked elements: " + result.Print());
         }
 
         public List<string> GetListOfNotChecked()
         {
-            return DoVIAction("GetListOfChecked elements",
+            return DoVIActionResult("GetListOfChecked elements",
                 () => ListOfValues.Except(SelectedItems).ToList(), result => "Checkboxes list. GetListOfNotChecked elements: " + result.Print());
         }
 

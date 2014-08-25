@@ -52,22 +52,5 @@ namespace VIQA.Common
                 catch (Exception ex) { throw GetRowsException(num.ToString(), ex); } 
             }
         }
-        
-        public override string[] Headers
-        {
-            set { _headers = value; }
-            get
-            {
-                if (_headers != null)
-                    return _headers;
-                _headers = Table.DoVIAction("Get Columns Headers", () => GetHeadersFunc(Table.GetWebElement()));
-                if (_headers == null || !_headers.Any())
-                    throw VISite.Alerting.ThrowError("Table have 0 columns. Please Specify ColumnHeaders or GetColumnHeadersFunc");
-                Count = _headers.Length;
-                if (!HaveHeaders)
-                    _headers = GetNumList(Count);
-                return _headers;
-            }
-        }
     }
 }

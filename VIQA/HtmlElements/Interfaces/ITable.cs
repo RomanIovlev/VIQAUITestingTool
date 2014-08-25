@@ -30,6 +30,7 @@ namespace VIQA.HtmlElements.Interfaces
 
         Columns<T> Columns { get; }
         Rows<T> Rows { get; }
+        string[] Footer { get; set; }
     }
 
     public interface ITable : ITable<TextElement> { }
