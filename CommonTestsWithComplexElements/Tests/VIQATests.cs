@@ -73,7 +73,7 @@ namespace CommonTestsWithComplexElements.Tests
                 SelectAction = (selector, name) =>
                 {
                     selector.GetWebElement().Click();
-                    selector.GetVIElementByName(name).Click();
+                    selector.GetVIElementByTemplate(name).Click();
                 }
             };
     

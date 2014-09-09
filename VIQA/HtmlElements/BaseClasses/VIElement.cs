@@ -33,6 +33,8 @@ namespace VIQA.HtmlElements
                 return element;
             }
         }
+
+        public string Frame { set { Context.Add(ContextType.Frame, By.Id(value));} }
         
         private string PrintLocator()
         {
@@ -125,8 +127,10 @@ namespace VIQA.HtmlElements
 
         public bool WaitElementState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, double timeoutInSec = -1, int retryTimeoutInMSec = -1)
         {
-            return GetTimer(timeoutInSec, retryTimeoutInMSec)
-                .Wait(() => waitFunc(webElement ?? CheckWebElementIsUnique(SearchElements())));
+            return DoVIActionResult("Wait element State", 
+                () => GetTimer(timeoutInSec, retryTimeoutInMSec)
+                    .Wait(() => waitFunc(webElement ?? CheckWebElementIsUnique(SearchElements()))), 
+                result => result.ToString());
         }
 
         public IWebElement WaitElementWithState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, double timeoutInSec = -1, int retryTimeoutInMSec = -1, string msg = "")
@@ -145,34 +149,37 @@ namespace VIQA.HtmlElements
                 : null;
         }
 
-        public virtual bool IsPresent
+        public bool IsPresent
         {
             get
             {
-                try
+                return DoVIActionResult("Is Element Present", () =>
                 {
-                    WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
-                    var elements = SearchElements();
-                    WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
-                    CheckWebElementIsUnique(elements);
-                    return true; 
-                }
-                catch { return false; }
+                    try {
+                        WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
+                        var elements = SearchElements();
+                        WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
+                        return (elements.Count == 1);
+                    }
+                    catch { return false; }
+                }, result => result.ToString());
             }
         }
 
-        public virtual bool IsDisplayed
+        public bool IsDisplayed
         {
             get
             {
-                try
+                return DoVIActionResult("Is Element Displayed", () =>
                 {
-                    WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
-                    var elements = SearchElements();
-                    WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
-                    return CheckWebElementIsUnique(elements).Displayed;
-                }
-                catch { return false; }
+                    try {
+                        WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(0));
+                        var elements = DoVIActionResult("Is Displayed Present", () => SearchElements(), els => "Find " + els.Count() + " element(s)");
+                        WebDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(Site.WebDriverTimeouts.WaitWebElementInSec));
+                        return (elements.Count == 1 && elements.First().Displayed);
+                    }
+                    catch { return false; }
+                }, result => result.ToString());
             }
         }
         

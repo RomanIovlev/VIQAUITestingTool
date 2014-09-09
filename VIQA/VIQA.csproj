@@ -74,6 +74,7 @@
     <Compile Include="HAttributes\ClickLoadsPageAttribute.cs" />
     <Compile Include="HAttributes\DemoSettingsAttribute.cs" />
     <Compile Include="HAttributes\FillFromFieldAttribute.cs" />
+    <Compile Include="HAttributes\FrameAttribute.cs" />
     <Compile Include="HAttributes\LocatorAttribute.cs" />
     <Compile Include="HAttributes\PageAttribute.cs" />
     <Compile Include="HAttributes\NameAttribute.cs" />

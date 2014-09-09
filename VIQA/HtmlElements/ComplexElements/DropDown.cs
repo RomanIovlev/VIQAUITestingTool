@@ -19,6 +19,9 @@ namespace VIQA.HtmlElements
         public DropDown(string name, By rootCssSelector, Func<SelectItem> selectorTemplate) : base(name, rootCssSelector, selectorTemplate) { }
         public DropDown(string name, Func<SelectItem> selectorTemplate) : base(name, selectorTemplate) { }
         public DropDown(string name, string cssLocator) : base(name, cssLocator) { }
+        public DropDown(By byLocator) : base(byLocator) { }
+        public DropDown(string name, IWebElement webElement) : base(name, webElement) { }
+        public DropDown(IWebElement webElement) : base(webElement) { }
 
         private new List<string> SelectedItems() { return null; }
 
@@ -29,7 +32,7 @@ namespace VIQA.HtmlElements
                 return DoVIActionResult(Name + ". SelectedItems",
                     () => (ListOfValues == null)
                         ? GetAllElements().First(pair => pair.Value.IsSelected()).Key
-                        : ListOfValues.First(name => GetVIElementByName(name).IsSelected()),
+                        : ListOfValues.First(name => GetVIElementByTemplate(name).IsSelected()),
                     value => FullName + " value '" + value + "' is selected: ");
             }
         }

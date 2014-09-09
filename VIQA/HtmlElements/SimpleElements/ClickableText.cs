@@ -11,7 +11,6 @@ namespace VIQA.HtmlElements
 
         public ClickableText() { }
         public ClickableText(string name) : base(name) { }
-
         public ClickableText(string name, string cssSelector) : base(name, cssSelector) { Init(name, By.CssSelector(cssSelector)); }
         public ClickableText(string name, By byLocator) : base(name, byLocator) { Init(name, byLocator); }
         public ClickableText(By byLocator) : base(byLocator) { Init("", byLocator); }

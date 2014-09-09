@@ -4,6 +4,7 @@
     {
         void Input(string text);
         void NewInput(string text);
+        void Focus();
         void Clear();
     }
 }

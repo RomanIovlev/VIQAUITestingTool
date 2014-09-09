@@ -15,7 +15,7 @@ namespace VIQA.HtmlElements
     public class VIElementsSet : Named
     {
         protected By _locator;
-        public Pairs<ContextType, By> Context;
+        public Pairs<ContextType, By> Context = new Pairs<ContextType, By>();
         private VISite _site;
         protected bool IsSiteSet { get { return _site != null; } }
         public VISite Site { get { return _site = _site ?? (DefaultSite ?? new VISite()); } set { _site = value; } }
@@ -25,37 +25,63 @@ namespace VIQA.HtmlElements
 
         private void SetViElement(FieldInfo viElement)
         {
-            var instance = (VIElement) viElement.GetValue(this) ??
+            var instance = CreateInstance(viElement);
+            SetName(viElement, ref instance);
+            CreateContext(viElement, ref instance);
+            SetHaveValueData(viElement, ref instance);
+            SetClickableElementData(viElement, ref instance);
+            viElement.SetValue(this, instance);
+            instance.InitSubElements();
+        }
+
+        private VIElement CreateInstance(FieldInfo viElement)
+        {
+            var instance = (VIElement)viElement.GetValue(this) ??
                 (VIElement)Activator.CreateInstance(GetFieldType(viElement.FieldType));
             instance.Site = Site;
+            return instance;
+        }
+
+        private void SetName(FieldInfo viElement, ref VIElement instance)
+        {
             var nameAttr = NameAttribute.GetName(viElement);
             instance.Name = (!string.IsNullOrEmpty(nameAttr))
                 ? nameAttr
                 : viElement.Name;
-            instance.Context = new Pairs<ContextType, By>(Context);
+        }
+
+        private void CreateContext(FieldInfo viElement, ref VIElement instance)
+        {
+            instance.Context.Add(Context);
+
+            var frameAttr = FrameAttribute.GetFrame(viElement);
+            if (frameAttr != null)
+                instance.Context.Add(ContextType.Frame, frameAttr);
+
             var locatorAttr = LocatorAttribute.GetLocator(viElement)
                 ?? LocatorAttribute.GetLocatorFomFindsBy(viElement);
             if (locatorAttr != null)
                 instance.Locator = locatorAttr;
             if (_locator != null)
                 instance.Context.Add((this is Frame) ? ContextType.Frame : ContextType.Locator, _locator);
-            var textElement = instance as IHaveValue;
-            if (textElement != null)
-            {
-                var fillFromNameAttr = FillFromFieldAttribute.GetFieldName(viElement);
-                if (!string.IsNullOrEmpty(fillFromNameAttr))
-                    textElement.FillRule = data => data.GetFieldByName(fillFromNameAttr);
-            }
-            var clickableElement = instance as IClickable;
-            if (clickableElement != null)
-            {
-                var clickLoadsPageAttr = ClickLoadsPageAttribute.Handler(viElement);
-                clickableElement.ClickLoadsPage = clickLoadsPageAttr;
-            }
-            viElement.SetValue(this, instance);
-            instance.InitSubElements();
         }
 
+        private void SetHaveValueData(FieldInfo viElement, ref VIElement instance)
+        {
+            var haveValueElement = instance as IHaveValue;
+            if (haveValueElement == null) return;
+            var fillFromNameAttr = FillFromFieldAttribute.GetFieldName(viElement);
+            if (!string.IsNullOrEmpty(fillFromNameAttr))
+                haveValueElement.FillRule = data => data.GetFieldByName(fillFromNameAttr);
+        }
+
+        private void SetClickableElementData(FieldInfo viElement, ref VIElement instance)
+        {
+            var clickableElement = instance as IClickable;
+            if (clickableElement == null) return;
+            var clickLoadsPageAttr = ClickLoadsPageAttribute.Handler(viElement);
+            clickableElement.ClickLoadsPage = clickLoadsPageAttr;
+        }
         #region Public
         public void FillSubElements(Dictionary<string, Object> values)
         {

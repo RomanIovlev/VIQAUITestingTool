@@ -14,7 +14,7 @@ namespace VIQA.HtmlElements.BaseClasses
         
         public Dictionary<string, T> Elements = new Dictionary<string, T>();
         
-        public T GetVIElementByName(string value)
+        public T GetVIElementByTemplate(string value)
         {
             if (!Elements.ContainsKey(value))
             {
@@ -46,6 +46,9 @@ namespace VIQA.HtmlElements.BaseClasses
         }
 
         public VIList(string name, Func<T> selectorTemplate) : this(name, null, selectorTemplate) { }
+        public VIList(By byLocator) : base(byLocator) { }
+        public VIList(string name, IWebElement webElement) : base(name, webElement) { }
+        public VIList(IWebElement webElement) : base(webElement) { }
         #endregion
 
         public List<string> ListOfValues;

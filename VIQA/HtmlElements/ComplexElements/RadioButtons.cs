@@ -23,6 +23,9 @@ namespace VIQA.HtmlElements
         public RadioButtons(string name, Func<RadioButton> selectorTemplate) : base(name, selectorTemplate) { }
         public RadioButtons(string name, By byLocator) : base(name, byLocator) { }
         public RadioButtons(string name, string cssLocator) : base(name, cssLocator) { }
+        public RadioButtons(By byLocator) : base(byLocator) { }
+        public RadioButtons(string name, IWebElement webElement) : base(name, webElement) { }
+        public RadioButtons(IWebElement webElement) : base(webElement) { }
 
         private new List<string> SelectedItems() { return null; }
         
@@ -30,7 +33,7 @@ namespace VIQA.HtmlElements
             return DoVIActionResult(Name + ". SelectedItems",
                 () => (ListOfValues == null)
                     ? GetAllElements().First(pair => pair.Value.IsSelected()).Key
-                    : ListOfValues.First(name => GetVIElementByName(name).IsSelected()),
+                    : ListOfValues.First(name => GetVIElementByTemplate(name).IsSelected()),
                 value => FullName + " value '" + value + "' is selected: ");
         } }
 

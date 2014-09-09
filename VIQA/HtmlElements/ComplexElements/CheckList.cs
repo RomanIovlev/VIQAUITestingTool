@@ -20,17 +20,20 @@ namespace VIQA.HtmlElements
         public CheckList(string name, Func<Checkbox> checkboxTemplate) : base(name, checkboxTemplate) { }
         public CheckList(string name, By byLocator) : base(name, byLocator) { }
         public CheckList(string name, string cssLocator) : base(name, cssLocator) { }
+        public CheckList(By byLocator) : base(byLocator) { }
+        public CheckList(string name, IWebElement webElement) : base(name, webElement) { }
+        public CheckList(IWebElement webElement) : base(webElement) { }
 
         public void CheckGroup(params string[] values)
         {
             DoVIAction("Check Group: " + values.Print(),
-                () => values.ForEach(val => GetVIElementByName(val).Check()));
+                () => values.ForEach(val => GetVIElementByTemplate(val).Check()));
         }
 
         public void UncheckGroup(params string[] values)
         {
             DoVIAction("Uncheck Group: " + values.Print(),
-                () => values.ForEach(val => GetVIElementByName(val).Uncheck()));
+                () => values.ForEach(val => GetVIElementByTemplate(val).Uncheck()));
         }
 
         public Action<List<Checkbox>> ClearAction;

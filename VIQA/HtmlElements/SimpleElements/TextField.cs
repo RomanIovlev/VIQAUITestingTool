@@ -28,6 +28,11 @@ namespace VIQA.HtmlElements
             DoVIAction("Input text '" + text + "' in text field", () => GetWebElement().SendKeys(text));
         }
 
+        public void Focus()
+        {
+            DoVIAction("Focus on text field", () => GetWebElement().Click());
+        }
+
         public void NewInput(string text)
         {
             Clear();

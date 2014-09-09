@@ -2,6 +2,6 @@
 {
     public interface IVIList<T>
     {
-        T GetVIElementByName(string value);
+        T GetVIElementByTemplate(string value);
     }
 }

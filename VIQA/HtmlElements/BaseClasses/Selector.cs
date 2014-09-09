@@ -21,19 +21,22 @@ namespace VIQA.HtmlElements
             DefaultSelectAction = (selector, val) =>
             {
                 selector.GetWebElement().Click();
-                selector.GetVIElementByName(val).Click();
+                selector.GetVIElementByTemplate(val).Click();
             };
         }
         public Selector(string name, Func<T> selectorTemplate) : base(name, selectorTemplate) { }
         public Selector(string name, By byLocator) : base(name, byLocator) { }
         public Selector(string name, string cssLocator) : base(name, cssLocator) { }
+        public Selector(By byLocator) : base(byLocator) { }
+        public Selector(string name, IWebElement webElement) : base(name, webElement) { }
+        public Selector(IWebElement webElement) : base(webElement) { }
 
         #endregion
 
         #region Actions
 
         public Action<Selector<T>, string> DefaultSelectAction 
-            = (selector, name) => selector.GetVIElementByName(name).Click();
+            = (selector, name) => selector.GetVIElementByTemplate(name).Click();
         private Action<Selector<T>, string> _selectAction;
         public Action<Selector<T>, string> SelectAction
         {
@@ -42,7 +45,7 @@ namespace VIQA.HtmlElements
         }
 
         public Func<Selector<T>, string, string> DefaultGetElementLabelFunc 
-            = (selector, name) => selector.GetVIElementByName(name).Text;
+            = (selector, name) => selector.GetVIElementByTemplate(name).Text;
         private Func<Selector<T>, string, string> _getElementLabelFunc;
         public Func<Selector<T>, string, string> GetElementLabelFunc
         {
@@ -51,7 +54,7 @@ namespace VIQA.HtmlElements
         }
 
         public Func<Selector<T>, string, bool> DefaultIsSelectedFunc 
-            = (selector, name) => selector.GetVIElementByName(name).IsSelected();
+            = (selector, name) => selector.GetVIElementByTemplate(name).IsSelected();
         private Func<Selector<T>, string, bool> _isSelectedFunc;
         public Func<Selector<T>, string, bool> IsSelectedFunc
         {
@@ -81,7 +84,7 @@ namespace VIQA.HtmlElements
 
         public bool IsSelected(string valueName)
         {
-            return GetVIElementByName(valueName).IsSelected();
+            return GetVIElementByTemplate(valueName).IsSelected();
         }
 
         public virtual string Value { get { return SelectedItems.Print(); } }

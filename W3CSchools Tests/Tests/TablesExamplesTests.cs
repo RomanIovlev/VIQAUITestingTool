@@ -233,8 +233,7 @@ namespace W3CSchools_Tests.Tests
             var page = new VIPage { Url = "http://www.w3schools.com/tags/tag_tfoot.asp" };
             page.Open();
             new ClickableElement(By.XPath(".//a[contains(text(),'Try it Yourself')]")).Click();
-            ITable table = new Table(By.XPath("//table")){
-                Context = new Pairs<ContextType, By>(ContextType.Frame, By.Id("iframeResult"))};
+            ITable table = new Table(By.XPath("//table")) { Frame = "iframeResult" };
             Assert.AreEqual(table.Footer.Print(), "Sum, $180");
         }
     }

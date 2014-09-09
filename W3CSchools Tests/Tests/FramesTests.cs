@@ -19,7 +19,7 @@ namespace W3CSchools_Tests.Tests
         {
             var page = new W3CSite().W3CPageFrame;
             page.Open();
-            page.Frame.StartLearningLink.Click();
+            page.StartLearningLink.Click();
             Assert.AreEqual(page.WebDriver.FindElements(By.XPath("//*[contains(text(), 'Example Explained')]")).Count, 1);
         }
     }

@@ -20,7 +20,7 @@ namespace TelerikExamplesTests.Site.Pages
                 {
                     selector.GetWebElement().Click();
                     Thread.Sleep(300);
-                    selector.GetVIElementByName(name).Click();
+                    selector.GetVIElementByTemplate(name).Click();
                 },
                 ListOfValues = new List<string> { "Cotton", "Polyester", "Rib Knit" }
             };

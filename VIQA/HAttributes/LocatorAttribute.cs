@@ -8,35 +8,15 @@ namespace VIQA.HAttributes
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
     public class LocatorAttribute : Attribute
     {
-        public string ById { get; set; }
-        public string ByName { get; set; }
-        public string ByClassName { get; set; }
-        public string ByCssSelector { get; set; }
-        public string ByXPath { get; set; }
-        public string ByTagName { get; set; }
-        public string ByLinkText { get; set; }
-        public string ByPartialLinkText { get; set; }
-
-        public By GetLocator()
-        {
-            if (ById != null)
-                return By.Id(ById);
-            if (ByName != null)
-                return By.Name(ByName);
-            if (ByClassName != null)
-                return By.ClassName(ByClassName);
-            if (ByCssSelector != null)
-                return By.CssSelector(ByCssSelector);
-            if (ByXPath != null)
-                return By.XPath(ByXPath);
-            if (ByTagName != null)
-                return By.TagName(ByTagName);
-            if (ByLinkText != null)
-                return By.LinkText(ByLinkText);
-            if (ByPartialLinkText != null)
-                return By.TagName(ByPartialLinkText);
-            return By.Id("Undefined locator");
-        }
+        private By Locator;
+        public string ById { set { Locator = By.Id(value); } get { return ""; } }
+        public string ByName { set { Locator = By.Name(value); } get { return ""; } }
+        public string ByClassName { set { Locator = By.ClassName(value); } get { return ""; } }
+        public string ByCssSelector { set { Locator = By.CssSelector(value); } get { return ""; } }
+        public string ByXPath { set { Locator = By.XPath(value); } get { return ""; } }
+        public string ByTagName { set { Locator = By.TagName(value); } get { return ""; } }
+        public string ByLinkText { set { Locator = By.LinkText(value); } get { return ""; } }
+        public string ByPartialLinkText { set { Locator = By.PartialLinkText(value); } get { return ""; } }
 
         public static By GetLocatorFromFindBy(FindsByAttribute fbAttr)
         {
@@ -63,23 +43,22 @@ namespace VIQA.HAttributes
             }
         }
 
-
         public static By GetLocator(FieldInfo field)
         {
-            var locates = field.GetCustomAttribute<LocatorAttribute>(false);
-            return locates != null ? locates.GetLocator() : null;
+            var locator = field.GetCustomAttribute<LocatorAttribute>(false);
+            return locator != null ? locator.Locator : null;
         }
 
         public static By GetLocatorFomFindsBy(FieldInfo field)
         {
-            var locates = field.GetCustomAttribute<FindsByAttribute>(false);
-            return locates != null ? LocatorAttribute.GetLocatorFromFindBy(locates) : null;
+            var locator = field.GetCustomAttribute<FindsByAttribute>(false);
+            return locator != null ? GetLocatorFromFindBy(locator) : null;
         }
 
         public static By GetLocator(Object obj)
         {
-            var locates = obj.GetType().GetCustomAttribute<LocatorAttribute>(false);
-            return locates != null ? locates.GetLocator() : null;
+            var locator = obj.GetType().GetCustomAttribute<LocatorAttribute>(false);
+            return locator != null ? locator.Locator : null;
         }
     }
 }

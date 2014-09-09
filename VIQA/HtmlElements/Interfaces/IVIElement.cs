@@ -12,7 +12,7 @@ namespace VIQA.HtmlElements.Interfaces
         IWebElement GetWebElement();
         bool IsPresent { get; }
         bool IsDisplayed { get; }
-        List<T> GetElements<T>();
+        //List<T> GetElements<T>();
         bool WaitElementState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, double timeoutInSec = -1, int retryTimeoutInMSec = -1);
         IWebElement WaitElementWithState(Func<IWebElement, bool> waitFunc, IWebElement webElement = null, double timeoutInSec = -1, int retryTimeoutInMSec = -1, string msg = "");
         ReadOnlyCollection<IWebElement> SearchElements(By locator = null);
