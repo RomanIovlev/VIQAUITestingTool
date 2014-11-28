@@ -1,4 +1,4 @@
-package test.site.pages;
+package examples.site.pages;
 
 import SiteClasses.VIPage;
 import VIAnnotations.Page;

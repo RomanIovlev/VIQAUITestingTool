@@ -1,9 +1,9 @@
-package test.site.pages;
+package examples.site.pages;
 
 import VIElements.BaseClasses.VIElement;
 import VIElements.Interfaces.IButton;
 import VIElements.Interfaces.ITextField;
-import test.data.User;
+import examples.data.User;
 import org.openqa.selenium.support.FindBy;
 
 /**

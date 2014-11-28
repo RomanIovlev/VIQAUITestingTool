@@ -243,12 +243,9 @@ public class VIElement extends VIElementSet implements IVIElement {
         return text +  format(" (Name: '%s', Type: '%s', LocatorAttribute: '%s')", getFullName(), TypeName, printLocator());
     }
 
-    public static Scenario viScenario = new Scenario() {
-        @Override
-        public <T> T invoke(VIElement viElement, String actionName, FuncT<T> viAction) throws Exception {
-            VISite.Logger.Event(viElement.getDefaultLogMessage(actionName));
-            return viAction.invoke();
-        }
+    public static Scenario viScenario = (viElement, actionName, viAction) -> {
+        VISite.Logger.Event(viElement.getDefaultLogMessage(actionName));
+        return viAction.invoke();
     };
 /*
     public static <T> T viAction(VIElement viElement, String actionName, FuncT<T> viAction) throws Exception {
@@ -262,7 +259,7 @@ public class VIElement extends VIElementSet implements IVIElement {
     public final <T> T doVIActionResult(String actionName, FuncT<T> viAction, FuncTT<T, String> logResult) throws Exception
     {
         try {
-            T result = viScenario.invoke(this, actionName, viAction);
+            T result = (T) viScenario.invoke(this, actionName, () -> viAction.invoke());
             HighlightSettings demoMode = getSite().SiteSettings.DemoSettings;
             if (demoMode != null)
                 highlight(demoMode);

@@ -1,12 +1,12 @@
-package test;
+package examples.scenarios;
 
-import test.data.User;
+import examples.data.User;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static test.setup.TestsSetup.mySite;
-import static test.setup.TestsSetup.newBrowser;
-import static test.site.MySite.*;
+import static examples.setup.TestsSetup.mySite;
+import static examples.setup.TestsSetup.newBrowser;
+import static examples.site.MySite.*;
 
 /**
  * Created by roman.i on 07.11.2014.
@@ -30,6 +30,7 @@ public class SimpleTests {
         mainPage.searchButton.click();
 
         resultsPage.searchResults.cell("Total", 1);
+
 
     }
 

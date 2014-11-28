@@ -1,12 +1,10 @@
-package test.setup;
+package examples.setup;
 
-import Common.FuncInterfaces.FuncT;
-import Common.Scenario;
 import SiteClasses.VISite;
 import VIElements.BaseClasses.VIElement;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
-import test.site.MySite;
+import examples.site.MySite;
 
 import static SiteClasses.BrowserType.Chrome;
 
@@ -20,13 +18,10 @@ public class TestsSetup {
     public static void setUp() throws Exception {
         mySite = new MySite(Chrome);
 
-        VIElement.viScenario = new Scenario() {
-            @Override
-            public <T> T invoke(VIElement viElement, String actionName, FuncT<T> viAction) throws Exception {
+        VIElement.viScenario = (viElement, actionName, viAction) -> {
                 VISite.Logger.Event(viElement.getDefaultLogMessage(actionName));
                 return viAction.invoke();
-            }
-        };
+            };
         //killAllRunWebDrivers();
     }
 

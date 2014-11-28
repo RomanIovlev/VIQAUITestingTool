@@ -1,12 +1,12 @@
-package test.site;
+package examples.site;
 
 import SiteClasses.BrowserType;
 import SiteClasses.VISite;
 import VIAnnotations.Page;
 import VIElements.SimpleElements.Clickable;
-import test.site.pages.LoginForm;
-import test.site.pages.MainPage;
-import test.site.pages.ResultsPage;
+import examples.site.pages.LoginForm;
+import examples.site.pages.MainPage;
+import examples.site.pages.ResultsPage;
 
 /**
  * Created by roman.i on 07.11.2014.

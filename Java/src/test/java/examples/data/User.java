@@ -1,4 +1,4 @@
-package test.data;
+package examples.data;
 
 /**
  * Created by roman.i on 07.11.2014.
