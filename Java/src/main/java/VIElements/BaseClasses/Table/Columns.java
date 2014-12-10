@@ -26,7 +26,7 @@ public class Columns<T extends IHaveValue> extends TableLine<T> {
     }
 
     private Exception getRowsException(String colName, Exception ex) throws Exception {
-        return VISite.Alerting.ThrowError(format("Can't Get Column '%s'. Exception: %s", colName, ex));
+        return VISite.Alerting.throwError(format("Can't Get Column '%s'. Exception: %s", colName, ex));
     }
 
     public final List<Cell<T>> getRow(String name) throws Exception {
@@ -41,7 +41,7 @@ public class Columns<T extends IHaveValue> extends TableLine<T> {
         else if (_headers != null && (_headers.length > 0))
         colsCount = _headers.length;
         if (colsCount > 0 && colsCount < num)
-        throw VISite.Alerting.ThrowError(format("Can't Get Column '%s'. [num] > ColumnsCount(%s).", num, colsCount));
+        throw VISite.Alerting.throwError(format("Can't Get Column '%s'. [num] > ColumnsCount(%s).", num, colsCount));
         try {
             List<Cell<T>> result = new ArrayList<>();
             for (int rowNum = 1; rowNum <= Table.getRows().getCount(); rowNum++)

@@ -85,7 +85,7 @@ public class VIPage extends VIElementSet {
             throws Exception {
         if (checkType == PageCheckType.NoCheck) return true;
         if (expected == null || expected.equals(""))
-            throw VISite.Alerting.ThrowError(format("Page '%s' %s is empty. Please set %s for this page", getName(), checkWhat, checkWhat));
+            throw VISite.Alerting.throwError(format("Page '%s' %s is empty. Please set %s for this page", getName(), checkWhat, checkWhat));
         VISite.Logger.Event(format("Check page '%s' %s %s '%s'", getName(), checkWhat,
                 checkType == PageCheckType.Equal ? "equal to " : "contains", expected));
         boolean result =
@@ -98,7 +98,7 @@ public class VIPage extends VIElementSet {
                 LineBreak + "Expected: '%s'" +
                 "CheckType: '%s'", checkWhat, getName(), actual, expected, checkType);
         if (throwError)
-            throw VISite.Alerting.ThrowError(errorMsg);
+            throw VISite.Alerting.throwError(errorMsg);
         VISite.Logger.Error(errorMsg);
         return false;
     }

@@ -3,7 +3,6 @@ package VIElements.BaseClasses;
 import Common.FuncInterfaces.*;
 import Common.Interfaces.IWebDriverTimeouts;
 import Common.Pairs.Pair;
-import Common.Pairs.Pairs;
 import Common.Scenario;
 import Common.Utils.Timer;
 import SiteClasses.HighlightSettings;
@@ -61,7 +60,7 @@ public class VIElement extends VIElementSet implements IVIElement {
                 : fillByTemplate(_locator, getTemplateId());
         if (locator != null)
             return locator;
-        throw VISite.Alerting.ThrowError(getDefaultLogMessage("LocatorAttribute cannot be null"));
+        throw VISite.Alerting.throwError(getDefaultLogMessage("LocatorAttribute cannot be null"));
     }
 
     protected Timer getTimer() {
@@ -114,8 +113,8 @@ public class VIElement extends VIElementSet implements IVIElement {
         if (webElements.size() == 1)
             return webElements.get(0);
         if (webElements.size() > 0)
-            throw VISite.Alerting.ThrowError(getLotOfFindElementsMessage(webElements));
-        throw VISite.Alerting.ThrowError(getCantFindElementMessage());
+            throw VISite.Alerting.throwError(getLotOfFindElementsMessage(webElements));
+        throw VISite.Alerting.throwError(getCantFindElementMessage());
     }
     private String getLotOfFindElementsMessage(List<WebElement> webElements) throws Exception {
         return format("Find %s elements '%s' but expected 1. Please correct locator '%s'",
@@ -127,7 +126,7 @@ public class VIElement extends VIElementSet implements IVIElement {
     public List<WebElement> searchElements() throws Exception { return searchElements(getLocator()); }
     public List<WebElement> searchElements(By locator) throws Exception {
         try { return getSearchContext().findElements(locator); }
-        catch(Exception ex) { throw VISite.Alerting.ThrowError(getCantFindElementMessage());}
+        catch(Exception ex) { throw VISite.Alerting.throwError(getCantFindElementMessage());}
     }
 
     public boolean waitElementState(FuncTT<WebElement, Boolean> waitFunc) throws Exception {
@@ -162,7 +161,7 @@ public class VIElement extends VIElementSet implements IVIElement {
     public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec, long retryTimeoutInMSec, String msg) throws Exception {
         if (waitElementState(waitFunc, webElement, timeoutInSec, retryTimeoutInMSec))
             return getUniqueWebElement();
-        throw VISite.Alerting.ThrowError(msg);
+        throw VISite.Alerting.throwError(msg);
     }
     private List<WebElement> waitWebElements() throws Exception {
         if (getTimer().wait(() -> searchElements().size() > 0))
@@ -221,7 +220,7 @@ public class VIElement extends VIElementSet implements IVIElement {
             return _webElement;
         List<WebElement> foundElements = waitWebElements();
         if (foundElements == null)
-            throw VISite.Alerting.ThrowError(getCantFindElementMessage());
+            throw VISite.Alerting.throwError(getCantFindElementMessage());
         setWebElement(getUniqueWebElement(foundElements));
         return waitElementWithState(WebElement::isDisplayed, getWebElement(), getDefaultLogMessage(("Found element stay invisible.")));
     }
@@ -269,7 +268,7 @@ public class VIElement extends VIElementSet implements IVIElement {
             }
         catch (Exception ex)
         {
-            throw VISite.Alerting.ThrowError(format("Failed to do '%s' action. Exception: %s", actionName, ex));
+            throw VISite.Alerting.throwError(format("Failed to do '%s' action. Exception: %s", actionName, ex));
         }
     }
 
@@ -282,7 +281,7 @@ public class VIElement extends VIElementSet implements IVIElement {
                 highlight(demoMode);
         }
         catch (Exception ex) {
-            throw VISite.Alerting.ThrowError(format("Failed to do '%s' action. Exception: %s", actionName, ex));
+            throw VISite.Alerting.throwError(format("Failed to do '%s' action. Exception: %s", actionName, ex));
         }
     }
 

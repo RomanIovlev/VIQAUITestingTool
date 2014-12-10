@@ -73,7 +73,7 @@ public class Checkbox extends ClickableText implements ICheckbox, ISelected {
         if (value == null) return;
         var val = value.ToString();
         if (!new [] {"check", "uncheck", "true", "false"}.Contains(val = val.ToLower()))
-        throw VISite.Alerting.ThrowError("Wrong Value type. For Checkbox availabel only 'check', 'uncheck', 'true', 'false'values of type String");
+        throw VISite.Alerting.throwError("Wrong Value type. For Checkbox availabel only 'check', 'uncheck', 'true', 'false'values of type String");
         if (val == "check" || val == "true")
             Check();
         else

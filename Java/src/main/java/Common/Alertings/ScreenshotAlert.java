@@ -34,22 +34,22 @@ public class ScreenshotAlert implements IAlerting {
         _site = site;
     }
 
-    public Exception ThrowError(String errorMsg) throws Exception
+    public Exception throwError(String errorMsg) throws Exception
     {
         VISite.Logger.Error(errorMsg);
-        TakeScreenshot();
+        takeScreenshot();
         fail(errorMsg);
         throw new Exception();
     }
 
-    public void TakeScreenshot() throws Exception {
-        TakeScreenshot(null, null);
+    public void takeScreenshot() throws Exception {
+        takeScreenshot(null, null);
     }
-    public void TakeScreenshot(String path, String outputFileName) throws Exception {
+    public void takeScreenshot(String path, String outputFileName) throws Exception {
         DefaultLogger logger = new DefaultLogger();
         if (path == null)
         {
-            String imgRoot = getValidUrl(VISite.getProperty("viScreenshotsPath"));
+            String imgRoot = getValidUrl(VISite.getProperty("vi.screenshot.path"));
             path = (imgRoot != null && !imgRoot.equals(""))
                     ? imgRoot
                     : LogDirectory != null ? LogDirectory : "/../.Logs/.Screenshots";
@@ -59,7 +59,7 @@ public class ScreenshotAlert implements IAlerting {
                 outputFileName = _fileName;
             else
             {
-                outputFileName = getValidUrl(VISite.getProperty("viScreenshotsFileName"));
+                outputFileName = getValidUrl(VISite.getProperty("vi.screenshot.fileName"));
                 if (outputFileName == null || outputFileName.equals(""))
                     outputFileName = getFileName();
             }

@@ -55,7 +55,7 @@ public class VIElementSet extends Named {
         Class viType = first(getInterfaceTypeMap(), el -> el == type);
         if (viType != null)
             return (VIElement) viType.newInstance();
-        throw  VISite.Alerting.ThrowError("Unknown interface: " + type + "Add relation interface -> class in VIElement.InterfaceTypeMap");
+        throw  VISite.Alerting.throwError("Unknown interface: " + type + "Add relation interface -> class in VIElement.InterfaceTypeMap");
     }
 
 

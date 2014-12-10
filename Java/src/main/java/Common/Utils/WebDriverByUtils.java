@@ -26,7 +26,7 @@ public class WebDriverByUtils {
         String byLocator = getByLocator(by);
         try { byLocator = format(getByLocator(by), args); }
         catch(Exception ex) {
-            throw VISite.Alerting.ThrowError(getBadLocatorMsg(byLocator, args)); }
+            throw VISite.Alerting.throwError(getBadLocatorMsg(byLocator, args)); }
         return getByFunc(by).invoke(byLocator);
     }
 

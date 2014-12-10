@@ -246,8 +246,8 @@ public class Table<T extends IHaveValue> extends HaveValue implements ITable<T> 
         if (headers != null && Arrays.asList(headers).contains(name))
             nameIndex = Arrays.asList(headers).indexOf(name);
         else
-            throw VISite.Alerting.ThrowError("Can't Get Column: '" + name + "'. " + ((headers == null)
-                ? "ColumnHeaders is Null" : ("Available ColumnHeaders: " + print(headers, ", ", "'{0}'") + ")")));
+            throw VISite.Alerting.throwError("Can't Get Column: '" + name + "'. " + ((headers == null)
+                    ? "ColumnHeaders is Null" : ("Available ColumnHeaders: " + print(headers, ", ", "'{0}'") + ")")));
         return nameIndex + getColumns().StartIndex;
     }
 
@@ -257,8 +257,8 @@ public class Table<T extends IHaveValue> extends HaveValue implements ITable<T> 
         if (headers != null && Arrays.asList(headers).contains(name))
         nameIndex = Arrays.asList(headers).indexOf(name);
         else
-        throw VISite.Alerting.ThrowError("Can't Get Row: '" + name + "'. " +
-            ((headers == null) ? "RowHeaders is Null" : ("Available RowHeaders: " + print(headers, ", ", "'{0}'") + ")")));
+        throw VISite.Alerting.throwError("Can't Get Row: '" + name + "'. " +
+                ((headers == null) ? "RowHeaders is Null" : ("Available RowHeaders: " + print(headers, ", ", "'{0}'") + ")")));
         return nameIndex + getRows().StartIndex;
     }
 

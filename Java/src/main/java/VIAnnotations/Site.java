@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 public @interface Site {
     public String domain();
     public boolean useCache() default true;
-    public boolean isMain() default true;
     public boolean demoMode() default false;
     public boolean screenshotAlert() default false;
+    public String settingsFromPropertyFile() default "";
 }

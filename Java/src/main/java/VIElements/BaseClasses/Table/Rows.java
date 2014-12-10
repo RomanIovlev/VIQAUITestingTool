@@ -1,7 +1,6 @@
 package VIElements.BaseClasses.Table;
 
 import SiteClasses.VISite;
-import VIElements.BaseClasses.HaveValue;
 import VIElements.Interfaces.IHaveValue;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -26,7 +25,7 @@ public class Rows<T extends IHaveValue> extends TableLine<T> {
     }
 
     private Exception getRowsException(String rowName, Exception ex) throws Exception {
-        return VISite.Alerting.ThrowError(format("Can't Get Rows '%s'. Exception: %s", rowName, ex));
+        return VISite.Alerting.throwError(format("Can't Get Rows '%s'. Exception: %s", rowName, ex));
     }
 
     public final List<Cell<T>> getColumn(String name) throws Exception {
@@ -41,7 +40,7 @@ public class Rows<T extends IHaveValue> extends TableLine<T> {
         else if (_headers != null && (_headers.length > 0))
             rowsCount = _headers.length;
         if (rowsCount > 0 && rowsCount < num)
-        throw VISite.Alerting.ThrowError(format("Can't Get Row '%s'. [num] > RowsCount(%s).", num, rowsCount));
+        throw VISite.Alerting.throwError(format("Can't Get Row '%s'. [num] > RowsCount(%s).", num, rowsCount));
         try {
             List<Cell<T>> result = new ArrayList<>();
             for (int colNum = 1; colNum <= Table.getColumns().getCount(); colNum++)

@@ -48,7 +48,7 @@ public class Clickable extends VIElement implements IClickable {
             return true;
         });
         if (!clicked)
-            throw VISite.Alerting.ThrowError(getDefaultLogMessage("Failed to click element"));
+            throw VISite.Alerting.throwError(getDefaultLogMessage("Failed to click element"));
 
     }
 }

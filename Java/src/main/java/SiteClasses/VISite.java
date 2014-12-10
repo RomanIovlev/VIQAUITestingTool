@@ -7,6 +7,7 @@ import Common.Interfaces.*;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -115,42 +116,63 @@ public class VISite extends VIElementSet {
     public VISite(FuncT<WebDriver> webDriver, String group) throws Exception { this(webDriver, true, group); }
     public VISite(BrowserType browserType, boolean isMain) throws Exception { this(getDriver(browserType), isMain, null); }
     public VISite(BrowserType browserType, boolean isMain, String group) throws Exception { this(getDriver(browserType), isMain, group); }
-    public VISite(FuncT<WebDriver> webDriver, boolean isMain, String group) throws Exception {
+    public VISite(FuncT<WebDriver> webDriver, boolean isMain, String groupName) throws Exception {
         setName(getElementName(this));
         WebDriverFunc = webDriver;
         Logger = new DefaultLogger();
         ((DefaultLogger) Logger).LogFileFormat = () -> "%s_" + RunId + ".log";
         Navigate = new Navigation(this);
-        Site site = getClass().getAnnotation(Site.class);
-        SiteSettings = new SiteSettings();
-        if (site != null)
-        {
-            if (site.domain() != null)
-                Domain = site.domain();
-            if (isMain)
-                isMain = site.isMain();
-            if (site.useCache())
-                SiteSettings.UseCache = site.useCache();
-            if (site.demoMode())
-                SiteSettings.DemoSettings = new HighlightSettings(getClass().getAnnotation(DemoSettings.class));
-            if (Alerting == null)
-                Alerting = (site.screenshotAlert())
-                        ? AnnotationsUtil.getScreenshotAlert(this)
-                        : (IAlerting) new DefaultAlerting();
-        }
-        if (!isMain) return;
-        locatorGroup = group;
+        fillSiteSettings();
+        if (Alerting == null)
+            Alerting = new DefaultAlerting();
+        if (isMain)
+            VIElement.init(this);
+        locatorGroup = groupName;
         setSite(this);
-        VIElement.init(this);
         initSubElements();
         VIPage.init(this);
     }
-    /*
 
-    public void takeScreenshot(String path = null, String outputFileName = null, ImageFormat imgFormat = null)
-    {
-        new ScreenshotAlert(this).TakeScreenshot(path, outputFileName, imgFormat);
-    }*/
+    private void fillSiteSettings() throws IOException {
+        Site siteParams = getClass().getAnnotation(Site.class);
+        SiteSettings = new SiteSettings();
+        if (siteParams != null)
+        {
+            if (!siteParams.settingsFromPropertyFile().equals("")) {
+                PropertyLoader props = new PropertyLoader(siteParams.settingsFromPropertyFile());
+                if (props.get("viSite.domain") != null && !props.get("viSite.domain").equals(""))
+                    Domain = props.get("viSite.domain");
+                switch (props.get("viSite.useCache")) {
+                    case "true":
+                    case "1":
+                        SiteSettings.UseCache = true;
+                    case "false":
+                    case "0":
+                        SiteSettings.UseCache = false;
+                }
+                if (props.get("viSite.demoMode").equals("true") || props.get("viSite.demoMode").equals("1"))
+                    SiteSettings.DemoSettings = new HighlightSettings();
+                if (props.get("viSite.allerter").equals("screenshot"))
+                    Alerting = AnnotationsUtil.getScreenshotAlert(this);
+            }
+            if (siteParams.domain() != null)
+                Domain = siteParams.domain();
+            if (siteParams.useCache())
+                SiteSettings.UseCache = siteParams.useCache();
+            if (siteParams.demoMode())
+                SiteSettings.DemoSettings = new HighlightSettings(getClass().getAnnotation(DemoSettings.class));
+            if (siteParams.screenshotAlert())
+                Alerting = AnnotationsUtil.getScreenshotAlert(this);
+        }
+    }
+
+    public void takeScreenshot() throws Exception {
+        AnnotationsUtil.getScreenshotAlert(this).takeScreenshot();
+    }
+
+    public void takeScreenshot(String path, String outputFileName) throws Exception {
+        AnnotationsUtil.getScreenshotAlert(this).takeScreenshot(path, outputFileName);
+    }
 /*    public List<FieldInfo> PagesFields {  get  {
         return GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(_ => typeof(VIPage).IsAssignableFrom(_.FieldType)).ToList();
@@ -169,7 +191,7 @@ public class VISite extends VIElementSet {
         if (viPage != null)
             viPage.VerifyPage(true);
         else
-            Alerting.ThrowError("Can't check page '" + name + "'. Site have no pages with this name.");*/
+            Alerting.throwError("Can't check page '" + name + "'. Site have no pages with this name.");*/
     }
 
     public VIPage getHomePage() throws Exception {
@@ -182,8 +204,8 @@ public class VISite extends VIElementSet {
             page.setUrl(Domain);
             return page;
         }
-        throw Alerting.ThrowError("Site have more than one HomePage. Please specify only one HomePage. Current HomePages: " +
-                        select(where(getPages(), page -> page.IsHomePage), Named::getName));
+        throw Alerting.throwError("Site have more than one HomePage. Please specify only one HomePage. Current HomePages: " +
+                select(where(getPages(), page -> page.IsHomePage), Named::getName));
     }
     public void dispose()
     {
