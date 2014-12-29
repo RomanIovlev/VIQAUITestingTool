@@ -103,6 +103,12 @@ namespace VIQA.SiteClasses
         {
             new ScreenshotAlert(this).TakeScreenshot(path, outputFileName, imgFormat);
         }
+        
+        public int CountElementsByXPath(string xPath)
+        {
+            var count = WebDriver.FindElements(By.XPath(xPath)).Count;
+            return count;
+        }
 
         public IEnumerable<FieldInfo> PagesFields {  get  { 
             return GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
