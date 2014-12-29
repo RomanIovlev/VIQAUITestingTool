@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Remote;
 using VIQA.Common;
 using VIQA.Common.Pairs;
 using VIQA.HtmlElements.Interfaces;
@@ -214,6 +215,26 @@ namespace VIQA.HtmlElements
             return WaitElementWithState(el => el.Displayed, WebElement, msg: DefaultLogMessage(("Found element stay invisible.")));
         }
         
+        public void MouseMove()
+        {
+            var element = GetWebElement();
+            var webElement = element as RemoteWebElement;
+            if (webElement == null) return;
+            var webDriver = webElement.WrappedDriver as RemoteWebDriver;
+            if (webDriver != null) webDriver.Mouse.MouseMove(webElement.Coordinates);
+        }
+
+        public bool TryMouseMove()
+        {
+            var element = GetWebElement();
+            var webElement = element as RemoteWebElement;
+            if (webElement == null) return false;
+            var webDriver = webElement.WrappedDriver as RemoteWebDriver;
+            if (webDriver == null) return false;
+            webDriver.Mouse.MouseMove(webElement.Coordinates);
+            return true;
+        }
+
         public IVIElement GetVIElement()
         {
             WebElement = GetWebElement();
