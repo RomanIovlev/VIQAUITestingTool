@@ -1,10 +1,10 @@
 package examples.site.pages;
 
-import SiteClasses.VIPage;
-import VIElements.ComplexElements.Dropdown;
-import VIElements.Interfaces.IDropDown;
-import VIElements.Interfaces.ITable;
-import VIElements.SimpleElements.Table;
+import ru.viqa.ui_testing.page_objects.VIPage;
+import ru.viqa.ui_testing.elements.complexElements.Dropdown;
+import ru.viqa.ui_testing.elements.interfaces.IDropDown;
+import ru.viqa.ui_testing.elements.interfaces.ITable;
+import ru.viqa.ui_testing.elements.simpleElements.Table;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
 

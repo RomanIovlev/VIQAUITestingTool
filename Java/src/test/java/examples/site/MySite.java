@@ -1,9 +1,9 @@
 package examples.site;
 
-import SiteClasses.BrowserType;
-import SiteClasses.VISite;
-import VIAnnotations.Page;
-import VIElements.SimpleElements.Clickable;
+import ru.viqa.ui_testing.page_objects.BrowserType;
+import ru.viqa.ui_testing.page_objects.VISite;
+import ru.viqa.ui_testing.annotations.Page;
+import ru.viqa.ui_testing.elements.simpleElements.Clickable;
 import examples.site.pages.LoginForm;
 import examples.site.pages.MainPage;
 import examples.site.pages.ResultsPage;

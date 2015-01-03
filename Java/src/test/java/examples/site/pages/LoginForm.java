@@ -1,8 +1,8 @@
 package examples.site.pages;
 
-import VIElements.BaseClasses.VIElement;
-import VIElements.Interfaces.IButton;
-import VIElements.Interfaces.ITextField;
+import ru.viqa.ui_testing.elements.baseClasses.VIElement;
+import ru.viqa.ui_testing.elements.interfaces.IButton;
+import ru.viqa.ui_testing.elements.interfaces.ITextField;
 import examples.data.User;
 import org.openqa.selenium.support.FindBy;
 

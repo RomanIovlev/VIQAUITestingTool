@@ -1,12 +1,12 @@
 package examples.setup;
 
-import SiteClasses.VISite;
-import VIElements.BaseClasses.VIElement;
+import ru.viqa.ui_testing.page_objects.VISite;
+import ru.viqa.ui_testing.elements.baseClasses.VIElement;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import examples.site.MySite;
 
-import static SiteClasses.BrowserType.Chrome;
+import static ru.viqa.ui_testing.page_objects.BrowserType.Chrome;
 
 /**
  * Created by roman.i on 07.11.2014.
