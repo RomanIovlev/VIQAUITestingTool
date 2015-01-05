@@ -12,6 +12,8 @@ TestResults
 *.suo
 *.user
 *.sln.docstates
+.idea/
+target/
 
 # Build results
 [Dd]ebug/

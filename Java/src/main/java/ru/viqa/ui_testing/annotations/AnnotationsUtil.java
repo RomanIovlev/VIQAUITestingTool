@@ -14,7 +14,7 @@ public class AnnotationsUtil {
     public static <T> String getElementName(T clazz) {
         Class<T> cl = (Class<T>)clazz.getClass();
         if (cl.isAnnotationPresent(Name.class)) {
-            return cl.getAnnotation(Name.class).name();
+            return cl.getAnnotation(Name.class).value();
         } else {
             return splitCamelCase(cl.getSimpleName());
         }
@@ -23,7 +23,7 @@ public class AnnotationsUtil {
     public static String getElementName(Field field) {
         Class<?> cl = field.getClass();
         if (cl.isAnnotationPresent(Name.class)) {
-            return cl.getAnnotation(Name.class).name();
+            return cl.getAnnotation(Name.class).value();
         } else {
             return splitCamelCase(field.getName());
         }
