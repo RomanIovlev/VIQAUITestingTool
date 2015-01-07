@@ -17,6 +17,8 @@ public interface IVIElement {
     String getName() throws Exception;
     void fillFrom(Object obj) throws Exception;
     WebElement getUniqueWebElement() throws Exception;
+    IVIElement setTemplateId(String tId);
+    IVIElement setWaitTimeout(long waitTimeoutInSec);
 
     public boolean waitElementState(FuncTT<WebElement, Boolean> waitFunc) throws Exception;
     public boolean waitElementState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement) throws Exception;
@@ -28,10 +30,10 @@ public interface IVIElement {
     public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec) throws Exception;
     public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec, long retryTimeoutInMSec) throws Exception;
     public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec, long retryTimeoutInMSec, String msg) throws Exception;
-    /*List<WebElement> searchElements() throws Exception;
+    /*
+    List<WebElement> searchElements() throws Exception;
     List<WebElement> searchElements(By locator) throws Exception;
     By getLocator() throws Exception;
-    void setWaitTimeout(long waitTimeoutInSec);
     void fillSubElements_(Map<IHaveValue, Object> values);
     void fillSubElements(Map<String, Object> values);
     void fillSubElements(Object data);

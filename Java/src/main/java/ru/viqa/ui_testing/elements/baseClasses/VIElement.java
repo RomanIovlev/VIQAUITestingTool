@@ -26,6 +26,7 @@ import static ru.viqa.ui_testing.common.utils.WebDriverByUtils.*;
 import static ru.viqa.ui_testing.common.utils.StringUtils.*;
 import static ru.viqa.ui_testing.common.pairs.Pairs.*;
 import static java.lang.String.format;
+import static ru.viqa.ui_testing.page_objects.VISite.Alerting;
 
 /**
  * Created by 12345 on 10.05.2014.
@@ -94,7 +95,7 @@ public class VIElement extends Named implements IVIElement {
                 : fillByTemplate(_locator, getTemplateId());
         if (locator != null)
             return locator;
-        throw VISite.Alerting.throwError(getDefaultLogMessage("LocatorAttribute cannot be null"));
+        throw Alerting.throwError(getDefaultLogMessage("LocatorAttribute cannot be null"));
     }
 
     protected Timer getTimer() {
@@ -128,8 +129,12 @@ public class VIElement extends Named implements IVIElement {
     private Long _waitTimeoutInSec = null;
     private String _templateId;
     public String getTemplateId() { return _templateId; }
-    public void setTemplateId(String tId) { dropCache(); _templateId = tId; }
+    public IVIElement setTemplateId(String tId) { dropCache(); _templateId = tId; return this; }
 
+    public IVIElement setWaitTimeout(long waitTimeoutInSec) {
+        _waitTimeoutInSec = waitTimeoutInSec;
+        return this;
+    }
 
     private long getWaitTimeoutInSec() {
         if (OpenPageName == null)
@@ -147,8 +152,8 @@ public class VIElement extends Named implements IVIElement {
         if (webElements.size() == 1)
             return webElements.get(0);
         if (webElements.size() > 0)
-            throw VISite.Alerting.throwError(getLotOfFindElementsMessage(webElements));
-        throw VISite.Alerting.throwError(getCantFindElementMessage());
+            throw Alerting.throwError(getLotOfFindElementsMessage(webElements));
+        throw Alerting.throwError(getCantFindElementMessage());
     }
     private String getLotOfFindElementsMessage(List<WebElement> webElements) throws Exception {
         return format("Find %s elements '%s' but expected 1. Please correct locator '%s'",
@@ -160,7 +165,7 @@ public class VIElement extends Named implements IVIElement {
     public List<WebElement> searchElements() throws Exception { return searchElements(getLocator()); }
     public List<WebElement> searchElements(By locator) throws Exception {
         try { return getSearchContext().findElements(locator); }
-        catch(Exception ex) { throw VISite.Alerting.throwError(getCantFindElementMessage());}
+        catch(Exception ex) { throw Alerting.throwError(getCantFindElementMessage());}
     }
 
     public boolean waitElementState(FuncTT<WebElement, Boolean> waitFunc) throws Exception {
@@ -195,7 +200,7 @@ public class VIElement extends Named implements IVIElement {
     public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec, long retryTimeoutInMSec, String msg) throws Exception {
         if (waitElementState(waitFunc, webElement, timeoutInSec, retryTimeoutInMSec))
             return getUniqueWebElement();
-        throw VISite.Alerting.throwError(msg);
+        throw Alerting.throwError(msg);
     }
     private List<WebElement> waitWebElements() throws Exception {
         if (getTimer().wait(() -> searchElements().size() > 0))
@@ -234,10 +239,8 @@ public class VIElement extends Named implements IVIElement {
 
     public int cashDropTimes;
 
-    private void isClearCashNeeded()
-    {
-        if (getSite().SiteSettings.useCache)
-        {
+    private void isClearCashNeeded() {
+        if (getSite().SiteSettings.useCache) {
             if (cashDropTimes != getSite().SiteSettings.cashDropTimes)
                 dropCache();
             return;
@@ -245,8 +248,7 @@ public class VIElement extends Named implements IVIElement {
         _webElement = null;
     }
 
-    private void dropCache()
-    {
+    private void dropCache() {
         cashDropTimes = getSite().SiteSettings.cashDropTimes;
         _webElement = null;
     }
@@ -257,8 +259,9 @@ public class VIElement extends Named implements IVIElement {
             return _webElement;
         List<WebElement> foundElements = waitWebElements();
         if (foundElements == null)
-            throw VISite.Alerting.throwError(getCantFindElementMessage());
+            throw Alerting.throwError(getCantFindElementMessage());
         setWebElement(getUniqueWebElement(foundElements));
+        _waitTimeoutInSec = null;
         return waitElementWithState(WebElement::isDisplayed, getWebElement(), getDefaultLogMessage(("Found element stay invisible.")));
     }
 
@@ -283,11 +286,6 @@ public class VIElement extends Named implements IVIElement {
         VISite.Logger.Event(viElement.getDefaultLogMessage(actionName));
         return viAction.invoke();
     };
-/*
-    public static <T> T viAction(VIElement viElement, String actionName, FuncT<T> viAction) throws Exception {
-        VISite.Logger.Event(viElement.getDefaultLogMessage(actionName));
-        return viAction.invoke();
-    }*/
 
     public final <T> T doVIActionResult(String logActionName, FuncT<T> viAction) throws Exception {
         return doVIActionResult(logActionName, viAction, null);
@@ -305,7 +303,7 @@ public class VIElement extends Named implements IVIElement {
             }
         catch (Exception ex)
         {
-            throw VISite.Alerting.throwError(format(LineBreak + "Failed to do '%s' action. Exception: %s", actionName, ex));
+            throw Alerting.throwError(format(LineBreak + "Failed to do '%s' action. Exception: %s", actionName, ex));
         }
     }
 
@@ -318,7 +316,7 @@ public class VIElement extends Named implements IVIElement {
                 highlight(demoMode);
         }
         catch (Exception ex) {
-            throw VISite.Alerting.throwError(format(LineBreak + "Failed to do '%s' action. Exception: %s", actionName, ex));
+            throw Alerting.throwError(format(LineBreak + "Failed to do '%s' action. Exception: %s", actionName, ex));
         }
     }
 
