@@ -16,7 +16,7 @@ public class DefaultLogger implements ILogger {
     public FuncT<String> LogFileFormat =  () -> "%s_" + nowTime("yyyy-MM-dd-HH-mm-ss-S") + ".log";
     private static String LogRecordTemplate = LineBreak + "[%s] %s: %s" + LineBreak;
     private FuncTTT<String, String, String> LogRecord = (String s1, String s2) -> format(LogRecordTemplate, s1, nowTime("yyyy-MM-dd HH:mm:ss.S"), s2);
-    public FuncT<String> LogDirectoryRoot = () -> ".Logs/";
+    public FuncT<String> LogDirectoryRoot = () -> ".logs/";
     public boolean CreateFoldersForLogTypes = true;
 
     public static String getValidUrl(String logPath)
