@@ -7,7 +7,7 @@ import org.openqa.selenium.*;
 /**
  * Created by 12345 on 10.05.2014.
  */
-public interface IVIElement {
+public interface IVIElement extends Cloneable {
     WebElement getWebElement();
     boolean isPresent() throws Exception;
     boolean isDisplayed() throws Exception;
@@ -30,6 +30,8 @@ public interface IVIElement {
     public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec) throws Exception;
     public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec, long retryTimeoutInMSec) throws Exception;
     public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec, long retryTimeoutInMSec, String msg) throws Exception;
+
+    public Object clone() throws CloneNotSupportedException;
     /*
     List<WebElement> searchElements() throws Exception;
     List<WebElement> searchElements(By locator) throws Exception;

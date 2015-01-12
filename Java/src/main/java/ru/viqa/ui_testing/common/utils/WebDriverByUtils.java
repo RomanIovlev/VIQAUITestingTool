@@ -29,6 +29,11 @@ public class WebDriverByUtils {
             throw VISite.Alerting.throwError(getBadLocatorMsg(byLocator, args)); }
         return getByFunc(by).invoke(byLocator);
     }
+    public static By copyBy(By by) throws Exception {
+        String byLocator = getByLocator(by);
+        return getByFunc(by).invoke(byLocator);
+    }
+
 
     public static String getByLocator(By by) {
         String byAsString = by.toString();

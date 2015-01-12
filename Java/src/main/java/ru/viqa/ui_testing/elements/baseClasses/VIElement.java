@@ -32,10 +32,10 @@ import static ru.viqa.ui_testing.page_objects.VISite.Alerting;
  * Created by 12345 on 10.05.2014.
  */
 public class VIElement extends Named implements IVIElement {
-    private VISite _site;
-    public VISite getSite() { return _site;}
-    protected boolean isSiteSet() { return _site != null; }
-    public void setSite(VISite site) { _site = site;}
+    private VISite site;
+    public VISite getSite() { return site;}
+    protected boolean isSiteSet() { return site != null; }
+    public VIElement setSite(VISite site) { this.site = site; return this;}
     public Pairs<ContextType, By> Context = new Pairs<>();
     protected By _locator;
     public static VISite DefaultSite;
@@ -271,6 +271,7 @@ public class VIElement extends Named implements IVIElement {
     }
 
     public VIElement() throws Exception { }
+    public VIElement(VISite site) throws Exception { this.site = site; }
     public VIElement(String name) throws Exception { setName(name); }
     public VIElement(String name, String cssSelector) throws Exception { this(name); setLocator(By.cssSelector(cssSelector)); }
     public VIElement(String name, By byLocator) throws Exception { this(name); setLocator(byLocator); }
@@ -345,5 +346,18 @@ public class VIElement extends Named implements IVIElement {
         SetAttribute("style",  format("border: 3px solid %s; background-color: %s;", highlightSettings.FrameColor, highlightSettings.BgColor));
         Thread.sleep(highlightSettings.TimeoutInSec * 1000);
         SetAttribute("style", orig);
+    }
+
+    public static <T extends IVIElement> T cloneVIElement(T element) throws CloneNotSupportedException {
+        return (T) element.clone();
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        VIElement element = (VIElement) super.clone();
+        element.Context = new Pairs<>();
+        for (Pair<ContextType, By>locator : Context)
+            element.Context.add(locator);
+        try { element._locator = copyBy(_locator); } catch (Exception ignore) {}
+        return element;
     }
 }
