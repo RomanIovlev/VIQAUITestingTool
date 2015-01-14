@@ -21,7 +21,7 @@ public class Columns<T extends IHaveValue> extends TableLine<T> {
     }
 
     protected String[] getHeadersAction() throws Exception {
-        return select(Table.getWebElement().findElements(By.xpath(".//th")), WebElement::getText)
+        return select(Table.getWebElement().findElements(By.xpath("//th")), WebElement::getText)
                 .toArray(new String[1]);
     }
 

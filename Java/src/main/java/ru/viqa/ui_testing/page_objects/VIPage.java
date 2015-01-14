@@ -52,28 +52,32 @@ public class VIPage extends VIElement {
         return getSite().Navigate;
     }
 
-    public void open() throws Exception {
+    public VIPage open() throws Exception {
         VISite.Logger.Event("Open page: " + getUrl());
         getWebDriver().navigate().to(getUrl());
-        verifyPage(true);
+        //verifyPage(true);
         navigation().processNewPage(this);
+        return this;
     }
 
-    public void goBack() throws Exception {
+    public VIPage goBack() throws Exception {
         VISite.Logger.Event("GoBack to previous page");
         getWebDriver().navigate().back();
         navigation().processGoBack();
+        return this;
     }
-    public void goForward() throws Exception {
+    public VIPage goForward() throws Exception {
         VISite.Logger.Event("GoForward to next page");
         getWebDriver().navigate().forward();
         navigation().processGoForward();
+        return this;
     }
 
-    public void refreshPage() throws Exception {
+    public VIPage refreshPage() throws Exception {
         VISite.Logger.Event("Refresh current page");
         getWebDriver().navigate().refresh();
         navigation().processRefreshPage();
+        return this;
     }
 
     public boolean verifyPage() throws Exception {
@@ -131,7 +135,7 @@ public class VIPage extends VIElement {
     public void fillFromPageAttribute(Page pageAttr)
     {
         if (pageAttr == null) return;
-        Url = pageAttr.url();
+        setUrl(pageAttr.url());
         Title = pageAttr.title();
         UrlCheckType = pageAttr.urlCheckType();
         TitleCheckType = pageAttr.titleCheckType();
@@ -142,7 +146,7 @@ public class VIPage extends VIElement {
     {
         if (pageAttr == null) return;
         if (pageAttr.url() != null && !pageAttr.url().equals(""))
-            Url = pageAttr.url();
+            setUrl(pageAttr.url());
         if (pageAttr.title() != null && !pageAttr.title().equals(""))
             Title = pageAttr.title();
         if (pageAttr.urlCheckType() != PageCheckType.NotSet)

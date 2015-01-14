@@ -20,7 +20,7 @@ public class Rows<T extends IHaveValue> extends TableLine<T> {
     }
 
     protected String[] getHeadersAction() throws Exception {
-        return select(Table.getWebElement().findElements(By.xpath(".//tr/td[1]")), WebElement::getText)
+        return select(Table.getWebElement().findElements(By.xpath("//tr/td[1]")), WebElement::getText)
                 .toArray(new String[1]);
     }
 

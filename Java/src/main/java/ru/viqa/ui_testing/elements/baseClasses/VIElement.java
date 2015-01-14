@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import static ru.viqa.ui_testing.common.utils.LinqUtils.first;
 import static ru.viqa.ui_testing.common.utils.LinqUtils.foreach;
-import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getField;
+import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getFieldValue;
 import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getFields;
 import static ru.viqa.ui_testing.common.utils.WebDriverByUtils.*;
 import static ru.viqa.ui_testing.common.utils.StringUtils.*;
@@ -46,20 +46,27 @@ public class VIElement extends Named implements IVIElement {
         List<Field> fields = getFields(obj, String.class);
         foreach(getFields(this, IHaveValue.class), element -> {
             Field fieldWithName = first(fields, field ->
-                    AnnotationsUtil.getElementName(field)
-                            .equals(AnnotationsUtil.getElementName(element)));
+                AnnotationsUtil.getElementName(field)
+                    .equals(AnnotationsUtil.getElementName(element)));
             if (fieldWithName != null) {
-                String value = (String) getField(fieldWithName, obj);
-                if (value != null)
-                    ((IHaveValue) getField(element, this)).setValue(value);
+                String value = (String) getFieldValue(fieldWithName, obj);
+                if (value != null && !value.equals("")) {
+                    if (value.equals("#CLEAR#")) value = "";
+                    ((IHaveValue) getFieldValue(element, this)).setValue(value);
+                }
             }
         });
     }
+
     public SearchContext getSearchContext() throws Exception {
+        boolean isFirst = true;
         if (Context == null)
             return getWebDriver();
         SearchContext context = getWebDriver().switchTo().defaultContent();
         for (Pair<ContextType, By> locator : Context) {
+            if (!isFirst && locator.Value2.toString().contains("By.xpath: //"))
+                locator.Value2 = getByFunc(locator.Value2).invoke(getByLocator(locator.Value2)
+                    .replaceFirst("/", "./"));
             WebElement element = context.findElement(locator.Value2);
             if (locator.Value1 == ContextType.Locator)
                 context = element;
@@ -67,6 +74,7 @@ public class VIElement extends Named implements IVIElement {
                 getWebDriver().switchTo().frame(element);
                 context = getWebDriver();
             }
+            isFirst = false;
         }
         return context;
     }
@@ -164,7 +172,11 @@ public class VIElement extends Named implements IVIElement {
 
     public List<WebElement> searchElements() throws Exception { return searchElements(getLocator()); }
     public List<WebElement> searchElements(By locator) throws Exception {
-        try { return getSearchContext().findElements(locator); }
+        try {
+            if (Context.size() > 0 && locator.toString().contains("By.xpath: //"))
+                setLocator(getByFunc(locator).invoke(getByLocator(locator)
+                        .replaceFirst("/", "./")));
+            return getSearchContext().findElements(getLocator()); }
         catch(Exception ex) { throw Alerting.throwError(getCantFindElementMessage());}
     }
 

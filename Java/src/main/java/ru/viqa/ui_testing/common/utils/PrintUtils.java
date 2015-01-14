@@ -2,7 +2,7 @@ package ru.viqa.ui_testing.common.utils;
 
 import java.util.Arrays;
 
-import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getField;
+import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getFieldValue;
 import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getFields;
 import static ru.viqa.ui_testing.common.utils.LinqUtils.*;
 import static java.lang.String.format;
@@ -25,7 +25,7 @@ public class PrintUtils {
     public static String printFields(Object obj, String separator) throws Exception {
         String className = obj.getClass().getSimpleName();
         String params = print(select(getFields(obj, String.class),
-            field -> field.getName() + ": '" + getField(field, obj) + "'"), separator, "%s");
+            field -> field.getName() + ": '" + getFieldValue(field, obj) + "'"), separator, "%s");
         return format("%s(%s)", className, params);
     }
 }

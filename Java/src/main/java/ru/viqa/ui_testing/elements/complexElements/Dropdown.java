@@ -29,7 +29,7 @@ public class Dropdown extends Selector<Clickable> implements IDropDown {
     @Override
     protected void selectAction(String name) throws Exception {
         if (_rootLocator != null) {
-            getWebDriver().findElement(_rootLocator).click();
+            getSearchContext().findElement(_rootLocator).click();
             getElement(name).click();
         }
         else

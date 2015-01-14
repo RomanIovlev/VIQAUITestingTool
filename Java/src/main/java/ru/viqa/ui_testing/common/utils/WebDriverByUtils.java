@@ -43,14 +43,14 @@ public class WebDriverByUtils {
 
     private static Map<String, FuncTT<String, By>> getMapByTypes() {
         Map<String, FuncTT<String, By>> map = new HashMap<>();
-        map.put("selector", By::cssSelector);
-        map.put("className", By::className);
-        map.put("id", By::id);
-        map.put("linkText", By::linkText);
-        map.put("name", By::name);
-        map.put("partialLinkText", By::partialLinkText);
-        map.put("tagName", By::tagName);
-        map.put("xpath", By::xpath);
+        map.put("By.selector:", By::cssSelector);
+        map.put("By.className", By::className);
+        map.put("By.id", By::id);
+        map.put("By.linkText", By::linkText);
+        map.put("By.name", By::name);
+        map.put("By.partialLinkText", By::partialLinkText);
+        map.put("By.tagName", By::tagName);
+        map.put("By.xpath", By::xpath);
         return map;
     }
 }

@@ -38,7 +38,7 @@ public class ReflectionUtils {
         return (List<Field>) where(obj.getClass().getDeclaredFields(), field -> isClass(field, type) || isInterface(field, type));
     }
 
-    public static Object getField(Field field, Object obj) throws IllegalAccessException {
+    public static Object getFieldValue(Field field, Object obj) throws IllegalAccessException {
         field.setAccessible(true);
         return field.get(obj);
     }

@@ -1,14 +1,8 @@
 package ru.viqa.ui_testing.page_objects;
 
-import ru.viqa.ui_testing.annotations.Frame;
-import ru.viqa.ui_testing.annotations.Page;
-import ru.viqa.ui_testing.annotations.VIFindBy;
-import ru.viqa.ui_testing.elements.baseClasses.ContextType;
-import ru.viqa.ui_testing.elements.baseClasses.Selector;
-import ru.viqa.ui_testing.elements.baseClasses.VIElement;
-import ru.viqa.ui_testing.elements.complexElements.Checklist;
-import ru.viqa.ui_testing.elements.complexElements.Dropdown;
-import ru.viqa.ui_testing.elements.complexElements.RadioButtons;
+import ru.viqa.ui_testing.annotations.*;
+import ru.viqa.ui_testing.elements.baseClasses.*;
+import ru.viqa.ui_testing.elements.complexElements.*;
 import ru.viqa.ui_testing.elements.interfaces.*;
 import ru.viqa.ui_testing.elements.simpleElements.*;
 import org.openqa.selenium.By;
@@ -18,15 +12,11 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-import static ru.viqa.ui_testing.common.utils.LinqUtils.first;
-import static ru.viqa.ui_testing.common.utils.LinqUtils.foreach;
-import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getField;
-import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getFields;
-import static ru.viqa.ui_testing.common.utils.ReflectionUtils.isClass;
+import static ru.viqa.ui_testing.common.utils.LinqUtils.*;
+import static ru.viqa.ui_testing.common.utils.ReflectionUtils.*;
 import static ru.viqa.ui_testing.common.utils.StringUtils.LineBreak;
-import static ru.viqa.ui_testing.annotations.AnnotationsUtil.getElementName;
-import static ru.viqa.ui_testing.annotations.AnnotationsUtil.getFrame;
-import static ru.viqa.ui_testing.annotations.AnnotationsUtil.getLocator;
+import static ru.viqa.ui_testing.annotations.AnnotationsUtil.*;
+import static ru.viqa.ui_testing.common.utils.WebDriverByUtils.*;
 
 /**
  * Created by roman.i on 10.12.2014.
@@ -70,7 +60,7 @@ public class PageObjectsInit {
     }
 
     private static VIElement createInstance(Field viElement, VIElement root) throws Exception {
-        VIElement instance = (VIElement) getField(viElement, root);
+        VIElement instance = (VIElement) getFieldValue(viElement, root);
         if (instance == null)
             instance = getVIElementInstance(viElement.getType());
         instance.setSite(root.getSite());

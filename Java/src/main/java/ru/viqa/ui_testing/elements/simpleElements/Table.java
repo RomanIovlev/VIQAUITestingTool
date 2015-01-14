@@ -38,7 +38,7 @@ public class Table<T extends IHaveValue> extends HaveValue implements ITable<T> 
         TypeName = "Table";
         getColumns().Table = this;
         getRows().Table = this;
-        //GetFooterFunc = t => t.FindElements(By.xpath(".//tfoot/tr/td")).Select(el => el.Text).ToArray();
+        //GetFooterFunc = t => t.FindElements(By.xpath("//tfoot/tr/td")).Select(el => el.Text).ToArray();
     }
     /*
     public Table(By tableLocator) {
@@ -76,7 +76,7 @@ public class Table<T extends IHaveValue> extends HaveValue implements ITable<T> 
     public Func<WebElement, String[]> GetRowHeadersFunc { set { Rows.GetHeadersFunc = value; } }
 */
     protected String[] getFooterAction() throws Exception {
-        return select(getWebElement().findElements(By.xpath(".//tfoot/tr/td[1]")), WebElement::getText)
+        return select(getWebElement().findElements(By.xpath("//tfoot/tr/td[1]")), WebElement::getText)
                 .toArray(new String[1]);
     }
     protected String[] _footer;
@@ -292,10 +292,10 @@ public class Table<T extends IHaveValue> extends HaveValue implements ITable<T> 
         if (_cellLocatorTemplate == null)
             _cellLocatorTemplate = (cell.haveLocator())
                 ? cell.getLocator()
-                : By.xpath(".//tr[{1}]/td[{0}]");
+                : By.xpath("//tr[{1}]/td[{0}]");
         if (!cell.haveLocator())
             cell.setLocator(fillByTemplate(_cellLocatorTemplate != null
-                ? _cellLocatorTemplate : By.xpath(".//tr[%s]/td[%s]"), rowIndex, colIndex));
+                ? _cellLocatorTemplate : By.xpath("//tr[%s]/td[%s]"), rowIndex, colIndex));
         PageObjectsInit.initSubElements(cell);
         return new Cell((T)cell.getVIElement(), colNum, rowNum, colName, rowName);
     }
