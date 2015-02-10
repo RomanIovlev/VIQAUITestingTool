@@ -16,12 +16,12 @@ import static java.lang.String.format;
  */
 public class Columns<T extends IHaveValue> extends TableLine<T> {
     public Columns() {
-        HaveHeaders = true;
-        ElementIndex = ElementIndexType.Nums;
+        haveHeader = true;
+        elementIndex = ElementIndexType.Nums;
     }
 
     protected String[] getHeadersAction() throws Exception {
-        return select(Table.getWebElement().findElements(By.xpath("//th")), WebElement::getText)
+        return select(table.getWebElement().findElements(By.xpath("//th")), WebElement::getText)
                 .toArray(new String[1]);
     }
 
@@ -30,22 +30,22 @@ public class Columns<T extends IHaveValue> extends TableLine<T> {
     }
 
     public final List<Cell<T>> getRow(String name) throws Exception {
-        try { return new ArrayList<>(select(Table.getRows().getHeaders(), rowName -> Table.cell(name, rowName))); }
+        try { return new ArrayList<>(select(table.getRows().headers(), rowName -> table.cell(name, rowName))); }
         catch (Exception ex) { throw getRowsException(name, ex); }
     }
 
     public List<Cell<T>> getRow(int num) throws Exception {
         int colsCount = -1;
-        if (_count > 0)
-        colsCount = _count;
-        else if (_headers != null && (_headers.length > 0))
-        colsCount = _headers.length;
+        if (count > 0)
+        colsCount = count;
+        else if (headers != null && (headers.length > 0))
+        colsCount = headers.length;
         if (colsCount > 0 && colsCount < num)
         throw VISite.Alerting.throwError(format("Can't Get Column '%s'. [num] > ColumnsCount(%s).", num, colsCount));
         try {
             List<Cell<T>> result = new ArrayList<>();
-            for (int rowNum = 1; rowNum <= Table.getRows().getCount(); rowNum++)
-                result.add(Table.cell(num, rowNum));
+            for (int rowNum = 1; rowNum <= table.getRows().count(); rowNum++)
+                result.add(table.cell(num, rowNum));
             return result;
         }
         catch (Exception ex) { throw getRowsException(num + "", ex); }

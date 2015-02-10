@@ -1,6 +1,5 @@
 package ru.viqa.ui_testing.common.loggers;
 
-import ru.viqa.ui_testing.common.funcInterfaces.*;
 import ru.viqa.ui_testing.common.interfaces.ILogger;
 
 import java.io.*;
@@ -13,11 +12,25 @@ import static java.lang.String.format;
  * Created by roman.i on 25.09.2014.
  */
 public class DefaultLogger implements ILogger {
-    public FuncT<String> LogFileFormat =  () -> "%s_" + nowTime("yyyy-MM-dd-HH-mm-ss-S") + ".log";
-    private static String LogRecordTemplate = LineBreak + "[%s] %s: %s" + LineBreak;
-    private FuncTTT<String, String, String> LogRecord = (String s1, String s2) -> format(LogRecordTemplate, s1, nowTime("yyyy-MM-dd HH:mm:ss.S"), s2);
-    public FuncT<String> LogDirectoryRoot = () -> ".logs/";
+    private String logFileName = "%s.log";
+    private static String logRecordTemplate = LineBreak + "[%s] %s: %s" + LineBreak;
+    private String logRecord(String typeName, String msg) {
+        return format(logRecordTemplate, typeName, nowTime("yyyy-MM-dd HH:mm:ss.S"), msg);
+    }
+    private String logFolder = ".logs/";
     public boolean CreateFoldersForLogTypes = true;
+    private String runId;
+
+    public void setLogRecord(String template) { logRecordTemplate = template; }
+    public void setLogFolder(String folderName) { logFolder = folderName; }
+    public void setLogFileName(String logFileName) { this.logFileName = logFileName; }
+
+    public DefaultLogger() {
+        runId = nowTime("yyyy-MM-dd_HH-mm-ss");
+    }
+    public DefaultLogger(String runId) {
+        this.runId = runId;
+    }
 
     public static String getValidUrl(String logPath)
     {
@@ -34,11 +47,12 @@ public class DefaultLogger implements ILogger {
                 : result + "\\";
     }
 
-    public File getFile(String fileName) throws Exception {
-        File file = new File(".");
-        String current = file.getCanonicalPath();
-        String logDirectory = current + getValidUrl(LogDirectoryRoot.invoke()) + (CreateFoldersForLogTypes ? fileName + "s\\" : "");
-        return new File(logDirectory + format(LogFileFormat.invoke(), fileName));
+    private File getFile(String fileName) throws Exception {
+        return new File(getLogDirrectory(runId) + format(logFileName, fileName));
+    }
+
+    public String getLogDirrectory(String fileName) throws Exception {
+        return new File(".").getCanonicalPath() + getValidUrl(logFolder) + (CreateFoldersForLogTypes ? fileName + "\\" : "");
     }
 
     public void createDirFile(File file) throws IOException {
@@ -50,7 +64,7 @@ public class DefaultLogger implements ILogger {
     protected void InLog(String fileName, String typeName, String msg) throws Exception {
         File file = getFile(fileName);
         createDirFile(file);
-        writeInFile(file, LogRecord.invoke(typeName, msg));
+        writeInFile(file, logRecord(typeName, msg));
     }
 
     private void writeInFile(File file, String msg) throws Exception {
@@ -59,11 +73,11 @@ public class DefaultLogger implements ILogger {
         fw.close();
     }
 
-    public void Event(String msg) throws Exception {
+    public void event(String msg) throws Exception {
         InLog("Event", "Event", msg);
     }
 
-    public void Error(String msg) throws Exception {
+    public void error(String msg) throws Exception {
         InLog("Error", "Error", msg);
         InLog("Event", "Error", msg);
     }

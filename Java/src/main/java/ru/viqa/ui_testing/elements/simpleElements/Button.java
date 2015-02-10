@@ -1,5 +1,6 @@
 package ru.viqa.ui_testing.elements.simpleElements;
 
+import ru.viqa.ui_testing.elements.baseClasses.ClickableText;
 import ru.viqa.ui_testing.elements.interfaces.*;
 import org.openqa.selenium.*;
 
@@ -14,7 +15,7 @@ public class Button extends ClickableText implements IButton {
     public static String commonLocatorByNamed(String id) { return format(LocatorTmpl, "name", id); }
     public static String commonLocatorByClassName(String id) { return format(LocatorTmpl, "class", id); }
 
-    public Button() throws Exception{ super(); TypeName = "Button";}
+    public Button() throws Exception{ super(); }
     public Button(String name) throws Exception { super(name); }
     public Button(String name, String cssSelector) throws Exception { super(name, cssSelector); }
     public Button(String name, By byLocator) throws Exception { super(name, byLocator); }
@@ -24,7 +25,7 @@ public class Button extends ClickableText implements IButton {
     public Button(WebElement webElement) throws Exception { super(webElement); }
 
     @Override
-    public String getTextAction() throws Exception {
+    protected String getTextAction() throws Exception {
         return getUniqueWebElement().getAttribute("value");
     }
 }

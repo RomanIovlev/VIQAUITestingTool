@@ -6,77 +6,82 @@ import org.openqa.selenium.WebDriver;
 
 import static ru.viqa.ui_testing.common.utils.StringUtils.*;
 import static java.lang.String.format;
+import static ru.viqa.ui_testing.page_objects.VISite.Logger;
 
 /**
  * Created by roman.i on 26.09.2014.
  */
 public class VIPage extends VIElement {
-    private String Url;
-    public String getUrl() { return Url; }
-    public VIPage setUrl(String url) { Url = getUrlValue(url, getSite()); return this; }
+    private String url;
+    public String getUrl() { return url; }
+    public VIPage setUrl(String url) { this.url = getUrlValue(url, getSite()); return this; }
     public static String getUrlValue(String url, VISite site)
     {
         return (url == null || url.equals(""))
-            ? site.Domain
+            ? site.getDomain()
             : (url.contains("http://") || url.contains("file:///"))
                 ? url
-                : site.Domain.replaceAll("/*$", "") + "/"+ url.replaceAll("^/*", "");
+                : site.getDomain().replaceAll("/*$", "") + "/"+ url.replaceAll("^/*", "");
     }
 
-    public String Title;
-    public boolean IsHomePage;
+    public String title;
+    public boolean isHomePage;
 
-    public PageCheckType UrlCheckType;
-    public PageCheckType TitleCheckType;
+    public PageCheckType urlCheckType;
+    public PageCheckType titleCheckType;
 
     public void setEmptyPage()
     {
         if (isSiteSet())
             setUrl("");
         else
-            Url = "";
-        Title = "";
-        UrlCheckType = PageCheckType.NoCheck;
-        TitleCheckType = PageCheckType.NoCheck;
-        IsHomePage = false;
+            url = "";
+        title = "";
+        urlCheckType = PageCheckType.NoCheck;
+        titleCheckType = PageCheckType.NoCheck;
+        isHomePage = false;
     }
 
     public VIPage() throws Exception {
-        DefaultNameFunc = () -> format("Page with Title: '%s', Url: '%s'", Title != null ? Title : "", getUrl() != null ? getUrl() : "");
+        DefaultNameFunc = () -> format("Page with title: '%s', url: '%s'", title != null ? title : "", getUrl() != null ? getUrl() : "");
         setEmptyPage();
     }
     
-    public VIPage(String name, String url, String title, VISite site) throws Exception { Url = url; setName(name); Title = title; setSite(site); }
+    public VIPage(String name, String url, String title, VISite site) throws Exception { this.url = url; setName(name); this.title = title; setSite(site); }
 
     private Navigation navigation() {
-        return getSite().Navigate;
+        return getSite().navigate;
     }
 
     public VIPage open() throws Exception {
-        VISite.Logger.Event("Open page: " + getUrl());
+        Logger.event("Open page: " + getUrl());
         getWebDriver().navigate().to(getUrl());
         //verifyPage(true);
         navigation().processNewPage(this);
+        openPageName = getName();
         return this;
     }
 
     public VIPage goBack() throws Exception {
-        VISite.Logger.Event("GoBack to previous page");
+        Logger.event("GoBack to previous page");
         getWebDriver().navigate().back();
         navigation().processGoBack();
+        openPageName = "From page: " + getName();
         return this;
     }
     public VIPage goForward() throws Exception {
-        VISite.Logger.Event("GoForward to next page");
+        Logger.event("GoForward to next page");
         getWebDriver().navigate().forward();
         navigation().processGoForward();
+        openPageName = "From page: " + getName();
         return this;
     }
 
     public VIPage refreshPage() throws Exception {
-        VISite.Logger.Event("Refresh current page");
+        Logger.event("Refresh current page");
         getWebDriver().navigate().refresh();
         navigation().processRefreshPage();
+        openPageName = getName();
         return this;
     }
 
@@ -85,11 +90,11 @@ public class VIPage extends VIElement {
     }
 
     public boolean verifyPage(boolean throwError) throws Exception {
-        return checkUrl(UrlCheckType, throwError) && checkTitle(TitleCheckType, throwError);
+        return checkUrl(urlCheckType, throwError) && checkTitle(titleCheckType, throwError);
     }
 
     public boolean checkUrl() throws Exception {
-        return checkUrl(UrlCheckType, false);
+        return checkUrl(urlCheckType, false);
     }
     public boolean checkUrl(PageCheckType checkType) throws Exception {
         return checkUrl(checkType, false);
@@ -99,19 +104,22 @@ public class VIPage extends VIElement {
                 getWebDriver().getCurrentUrl().toLowerCase().replaceAll("/*$", ""), getUrl().toLowerCase().replaceAll("/*$", ""));
     }
 
+    public boolean checkTitle() throws Exception {
+        return checkTitle(titleCheckType, false);
+    }
     public boolean checkTitle(PageCheckType checkType) throws Exception {
         return checkTitle(checkType, false);
     }
     public boolean checkTitle(PageCheckType checkType, boolean throwError) throws Exception {
         return checkPageAttribute(checkType, throwError, "title",
-                getWebDriver().getTitle(), Title);
+                getWebDriver().getTitle(), title);
     }
     private boolean checkPageAttribute(PageCheckType checkType, boolean throwError, String checkWhat, String actual, String expected)
             throws Exception {
         if (checkType == PageCheckType.NoCheck) return true;
         if (expected == null || expected.equals(""))
             throw VISite.Alerting.throwError(format("Page '%s' %s is empty. Please set %s for this page", getName(), checkWhat, checkWhat));
-        VISite.Logger.Event(format("Check page '%s' %s %s '%s'", getName(), checkWhat,
+        Logger.event(format("Check page '%s' %s %s '%s'", getName(), checkWhat,
                 checkType == PageCheckType.Equal ? "equal to " : "contains", expected));
         boolean result =
                 (checkType == PageCheckType.Equal)
@@ -124,22 +132,18 @@ public class VIPage extends VIElement {
                 "CheckType: '%s'", checkWhat, getName(), actual, expected, checkType);
         if (throwError)
             throw VISite.Alerting.throwError(errorMsg);
-        VISite.Logger.Error(errorMsg);
+        Logger.error(errorMsg);
         return false;
     }
-
-    public Navigation Navigate() { return getSite().Navigate; }
-
-    public WebDriver getWebDriver() throws Exception { return getSite().getWebDriver(); }
 
     public void fillFromPageAttribute(Page pageAttr)
     {
         if (pageAttr == null) return;
         setUrl(pageAttr.url());
-        Title = pageAttr.title();
-        UrlCheckType = pageAttr.urlCheckType();
-        TitleCheckType = pageAttr.titleCheckType();
-        IsHomePage = pageAttr.isHomePage();
+        title = pageAttr.title();
+        urlCheckType = pageAttr.urlCheckType();
+        titleCheckType = pageAttr.titleCheckType();
+        isHomePage = pageAttr.isHomePage();
     }
 
     public void updatePageAttribute(Page pageAttr)
@@ -148,12 +152,12 @@ public class VIPage extends VIElement {
         if (pageAttr.url() != null && !pageAttr.url().equals(""))
             setUrl(pageAttr.url());
         if (pageAttr.title() != null && !pageAttr.title().equals(""))
-            Title = pageAttr.title();
+            title = pageAttr.title();
         if (pageAttr.urlCheckType() != PageCheckType.NotSet)
-            UrlCheckType = pageAttr.urlCheckType();
+            urlCheckType = pageAttr.urlCheckType();
         if (pageAttr.titleCheckType() != PageCheckType.NotSet)
-            TitleCheckType = pageAttr.titleCheckType();
+            titleCheckType = pageAttr.titleCheckType();
         if (pageAttr.isHomePage())
-            IsHomePage = true;
+            isHomePage = true;
     }
 }

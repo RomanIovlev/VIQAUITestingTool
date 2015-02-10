@@ -35,7 +35,10 @@ public interface ITable<T extends IHaveValue> extends IHaveValue {
     List<Cell<T>> findRowByColumnValue(String colName, String value) throws Exception;
 
     Columns<T> getColumns();
+    List<Cell<T>> getColumn(int colNum) throws Exception;
+    List<Cell<T>> getColumn(String colName) throws Exception;
     Rows<T> getRows();
-    void setFooter(String[] value);
+    List<Cell<T>> getRow(int rowNum) throws Exception;
+    List<Cell<T>> getRow(String rowName) throws Exception;
     String[] getFooter() throws Exception;
 }

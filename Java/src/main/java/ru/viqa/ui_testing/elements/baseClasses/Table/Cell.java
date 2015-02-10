@@ -8,25 +8,25 @@ import ru.viqa.ui_testing.elements.baseClasses.*;
 import ru.viqa.ui_testing.elements.interfaces.IHaveValue;
 
 public class Cell<T extends IHaveValue> extends VIElement {
-    public T Element;
-    public int ColumnNum;
-    public int RowNum;
-    public String ColumnName;
-    public String RowName;
+    public T element;
+    public int columnNum;
+    public int rowNum;
+    public String columnName;
+    public String rowName;
 
     public Cell(T element, int columnNum, int rowNum, String colName, String rowName) throws Exception {
-        Element = element;
-        ColumnNum = columnNum;
-        RowNum = rowNum;
-        ColumnName = colName;
-        RowName = rowName;
+        this.element = element;
+        this.columnNum = columnNum;
+        this.rowNum = rowNum;
+        columnName = colName;
+        this.rowName = rowName;
     }
 
-    public Cell<T> UpdateData(String colName, String rowName) {
-        if ((ColumnName == null || ColumnName.equals("")) && !(colName == null || colName.equals("")))
-            ColumnName = colName;
-        if ((RowName == null || RowName.equals("")) && !(rowName == null || rowName.equals("")))
-        RowName = rowName;
+    public Cell<T> updateData(String colName, String rowName) {
+        if ((columnName == null || columnName.equals("")) && !(colName == null || colName.equals("")))
+            columnName = colName;
+        if ((this.rowName == null || this.rowName.equals("")) && !(rowName == null || rowName.equals("")))
+        this.rowName = rowName;
         return this;
     }
 }

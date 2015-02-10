@@ -5,4 +5,7 @@ package ru.viqa.ui_testing.elements.interfaces;
  */
 public interface IText extends IHaveValue {
     String getText() throws Exception;
+    @Deprecated
+    void setValue(String value) throws Exception;
+
 }

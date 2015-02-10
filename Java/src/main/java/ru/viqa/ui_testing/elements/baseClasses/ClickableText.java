@@ -1,8 +1,9 @@
-package ru.viqa.ui_testing.elements.simpleElements;
+package ru.viqa.ui_testing.elements.baseClasses;
 
 import ru.viqa.ui_testing.elements.interfaces.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import ru.viqa.ui_testing.elements.simpleElements.Text;
 
 /**
  * Created by 12345 on 02.10.2014.
@@ -10,7 +11,7 @@ import org.openqa.selenium.WebElement;
 public class ClickableText extends Clickable implements IText{
     public Text TextElement;
 
-    public ClickableText() throws Exception{ super(); TypeName = "Clickable text";}
+    public ClickableText() throws Exception{ super(); }
     public ClickableText(String name) throws Exception { super(name); }
     public ClickableText(String name, String cssSelector) throws Exception {
         super(name, cssSelector); Init(name, By.cssSelector(cssSelector)); }
@@ -33,15 +34,13 @@ public class ClickableText extends Clickable implements IText{
 
     protected String getTextAction() throws Exception { return TextElement.getText(); }
     protected String getValueAction() throws Exception { return getTextAction(); }
-    protected void setValueAction(Object value) throws Exception { }
-
-    public final String getValue() throws Exception { return doVIActionResult("Get value", this::getValueAction, text -> text); }
+    public final String getValue() throws Exception {
+        return doVIActionResult("Get value", this::getValueAction, text -> text);
+    }
+    @Deprecated
+    public final void setValue(String value) throws Exception {  }
 
     public final String getText() throws Exception{
         return doVIActionResult("Get text", this::getTextAction, text -> text);
     }
-
-    public final void setValue(String value) throws Exception { doVIAction("Set Value^ " + value, () -> setValueAction(value));}
-
-
 }

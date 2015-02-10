@@ -26,27 +26,23 @@ public class Navigation {
     public VIPage getCurrentPage() { return pagesHistory.toArray(new VIPage[pagesHistory.size()])[_currentPageNum]; }
     public String WindowHandle;
 
-    public void openPage(String uri) throws Exception {
-        new VIPage("Page with url " + VIPage.getUrlValue(uri, _site), uri, "", _site).open();
-    }
-
-    public void processNewPage(VIPage page) throws Exception {
+    protected void processNewPage(VIPage page) throws Exception {
         WindowHandle = getWebDriver().getWindowHandle();
-        _site.SiteSettings.dropCash();
+        _site.siteSettings.dropCash();
         pagesHistory.add(page);
         incCurrentPageNum();
     }
 
-    public void processGoBack() throws Exception {
-        _site.SiteSettings.dropCash();
+    protected void processGoBack() throws Exception {
+        _site.siteSettings.dropCash();
         decCurrentPageNum();
     }
-    public void processGoForward() throws Exception {
-        _site.SiteSettings.dropCash();
+    protected void processGoForward() throws Exception {
+        _site.siteSettings.dropCash();
         incCurrentPageNum();
     }
 
-    public void processRefreshPage() throws Exception {
-        _site.SiteSettings.dropCash();
+    protected void processRefreshPage() throws Exception {
+        _site.siteSettings.dropCash();
     }
 }

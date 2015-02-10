@@ -1,5 +1,6 @@
 package ru.viqa.ui_testing.elements.simpleElements;
 
+import ru.viqa.ui_testing.elements.baseClasses.ClickableText;
 import ru.viqa.ui_testing.elements.interfaces.*;
 import org.openqa.selenium.*;
 
@@ -14,7 +15,7 @@ public class Link extends ClickableText implements ILink {
     public static String commonLocatorByNamed(String id) { return format(LocatorTmpl, "name", id); }
     public static String commonLocatorByClassName(String id) { return format(LocatorTmpl, "class", id); }
 
-    public Link() throws Exception{ super(); TypeName = "Link";}
+    public Link() throws Exception{ super(); }
     public Link(String name) throws Exception { super(name); }
     public Link(String name, String cssSelector) throws Exception { super(name, cssSelector); }
     public Link(String name, By byLocator) throws Exception { super(name, byLocator); }

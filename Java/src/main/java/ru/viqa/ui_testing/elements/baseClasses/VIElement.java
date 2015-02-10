@@ -3,12 +3,10 @@ package ru.viqa.ui_testing.elements.baseClasses;
 import ru.viqa.ui_testing.common.funcInterfaces.*;
 import ru.viqa.ui_testing.common.interfaces.WebDriverTimeouts;
 import ru.viqa.ui_testing.common.Named;
-import ru.viqa.ui_testing.common.pairs.Pair;
-import ru.viqa.ui_testing.common.pairs.Pairs;
+import ru.viqa.ui_testing.common.pairs.*;
 import ru.viqa.ui_testing.common.Scenario;
 import ru.viqa.ui_testing.common.utils.Timer;
-import ru.viqa.ui_testing.page_objects.HighlightSettings;
-import ru.viqa.ui_testing.page_objects.VISite;
+import ru.viqa.ui_testing.page_objects.*;
 import ru.viqa.ui_testing.annotations.AnnotationsUtil;
 import ru.viqa.ui_testing.elements.interfaces.*;
 import org.openqa.selenium.JavascriptExecutor;
@@ -18,15 +16,14 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static ru.viqa.ui_testing.common.utils.LinqUtils.first;
-import static ru.viqa.ui_testing.common.utils.LinqUtils.foreach;
-import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getFieldValue;
-import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getFields;
+import static ru.viqa.ui_testing.common.utils.LinqUtils.*;
+import static ru.viqa.ui_testing.common.utils.ReflectionUtils.*;
 import static ru.viqa.ui_testing.common.utils.WebDriverByUtils.*;
 import static ru.viqa.ui_testing.common.utils.StringUtils.*;
 import static ru.viqa.ui_testing.common.pairs.Pairs.*;
 import static java.lang.String.format;
 import static ru.viqa.ui_testing.page_objects.VISite.Alerting;
+import static ru.viqa.ui_testing.page_objects.VISite.Logger;
 
 /**
  * Created by 12345 on 10.05.2014.
@@ -38,8 +35,8 @@ public class VIElement extends Named implements IVIElement {
     public VIElement setSite(VISite site) { this.site = site; return this;}
     public Pairs<ContextType, By> Context = new Pairs<>();
     protected By _locator;
-    public static VISite DefaultSite;
     public boolean haveLocator() { return _locator != null; }
+    protected boolean checkVisibility = true;
 
     public void fillFrom(Object obj) throws Exception {
         if (obj == null) return;
@@ -60,7 +57,7 @@ public class VIElement extends Named implements IVIElement {
 
     public SearchContext getSearchContext() throws Exception {
         boolean isFirst = true;
-        if (Context == null)
+        if (Context == null || Context.size() == 0)
             return getWebDriver();
         SearchContext context = getWebDriver().switchTo().defaultContent();
         for (Pair<ContextType, By> locator : Context) {
@@ -107,7 +104,7 @@ public class VIElement extends Named implements IVIElement {
     }
 
     protected Timer getTimer() {
-        return new Timer(getWaitTimeoutInSec() * 1000, getSite().WebDriverTimeouts.RetryActionInMSec);
+        return new Timer(getWaitTimeoutInSec() * 1000, getSite().siteSettings.timeouts.RetryActionInMSec);
     }
     private Timer getTimer(long timeoutInSec, long retryTimeoutInMSec)
     {
@@ -121,7 +118,7 @@ public class VIElement extends Named implements IVIElement {
     }
 
     public WebDriverTimeouts getTimeouts() {
-        return getSite().WebDriverTimeouts;
+        return getSite().siteSettings.timeouts;
     }
 
     private WebElement _webElement;
@@ -145,16 +142,14 @@ public class VIElement extends Named implements IVIElement {
     }
 
     private long getWaitTimeoutInSec() {
-        if (OpenPageName == null)
+        if (openPageName == null || openPageName.equals(""))
             return (_waitTimeoutInSec != null) ? _waitTimeoutInSec : getDefaultWaitTimeoutInSec();
-        if (!OpenPageName.equals(""))
-            getSite().checkPage(OpenPageName);
-        OpenPageName = null;
+        getSite().checkPage(openPageName);
         return getTimeouts().WaitPageToLoadInSec;
     }
 
-    protected String TypeName = "Element type undefined";
-    public String getFullName() throws Exception { return (getName() != null) ? getName() : TypeName + " with undefiened Name";}
+    protected String getTypeName() { return last(this.getClass().getTypeName().split("\\."));}
+    public String getFullName() throws Exception { return (getName() != null) ? getName() : getTypeName() + " with undefiened Name";}
 
     private WebElement getUniqueWebElement(List<WebElement> webElements) throws Exception {
         if (webElements.size() == 1)
@@ -170,13 +165,15 @@ public class VIElement extends Named implements IVIElement {
     private String getCantFindElementMessage() throws Exception {
         return format("Can't find element '%s' by selector '%s'. Please correct locator" + LineBreak, getName(), printLocator()); }
 
-    public List<WebElement> searchElements() throws Exception { return searchElements(getLocator()); }
-    public List<WebElement> searchElements(By locator) throws Exception {
+    private List<WebElement> searchElements() throws Exception { return searchElements(getLocator()); }
+    private List<WebElement> searchElements(By locator) throws Exception {
         try {
             if (Context.size() > 0 && locator.toString().contains("By.xpath: //"))
                 setLocator(getByFunc(locator).invoke(getByLocator(locator)
                         .replaceFirst("/", "./")));
-            return getSearchContext().findElements(getLocator()); }
+            SearchContext sc = getSearchContext();
+            By locatorS = getLocator();
+            return sc.findElements(locatorS); }
         catch(Exception ex) { throw Alerting.throwError(getCantFindElementMessage());}
     }
 
@@ -184,10 +181,11 @@ public class VIElement extends Named implements IVIElement {
         return waitElementState(waitFunc, getUniqueWebElement(searchElements()), -1, -1); }
     public boolean waitElementState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement) throws Exception {
         return waitElementState(waitFunc, webElement, -1, -1); }
-    public boolean waitElementState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec) throws Exception {
+    public boolean waitElementState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec)
+            throws Exception {
         return waitElementState(waitFunc, webElement, timeoutInSec, -1); }
-    public boolean waitElementState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec, long retryTimeoutInMSec) throws Exception
-    {
+    public boolean waitElementState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec,
+            long retryTimeoutInMSec) throws Exception {
         return doVIActionResult("Wait element State",
                 () -> getTimer(timeoutInSec, retryTimeoutInMSec)
                     .wait(() -> waitFunc.invoke(webElement)),
@@ -200,21 +198,26 @@ public class VIElement extends Named implements IVIElement {
     public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement) throws Exception {
         return waitElementWithState(waitFunc, webElement, -1, -1, "");
     }
-    public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, String msg) throws Exception {
+    public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, String msg)
+            throws Exception {
         return waitElementWithState(waitFunc, webElement, -1, -1, msg);
     }
-    public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec) throws Exception {
+    public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec)
+            throws Exception {
         return waitElementWithState(waitFunc, webElement, timeoutInSec, -1, "");
     }
-    public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec, long retryTimeoutInMSec) throws Exception {
+    public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec,
+            long retryTimeoutInMSec) throws Exception {
         return waitElementWithState(waitFunc, webElement, timeoutInSec, retryTimeoutInMSec, "");
     }
-    public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec, long retryTimeoutInMSec, String msg) throws Exception {
+    public WebElement waitElementWithState(FuncTT<WebElement, Boolean> waitFunc, WebElement webElement, long timeoutInSec,
+           long retryTimeoutInMSec, String msg) throws Exception {
+
         if (waitElementState(waitFunc, webElement, timeoutInSec, retryTimeoutInMSec))
             return getUniqueWebElement();
         throw Alerting.throwError(msg);
     }
-    private List<WebElement> waitWebElements() throws Exception {
+    public List<WebElement> waitListOfWebElements() throws Exception {
         if (getTimer().wait(() -> searchElements().size() > 0))
             try {
                 return searchElements();
@@ -223,37 +226,45 @@ public class VIElement extends Named implements IVIElement {
     }
 
     public boolean isPresent() throws Exception {
-        return doVIActionResult("Is Element Present",
-            () -> {
-                try {
-                    getWebDriver().manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
-                    List<WebElement> elements = searchElements();
-                    getWebDriver().manage().timeouts().implicitlyWait(getSite().WebDriverTimeouts.WaitWebElementInSec, TimeUnit.SECONDS);
-                    return elements.size() > 0;
-                } catch (Exception ex) { return false; }
-            }, Object::toString);
+        return checkNowElement("Present", elements -> elements.size() > 0);
     }
 
     public boolean isDisplayed() throws Exception {
-        return doVIActionResult("Is Element Displayed",
-            () -> {
+        return checkNowElement("Displayed", elements -> {
+            for (WebElement el : elements)
+                if (el.isDisplayed())
+                    return true;
+            return false;
+        });
+    }
+
+    public boolean isEnabled() throws Exception {
+        return checkNowElement("Enabled", elements -> {
+            for (WebElement el : elements)
+                if (el.isDisplayed())
+                    return el.isEnabled();
+            return false;
+        });
+    }
+
+    private boolean checkNowElement(String checkName, FuncTT<List<WebElement>, Boolean> checkCriteria) throws Exception {
+        return doVIActionResult("Is Element " + checkName, () -> {
                 try {
                     getWebDriver().manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
-                    List<WebElement> elements = doVIActionResult("Is Displayed Present", this::searchElements, els -> "Find " + els.size() + " element(s)");
-                    getWebDriver().manage().timeouts().implicitlyWait(getSite().WebDriverTimeouts.WaitWebElementInSec, TimeUnit.SECONDS);
-                    for (WebElement el : elements)
-                        if (el.isDisplayed())
-                            return true;
-                    return false;
+                    List<WebElement> elements = doVIActionResult("Is Element" + checkName, this::searchElements,
+                        els -> "Find " + els.size() + " element(s)");
+                    getWebDriver().manage().timeouts().implicitlyWait(getSite().siteSettings.timeouts.WaitWebElementInSec,
+                        TimeUnit.SECONDS);
+                    return checkCriteria.invoke(elements);
                 } catch(Exception ex) { return false; }
-        }, Object::toString);
+            }, Object::toString);
     }
 
     public int cashDropTimes;
 
     private void isClearCashNeeded() {
-        if (getSite().SiteSettings.useCache) {
-            if (cashDropTimes != getSite().SiteSettings.cashDropTimes)
+        if (getSite().siteSettings.useCache) {
+            if (cashDropTimes != getSite().siteSettings.cashDropTimes)
                 dropCache();
             return;
         }
@@ -261,20 +272,23 @@ public class VIElement extends Named implements IVIElement {
     }
 
     private void dropCache() {
-        cashDropTimes = getSite().SiteSettings.cashDropTimes;
+        cashDropTimes = getSite().siteSettings.cashDropTimes;
         _webElement = null;
     }
 
     public WebElement getUniqueWebElement() throws Exception {
-        isClearCashNeeded();
-        if (_webElement != null)
-            return _webElement;
-        List<WebElement> foundElements = waitWebElements();
-        if (foundElements == null)
-            throw Alerting.throwError(getCantFindElementMessage());
-        setWebElement(getUniqueWebElement(foundElements));
-        _waitTimeoutInSec = null;
-        return waitElementWithState(WebElement::isDisplayed, getWebElement(), getDefaultLogMessage(("Found element stay invisible.")));
+        try {
+            isClearCashNeeded();
+            if (_webElement != null)
+                return _webElement;
+            List<WebElement> foundElements = waitListOfWebElements();
+            if (foundElements == null)
+                throw Alerting.throwError(getCantFindElementMessage());
+            setWebElement(getUniqueWebElement(foundElements));
+            return (checkVisibility)
+                    ? waitElementWithState(WebElement::isDisplayed, getWebElement(), getDefaultLogMessage(("Found element stay invisible.")))
+                    : getWebElement();
+        } catch (Exception ex) { throw Alerting.throwError("Error in getUniqueWebElement" + ex.getMessage()); }
     }
 
     public IVIElement getVIElement() throws Exception {
@@ -292,26 +306,28 @@ public class VIElement extends Named implements IVIElement {
     public VIElement(WebElement webElement) throws Exception { this("", webElement); }
 
     public String getDefaultLogMessage(String text) throws Exception {
-        return text +  format(" (Name: '%s', Type: '%s', LocatorAttribute: '%s')", getFullName(), TypeName, printLocator());
+        return text +  format(" (Name: '%s', Type: '%s', LocatorAttribute: '%s')", getFullName(), getTypeName(), printLocator());
     }
 
     public static Scenario viScenario = (viElement, actionName, viAction) -> {
-        VISite.Logger.Event(viElement.getDefaultLogMessage(actionName));
+        Logger.event(viElement.getDefaultLogMessage(actionName));
         return viAction.invoke();
     };
 
-    public final <T> T doVIActionResult(String logActionName, FuncT<T> viAction) throws Exception {
+    protected final <T> T doVIActionResult(String logActionName, FuncT<T> viAction) throws Exception {
         return doVIActionResult(logActionName, viAction, null);
     }
-    public final <T> T doVIActionResult(String actionName, FuncT<T> viAction, FuncTT<T, String> logResult) throws Exception
+    protected final <T> T doVIActionResult(String actionName, FuncT<T> viAction, FuncTT<T, String> logResult) throws Exception
     {
         try {
             T result = (T) viScenario.invoke(this, actionName, () -> viAction.invoke());
-            HighlightSettings demoMode = getSite().SiteSettings.demoSettings;
+            HighlightSettings demoMode = getSite().siteSettings.demoSettings;
+            _waitTimeoutInSec = null;
+            openPageName = null;
             if (demoMode != null)
                 highlight(demoMode);
             if (logResult != null)
-                VISite.Logger.Event(logResult.invoke(result));
+                Logger.event(logResult.invoke(result));
             return result;
             }
         catch (Exception ex)
@@ -320,11 +336,11 @@ public class VIElement extends Named implements IVIElement {
         }
     }
 
-    public final void doVIAction(String actionName, Action viAction) throws Exception
+    protected final void doVIAction(String actionName, Action viAction) throws Exception
     {
         try {
             viScenario.invoke(this, actionName, () -> {viAction.invoke(); return null;});
-            HighlightSettings demoMode = getSite().SiteSettings.demoSettings;
+            HighlightSettings demoMode = getSite().siteSettings.demoSettings;
             if (demoMode != null)
                 highlight(demoMode);
         }
@@ -333,16 +349,11 @@ public class VIElement extends Named implements IVIElement {
         }
     }
 
-    public static FuncTTT<String, String, Boolean> DefaultCompareFunc = (a, e) -> a.equals(e);
+    protected static String openPageName;
 
-    protected static String OpenPageName;
-
-    public static void init(VISite site) throws Exception {
-        DefaultSite = site;
-    }
-
-    public void SetAttribute(String attributeName, String value) throws Exception {
-        ((JavascriptExecutor)getWebDriver()).executeScript("arguments[0].setAttribute(arguments[1], arguments[2])", getUniqueWebElement(), attributeName, value);
+    public void setAttribute(String attributeName, String value) throws Exception {
+        ((JavascriptExecutor)getWebDriver()).executeScript("arguments[0].setAttribute(arguments[1], arguments[2])",
+            getUniqueWebElement(), attributeName, value);
     }
     public void highlight() throws Exception { highlight("yellow", "red", 1); }
     public void highlight(String bgColor) throws Exception { highlight(bgColor, "red", 1); }
@@ -355,9 +366,10 @@ public class VIElement extends Named implements IVIElement {
         if (highlightSettings == null)
             highlightSettings = new HighlightSettings();
         String orig = getUniqueWebElement().getAttribute("style");
-        SetAttribute("style",  format("border: 3px solid %s; background-color: %s;", highlightSettings.FrameColor, highlightSettings.BgColor));
+        setAttribute("style", format("border: 3px solid %s; background-color: %s;", highlightSettings.FrameColor,
+                highlightSettings.BgColor));
         Thread.sleep(highlightSettings.TimeoutInSec * 1000);
-        SetAttribute("style", orig);
+        setAttribute("style", orig);
     }
 
     public static <T extends IVIElement> T cloneVIElement(T element) throws CloneNotSupportedException {

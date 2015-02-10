@@ -9,6 +9,7 @@ import java.util.*;
 import static ru.viqa.ui_testing.common.utils.PrintUtils.*;
 import static ru.viqa.ui_testing.common.utils.LinqUtils.*;
 import static java.lang.String.format;
+import static ru.viqa.ui_testing.page_objects.VISite.Alerting;
 
 /**
  * Created by roman.i on 30.09.2014.
@@ -26,7 +27,7 @@ public class WebDriverByUtils {
         String byLocator = getByLocator(by);
         try { byLocator = format(getByLocator(by), args); }
         catch(Exception ex) {
-            throw VISite.Alerting.throwError(getBadLocatorMsg(byLocator, args)); }
+            throw Alerting.throwError(getBadLocatorMsg(byLocator, args)); }
         return getByFunc(by).invoke(byLocator);
     }
     public static By copyBy(By by) throws Exception {

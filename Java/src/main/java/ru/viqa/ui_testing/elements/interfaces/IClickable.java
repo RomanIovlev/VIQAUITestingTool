@@ -6,4 +6,6 @@ package ru.viqa.ui_testing.elements.interfaces;
 public interface IClickable extends IVIElement
 {
     void click() throws Exception;
+    void clickOnInvisible() throws Exception;
+    void clickOpenPage(String openPageName) throws Exception;
 }

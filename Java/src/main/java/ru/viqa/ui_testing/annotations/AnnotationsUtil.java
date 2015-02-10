@@ -1,7 +1,5 @@
 package ru.viqa.ui_testing.annotations;
 
-import ru.viqa.ui_testing.common.alertings.ScreenshotAlert;
-import ru.viqa.ui_testing.page_objects.VISite;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.FindBy;
 
@@ -33,14 +31,6 @@ public class AnnotationsUtil {
         for (int i = 1; i < camel.length() - 1; i++)
             result += (((isCapital(camel.charAt(i)) && !isCapital(camel.charAt(i + 1))) ? " " : "") + camel.charAt(i));
         return result + camel.charAt(camel.length() - 1);
-    }
-
-
-    public static ScreenshotAlert getScreenshotAlert(VISite site)
-    {
-        ScreenshotAlert alert = new ScreenshotAlert(site);
-        alert.setFileName(VISite.testContext.getTestName() + "_fail_" + VISite.RunId);
-        return alert;
     }
 
     private static boolean isCapital(char ch) { return ('A' < ch  && ch < 'Z') || ('А' < ch  && ch < 'Я'); }

@@ -12,33 +12,33 @@ import static ru.viqa.ui_testing.common.utils.ReflectionUtils.isClass;
  * Created by 12345 on 25.10.2014.
  */
 public abstract class TableLine<T extends IHaveValue> {
-    public int StartIndex = 1;
-    public boolean HaveHeaders;
-    public ElementIndexType ElementIndex;
+    public int startIndex = 1;
+    public boolean haveHeader;
+    public ElementIndexType elementIndex;
 
-    public Table<T> Table;
+    public Table<T> table;
 
-    protected int _count = -1;
-    public void setCount(int value) { _count = value; }
-    public int getCount() {
-        if (_count > 0)
-            return _count;
-            return _headers != null ? _headers.length : 0;
+    protected int count = -1;
+    public void setCount(int value) { count = value; }
+    public int count() {
+        if (count > 0)
+            return count;
+            return headers != null ? headers.length : 0;
     }
 
-    protected String[] _headers;
-    public void setHeaders(String[] value) { _headers = value; }
+    protected String[] headers;
+    public void setHeaders(String[] value) { headers = value; }
     protected abstract String[] getHeadersAction() throws Exception;
-    public final String[] getHeaders() throws Exception {
-        if (_headers != null)
-            return _headers;
-        _headers = Table.doVIActionResult("Get Rows Headers", this::getHeadersAction);
-        if (_headers == null || !(_headers.length > 0))
+    public final String[] headers() throws Exception {
+        if (headers != null)
+            return headers;
+        headers = table.getHeaders(this::getHeadersAction);
+        if (headers == null || !(headers.length > 0))
             return null;
-        setCount(_headers.length);
-        if (!HaveHeaders)
-            setHeaders(getNumList(getCount()));
-        return _headers;
+        setCount(headers.length);
+        if (!haveHeader)
+            setHeaders(getNumList(count()));
+        return headers;
     }
 
     protected String[] getNumList(int count) {
@@ -52,16 +52,16 @@ public abstract class TableLine<T extends IHaveValue> {
     }
 
     public final void update(TableLine<T> tableLine) throws Exception {
-        if (tableLine._count > 0)
-            setCount(tableLine.getCount());
-        if (tableLine.StartIndex != 1)
-            StartIndex = tableLine.StartIndex;
-        if (tableLine._headers != null && tableLine._headers.length > 0)
-            setHeaders(tableLine.getHeaders());
-        if ((isClass(tableLine.getClass(), Columns.class) && !tableLine.HaveHeaders)
-            || (isClass(tableLine.getClass(), Rows.class) && tableLine.HaveHeaders))
-            HaveHeaders = tableLine.HaveHeaders;
-        if (tableLine.ElementIndex != ElementIndexType.Nums)
-        ElementIndex = tableLine.ElementIndex;
+        if (tableLine.count > 0)
+            setCount(tableLine.count());
+        if (tableLine.startIndex != 1)
+            startIndex = tableLine.startIndex;
+        if (tableLine.headers != null && tableLine.headers.length > 0)
+            setHeaders(tableLine.headers());
+        if ((isClass(tableLine.getClass(), Columns.class) && !tableLine.haveHeader)
+            || (isClass(tableLine.getClass(), Rows.class) && tableLine.haveHeader))
+            haveHeader = tableLine.haveHeader;
+        if (tableLine.elementIndex != ElementIndexType.Nums)
+        elementIndex = tableLine.elementIndex;
     }
 }

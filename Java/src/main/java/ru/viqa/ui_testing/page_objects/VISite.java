@@ -2,19 +2,18 @@ package ru.viqa.ui_testing.page_objects;
 
 import ru.viqa.ui_testing.common.*;
 import ru.viqa.ui_testing.common.alertings.DefaultAlerting;
+import ru.viqa.ui_testing.common.alertings.ScreenshotAlert;
 import ru.viqa.ui_testing.common.funcInterfaces.*;
 import ru.viqa.ui_testing.common.interfaces.*;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import ru.viqa.ui_testing.common.loggers.DefaultLogger;
-import ru.viqa.ui_testing.annotations.AnnotationsUtil;
 import ru.viqa.ui_testing.annotations.DemoSettings;
 import ru.viqa.ui_testing.annotations.Site;
 import ru.viqa.ui_testing.elements.baseClasses.VIElement;
@@ -22,17 +21,18 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.os.*;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.testng.ITestResult;
 
+import static java.lang.Integer.parseInt;
+import static org.openqa.selenium.remote.DesiredCapabilities.*;
 import static ru.viqa.ui_testing.common.utils.StringUtils.LineBreak;
-import static ru.viqa.ui_testing.page_objects.BrowserType.Firefox;
+import static ru.viqa.ui_testing.page_objects.BrowserType.FIREFOX;
 import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getFields;
 import static ru.viqa.ui_testing.common.utils.TimeUtils.nowTime;
 import static ru.viqa.ui_testing.common.utils.LinqUtils.*;
 import static ru.viqa.ui_testing.annotations.AnnotationsUtil.getElementName;
+import static ru.viqa.ui_testing.page_objects.PageObjectsInit.interfaceTypeMapInit;
 
 /**
  * Created by roman.i on 24.09.2014.
@@ -40,42 +40,49 @@ import static ru.viqa.ui_testing.annotations.AnnotationsUtil.getElementName;
 public class VISite extends VIElement {
     public static ILogger Logger;
     public static IAlerting Alerting;
-    public static ITestResult testContext;
 
-    public WebDriverTimeouts WebDriverTimeouts = new WebDriverTimeouts();
-    public SiteSettings SiteSettings = new SiteSettings();
-
-    public static String RunId = nowTime("yy-MM-dd_HH-mm-ss");
-    private static Properties _properties;
-    public static String getProperty(String name) {
-        return _properties.getProperty(name);
+    public SiteSettings siteSettings = new SiteSettings();
+    private static PropertyLoader properties;
+    public static String getProperty(String name) throws IOException {
+        return properties.get(name);
     }
-    public void readPropertiesFromFile(String fileName) throws Exception {
-        FileInputStream propFile = new FileInputStream(fileName);
-        _properties = new Properties(System.getProperties());
-        _properties.load(propFile);
+    public static void setProperties(PropertyLoader properties) throws IOException {
+        VISite.properties = properties;
     }
-    public Navigation Navigate;
 
-    public String Domain = "/";
-    public void setDomain(String value) { Domain = value.replaceAll("/*$", "") + "/";  }
 
-    public String locatorGroup;
+    public static String RunId;
+
+    public Navigation navigate;
+    public void openPage(String uri) throws Exception {
+        new VIPage("Page with url " + VIPage.getUrlValue(uri, this), uri, "", this).open();
+    }
+
+    private String Domain = "/";
+    public String getDomain() { return Domain; }
+    public void setDomain(String value) { Domain = value.replaceAll("/*$", "");  }
+
+    private String locatorVersion;
+    public String getLocatorVersion() { return locatorVersion; }
     private WebDriver _webDriver;
-    public boolean driverIsRun() {return _webDriver != null; }
-    public BrowserType Browser = Firefox;
-    public VISite setWebDriver(BrowserType browserType) { WebDriverFunc = getDriver(browserType); return this; }
+    private BrowserType browserType;
+    public BrowserType getBrowserType() { return browserType; }
+    public boolean isDriverRun() {return _webDriver != null; }
+    public VISite setWebDriver(BrowserType browserType) {
+        this.browserType = browserType;
+        WebDriverFunc = getWebDriver(browserType); return this; }
     public WebDriver getWebDriver() throws Exception {
-        if (!driverIsRun())
+        if (!isDriverRun())
             return runWebDriver();
         return _webDriver; }
-    public static List<WebDriver> RunWebDrivers = new ArrayList<>();
+    private static List<WebDriver> RunWebDrivers = new ArrayList<>();
+    public static List<WebDriver> getRunWebDrivers() { return RunWebDrivers;}
 
     public WebDriver runWebDriver() throws Exception {
         _webDriver = WebDriverFunc.invoke();
         RunWebDrivers.add(_webDriver);
         _webDriver.manage().window().maximize();
-        _webDriver.manage().timeouts().implicitlyWait(WebDriverTimeouts.WaitWebElementInSec, TimeUnit.SECONDS);
+        _webDriver.manage().timeouts().implicitlyWait(siteSettings.timeouts.WaitWebElementInSec, TimeUnit.SECONDS);
         return _webDriver;
     }
 
@@ -86,20 +93,21 @@ public class VISite extends VIElement {
         desiredCapabilities = action;
     }
 
-    public FuncT<WebDriver> getDriver(BrowserType browserType)
+    public FuncT<WebDriver> getWebDriver(BrowserType browserType)
     {
+        this.browserType = browserType;
         switch (browserType)
         {
-            case Firefox:
+            case FIREFOX:
                 return () -> {
-                    DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+                    DesiredCapabilities capabilities = firefox();
                     if (desiredCapabilities != null)
                         desiredCapabilities.invoke(capabilities);
                     return new FirefoxDriver(capabilities);
                 };
-            case Chrome:
+            case CHROME:
                 return () -> {
-                    DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+                    DesiredCapabilities capabilities = chrome();
                     String path = new File(".").getCanonicalPath() + "\\drivers\\chromedriver.exe";
                     //String path = new File(".").getCanonicalPath() + "/drivers/chromedriver"; //for mac
                     System.setProperty("webdriver.chrome.driver", path);
@@ -109,7 +117,7 @@ public class VISite extends VIElement {
                 };
             case IE:
                 return () -> {
-                    DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
+                    DesiredCapabilities capabilities = internetExplorer();
                     String path = new File(".").getCanonicalPath() + "\\drivers\\IEDriverServer.exe";
                     capabilities.setCapability(
                             InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
@@ -123,45 +131,39 @@ public class VISite extends VIElement {
         }
     }
 
-    public VISite() throws Exception {
-        this(Firefox);
+    public VISite() throws Exception { this(FIREFOX); }
+    public VISite(BrowserType browserType) throws Exception { this(browserType, null); }
+    public VISite(BrowserType browserType, String locatorVersion) throws Exception {
+        WebDriverFunc = getWebDriver(browserType);
+        initSite(locatorVersion);
     }
-    public VISite(BrowserType browserType) throws Exception { this(browserType, true, null); }
-    public VISite(BrowserType browserType, String groupName) throws Exception { this(browserType, true, groupName); }
-    public VISite(BrowserType browserType, boolean isMain) throws Exception { this(browserType, isMain, null); }
-    public VISite(BrowserType browserType, boolean isMain, String groupName) throws Exception {
-        WebDriverFunc = getDriver(browserType);
-        initSite(isMain, groupName);
-    }
-    public VISite(FuncT<WebDriver> webDriver) throws Exception { this(webDriver, true, null); }
-    public VISite(FuncT<WebDriver> webDriver, String groupName) throws Exception { this(webDriver, true, groupName); }
-    public VISite(FuncT<WebDriver> webDriver, boolean isMain) throws Exception { this(webDriver, isMain, null); }
-    public VISite(FuncT<WebDriver> webDriver, boolean isMain, String groupName) throws Exception {
+    public VISite(FuncT<WebDriver> webDriver) throws Exception { this(webDriver, null); }
+    public VISite(FuncT<WebDriver> webDriver, String locatorVersion) throws Exception {
         WebDriverFunc = webDriver;
-        initSite(isMain, groupName);
+        initSite(locatorVersion);
     }
-    public VISite startRemote(String settingsFileName) throws Exception {
-        PropertyLoader props = new PropertyLoader(settingsFileName);
+
+    public VISite startRemote(PropertyLoader props) throws Exception {
         props.fillAction(prop -> Domain = prop, "site.url");
         WebDriverFunc = () -> {
             final DesiredCapabilities[] capabilities = {new DesiredCapabilities()};
             props.fillAction(prop -> {
                 if (prop != null && !prop.equals(""))
                     switch (prop) {
-                        case "Firefox":
-                            capabilities[0] = DesiredCapabilities.firefox();
+                        case "FIREFOX":
+                            capabilities[0] = firefox();
                             break;
-                        case "Chrome":
-                            capabilities[0] = DesiredCapabilities.chrome();
+                        case "CHROME":
+                            capabilities[0] = chrome();
                             break;
                         case "IE":
-                            capabilities[0] = DesiredCapabilities.internetExplorer();
+                            capabilities[0] = internetExplorer();
                             break;
                         default:
                             throw Alerting.throwError("Remote, Unsupported browser:" + prop);
                     }
                 else
-                    capabilities[0] = DesiredCapabilities.firefox();
+                    capabilities[0] = firefox();
             }, "browser.name");
             props.fillAction(prop -> capabilities[0].setPlatform(Platform.valueOf(prop)), "browser.os");
             props.fillAction(capabilities[0]::setVersion, "browser.version");
@@ -170,70 +172,94 @@ public class VISite extends VIElement {
         return this;
     }
 
-    public void initSite(boolean isMain, String groupName) throws Exception {
+    private void initSite(String locatorVersion) throws Exception {
         try {
             setName(getElementName(this));
-            Logger = new DefaultLogger();
-            ((DefaultLogger) Logger).LogFileFormat = () -> "%s_" + RunId + ".log";
-            Navigate = new Navigation(this);
+            if (RunId == null)
+                RunId = nowTime("yyyy-MM-dd_HH-mm-ss");
+            if (Logger == null)
+                Logger = new DefaultLogger(RunId);
+            interfaceTypeMapInit();
+            navigate = new Navigation(this);
             fillSiteSettings();
             if (Alerting == null)
                 Alerting = new DefaultAlerting();
-            if (isMain)
-                VIElement.init(this);
-            locatorGroup = groupName;
+            this.locatorVersion = locatorVersion;
             setSite(this);
         } catch (Exception ex) { throw new Exception("Init site failed: " + ex.getMessage()); }
-        //PageObjectsInit.initPagesCascade(this);
     }
 
     private void fillSiteSettings() throws Exception {
         try {
             Site siteParams = getClass().getAnnotation(Site.class);
-            SiteSettings = new SiteSettings();
+            siteSettings = new SiteSettings();
             if (siteParams == null) return;
-            if (siteParams.domain() != null && !siteParams.domain().equals(""))
-                Domain = siteParams.domain();
-            if (siteParams.useCache())
-                SiteSettings.useCache = siteParams.useCache();
-            if (siteParams.demoMode())
-                SiteSettings.demoSettings = new HighlightSettings(getClass().getAnnotation(DemoSettings.class));
-            if (siteParams.screenshotAlert())
-                Alerting = AnnotationsUtil.getScreenshotAlert(this);
-
-            if (!siteParams.settingsFromPropertyFile().equals("")) {
+            if (siteParams.settingsFromPropertyFile().equals("")) {
+                if (siteParams.domain() != null && !siteParams.domain().equals(""))
+                    Domain = siteParams.domain();
+                if (siteParams.useCache())
+                    siteSettings.useCache = siteParams.useCache();
+                if (siteParams.demoMode())
+                    siteSettings.demoSettings = new HighlightSettings(getClass().getAnnotation(DemoSettings.class));
+                if (siteParams.screenshotAlert())
+                    Alerting = new ScreenshotAlert(this);
+            } else 
                 try {
-                    PropertyLoader props = new PropertyLoader(siteParams.settingsFromPropertyFile());
-                    if (props.get("viSite.domain") != null && !props.get("viSite.domain").equals(""))
-                        Domain = props.get("viSite.domain");
-                    switch (props.get("viSite.useCache")) {
-                        case "true":
-                        case "1":
-                            SiteSettings.useCache = true;
-                        case "false":
-                        case "0":
-                            SiteSettings.useCache = false;
-                    }
-                    if (props.get("viSite.demoMode").equals("true") || props.get("viSite.demoMode").equals("1"))
-                        SiteSettings.demoSettings = new HighlightSettings();
-                    if (props.get("viSite.allerter").equals("screenshot"))
-                        Alerting = AnnotationsUtil.getScreenshotAlert(this);
-                } catch (Exception ex) { Logger.Event("Can't load Site properties from file: " + siteParams.settingsFromPropertyFile());}
-            }
+                    properties = new PropertyLoader(siteParams.settingsFromPropertyFile());
+                    fillSettingsFromProperties(properties);
+                } catch (Exception ex) { Logger.event("Can't load Site properties from file: " + siteParams.settingsFromPropertyFile());}
+
         } catch (Exception ex) { throw new Exception("Error in Fill Site params from Settings" + LineBreak + ex.getMessage()); }
     }
 
+    public void fillSettingsFromProperties(PropertyLoader props) throws Exception {
+        if (props.get("viSite.domain") != null && !props.get("viSite.domain").equals(""))
+            Domain = props.get("viSite.domain");
+        switch (props.get("viSite.useCache")) {
+            case "true":
+            case "1":
+                siteSettings.useCache = true;
+            case "false":
+            case "0":
+                siteSettings.useCache = false;
+        }
+        if (props.get("viSite.demoMode").equals("true") || props.get("viSite.demoMode").equals("1"))
+            siteSettings.demoSettings = new HighlightSettings();
+        if (props.get("viSite.alerter").equals("screenshot"))
+            Alerting = new ScreenshotAlert(this);
+        props.fillAction(prop ->
+                siteSettings.timeouts.WaitWebElementInSec = parseInt(prop), "wait.element.timeout.sec");
+        props.fillAction(prop ->
+                siteSettings.timeouts.WaitPageToLoadInSec = parseInt(prop), "wait.pageload.timeout.sec");
+        props.fillAction(Logger::setLogFolder, "logger.folder");
+        props.fillAction(Logger::setLogFileName, "logger.file.name");
+        props.fillAction(Logger::setLogRecord, "logger.record");
+    }
+
+    public void open(String url) throws Exception {
+        new VIPage(url, url, "", this).open();
+    }
+    public void open() throws Exception {
+        getHomePage().open();
+    }
+
     public void takeScreenshot() throws Exception {
-        AnnotationsUtil.getScreenshotAlert(this).takeScreenshot();
+        takeScreenshot(null, null);
+    }
+
+    public void takeScreenshot(String path) throws Exception {
+        takeScreenshot(path, null);
     }
 
     public void takeScreenshot(String path, String outputFileName) throws Exception {
-        AnnotationsUtil.getScreenshotAlert(this).takeScreenshot(path, outputFileName);
+        new ScreenshotAlert(this).takeScreenshot(path, outputFileName);
     }
-/*    public List<FieldInfo> PagesFields {  get  {
+/*
+    public List<FieldInfo> PagesFields {  get  {
         return GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(_ => typeof(VIPage).IsAssignableFrom(_.FieldType)).ToList();
-    } }*/
+    } }
+*/
 
     public List<VIPage> getPages() throws Exception {
         return (List<VIPage>)select(getFields(this, VIPage.class), field -> (VIPage) field.get(this)); }
@@ -252,9 +278,9 @@ public class VISite extends VIElement {
     }
 
     public VIPage getHomePage() throws Exception {
-        List<VIPage> homePages = (List<VIPage>)where(getPages(), page -> page.IsHomePage);
+        List<VIPage> homePages = (List<VIPage>)where(getPages(), page -> page.isHomePage);
         if (homePages.size() == 1)
-            return first(getPages(), page -> page.IsHomePage);
+            return first(getPages(), page -> page.isHomePage);
         if (homePages.size() == 0) {
             VIPage page = new VIPage();
             page.setSite(this);
@@ -262,37 +288,13 @@ public class VISite extends VIElement {
             return page;
         }
         throw Alerting.throwError("Site have more than one HomePage. Please specify only one HomePage. Current HomePages: " +
-                select(where(getPages(), page -> page.IsHomePage), Named::getName));
+                select(where(getPages(), page -> page.isHomePage), Named::getName));
     }
     public void dispose()
     {
-        if (!driverIsRun()) return;
+        if (!isDriverRun()) return;
         try { _webDriver.quit(); _webDriver = null; }
         catch(Exception ignored) { }
     }
     public static void disposeAll() throws Exception { foreach(RunWebDrivers, WebDriver::quit); }
-
-    public static void killAllRunWebDrivers() throws Exception {
-        String pid = getPid();
-        while (pid != null){
-            killPID(pid);
-            pid = getPid();
-        }
-    }
-
-    private static String getPid() throws Exception {
-        return first(where(WindowsUtils.procMap(), el -> el.getKey() != null
-                && (el.getKey().contains("firefox") && el.getKey().contains("-foreground"))
-                | el.getKey().contains("chromedriver")
-                | el.getKey().contains("IEDriverServer")));
-    }
-
-    private static void killPID(String processID) {
-        executeCommand("taskkill", "/f", "/t", "/pid", processID);
-    }
-
-    private static void executeCommand(String commandName, String... args) {
-        CommandLine cmd = new CommandLine(commandName, args);
-        cmd.execute();
-    }
 }

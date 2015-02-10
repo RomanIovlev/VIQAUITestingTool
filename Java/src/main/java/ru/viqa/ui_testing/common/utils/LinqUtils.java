@@ -17,6 +17,12 @@ public class LinqUtils {
     public static <T, T1> Collection<T1> select(T[] list, FuncTT<T, T1> func) throws Exception {
         return select(Arrays.asList(list), func);
     }
+    public static <T, T1, T2> Collection<T2> selectMap(Map<T, T1> map, FuncTT<Map.Entry<T, T1>, T2> func) throws Exception {
+        List<T2> result = new ArrayList<>();
+        for(Map.Entry<T, T1> el : map.entrySet())
+            result.add(func.invoke(el));
+        return result;
+    }
     public static <T, T1, T2> Map<T, T2> select(Map<T, T1> map, FuncTT<T1, T2> func) throws Exception {
         Map<T, T2> result = new HashMap<>();
         for(Map.Entry<T, T1> el : map.entrySet())

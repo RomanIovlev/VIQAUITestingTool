@@ -1,7 +1,6 @@
-package ru.viqa.ui_testing.elements.simpleElements;
+package ru.viqa.ui_testing.elements.baseClasses;
 
 import ru.viqa.ui_testing.page_objects.*;
-import ru.viqa.ui_testing.elements.baseClasses.*;
 import ru.viqa.ui_testing.elements.interfaces.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -15,7 +14,9 @@ import static ru.viqa.ui_testing.common.utils.LinqUtils.last;
  */
 public class Clickable extends VIElement implements IClickable {
 
-    public Clickable() throws Exception { super(); TypeName = "Text"; }
+    public String clickOpensPage;
+
+    public Clickable() throws Exception { super(); }
     public Clickable(String name) throws Exception { super(name); }
     public Clickable(String name, String cssSelector) throws Exception  { super(name, cssSelector); }
     public Clickable(String name, By byLocator) throws Exception { super(name, byLocator); }
@@ -23,32 +24,37 @@ public class Clickable extends VIElement implements IClickable {
     public Clickable(String name, WebElement webElement) throws Exception { super(name, webElement);}
     public Clickable(WebElement webElement) throws Exception  { super(webElement);}
 
-    public String ClickLoadsPage;
     protected void clickAction() throws Exception { getUniqueWebElement().click(); }
 
     public final void click() throws Exception {
-        doVIAction("Click", () -> {
+        clickOpenPage(clickOpensPage);
+    }
+    public final void clickOnInvisible() throws Exception {
+        checkVisibility = false;
+        clickOpenPage(clickOpensPage);
+    }
+
+    public final void clickOpenPage(String openPageName) throws Exception {
+        doVIAction("Click on element", () -> {
             SmartClickAction();
             Set<String> windowHandles = getWebDriver().getWindowHandles();
             if (windowHandles.size() > 1) {
                 String windowHandle = last(windowHandles);
-                getSite().Navigate.WindowHandle = windowHandle;
+                getSite().navigate.WindowHandle = windowHandle;
                 getWebDriver().switchTo().window(windowHandle);
             }
-            if (ClickLoadsPage != null && !ClickLoadsPage.equals("")) return;
-            OpenPageName = ClickLoadsPage;
-            getSite().SiteSettings.dropCash();
+            VIElement.openPageName = openPageName;
+            getSite().siteSettings.dropCash();
         });
     }
 
     private void SmartClickAction() throws Exception {
         boolean clicked = getTimer().wait(() -> {
             clickAction();
-            VISite.Logger.Event(getDefaultLogMessage("Done click"));
+            VISite.Logger.event(getDefaultLogMessage("Done click"));
             return true;
         });
         if (!clicked)
             throw VISite.Alerting.throwError(getDefaultLogMessage("Failed to click element"));
-
     }
 }

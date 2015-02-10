@@ -1,7 +1,6 @@
 package ru.viqa.ui_testing.elements.simpleElements;
 
-import ru.viqa.ui_testing.elements.baseClasses.ElementId;
-import ru.viqa.ui_testing.elements.baseClasses.VIElement;
+import ru.viqa.ui_testing.elements.baseClasses.*;
 import ru.viqa.ui_testing.elements.interfaces.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -11,11 +10,8 @@ import static java.lang.String.format;
 /**
  * Created by roman.i on 17.10.2014.
  */
-public class Checkbox extends ClickableText implements ICheckbox, ISelected {
+public class Checkbox extends HaveValue implements ICheckbox {
     public VIElement CheckSignElement;
-
-    @Override
-    public String getValueAction() throws Exception { return isChecked().toString(); }
 
     //<input type="checkbox" name="vehicle" value="Bike" id="bike">
     //<label for="bike">I have a bike<br></label>
@@ -36,7 +32,6 @@ public class Checkbox extends ClickableText implements ICheckbox, ISelected {
 
     public Checkbox(String name, ElementId id) throws Exception {
         super(name, By.cssSelector(commonLocatorById(id.getId())));
-        TypeName = "Checkbox";
     }
 
     protected void checkAction() throws Exception {
@@ -48,7 +43,16 @@ public class Checkbox extends ClickableText implements ICheckbox, ISelected {
             click();
     }
     protected boolean isCheckedAction() throws Exception { return getUniqueWebElement().isSelected(); }
-    protected boolean isSelectedAction() throws Exception { return isCheckedAction(); }
+    @Override
+    protected String getValueAction() throws Exception { return isChecked().toString(); }
+    @Override
+    protected void setValueAction(String value) throws Exception {
+        if (value.toLowerCase().equals("true") || value.toLowerCase().equals("1"))
+            check();
+        if (value.toLowerCase().equals("false") || value.toLowerCase().equals("0"))
+            uncheck();
+    }
+    protected void clickAction() throws Exception { getUniqueWebElement().click(); }
 
     public final void check() throws Exception {
         doVIAction("Check Checkbox", this::checkAction);
@@ -61,20 +65,11 @@ public class Checkbox extends ClickableText implements ICheckbox, ISelected {
                 this::isCheckedAction,
                 result -> "Checkbox is " + (result ? "checked" : "unchecked"));
     }
-
-    public final Boolean isSelected() throws Exception {
-        return doVIActionResult("IsSelected", this::isSelectedAction, bool -> bool ? "True" : "False"); }
-
-   /* public void SetValue<T>(T value)
-    {
-        if (value == null) return;
-        var val = value.ToString();
-        if (!new [] {"check", "uncheck", "true", "false"}.Contains(val = val.ToLower()))
-        throw VISite.Alerting.throwError("Wrong Value type. For Checkbox availabel only 'check', 'uncheck', 'true', 'false'values of type String");
-        if (val == "check" || val == "true")
-            Check();
-        else
-            Uncheck();
-    }*/
-
+    public final void click() throws Exception {
+        doVIAction("Click on element", this::clickAction);
+    }
+    @Deprecated
+    public void clickOpenPage(String openPageName) throws Exception { }
+    @Deprecated
+    public void clickOnInvisible() throws Exception { }
 }

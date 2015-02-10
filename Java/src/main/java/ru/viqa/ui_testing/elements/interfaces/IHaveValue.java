@@ -6,5 +6,4 @@ package ru.viqa.ui_testing.elements.interfaces;
 public interface IHaveValue extends  IVIElement {
     void setValue(String value) throws Exception;
     String getValue() throws Exception;
-    //FuncTT<Object, Object> getFillRule();
 }

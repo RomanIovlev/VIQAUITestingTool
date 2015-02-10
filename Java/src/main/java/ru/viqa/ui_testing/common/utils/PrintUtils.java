@@ -1,6 +1,7 @@
 package ru.viqa.ui_testing.common.utils;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getFieldValue;
 import static ru.viqa.ui_testing.common.utils.ReflectionUtils.getFields;
@@ -13,6 +14,9 @@ import static java.lang.String.format;
 public class PrintUtils {
     public static String print(Iterable<String> list) throws Exception { return print(list, ", ", "%s"); }
     public static String print(Iterable<String> list, String separator) throws Exception { return print(list, separator, "%s"); }
+    public static <T extends Enum> String printEnum(List<T> enums) throws Exception {
+        return (enums != null) ? String.join(", ", select(enums, el -> format("%s", el))) : "";
+    }
     public static String print(Iterable<String> list, String separator, String format) throws Exception {
         return (list != null) ? String.join(separator, select(list, el -> format(format, el))) : "";
     }

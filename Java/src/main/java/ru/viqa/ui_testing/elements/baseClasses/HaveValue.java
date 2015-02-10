@@ -19,7 +19,9 @@ public abstract class HaveValue extends VIElement implements IHaveValue {
     protected String getValueAction() throws Exception { return ""; }
     protected void setValueAction(String value) throws Exception { }
 
-    public final String getValue() throws Exception { return doVIActionResult("Get value", this::getValueAction, text -> text); }
+    public final String getValue() throws Exception {
+        return doVIActionResult("Get value", this::getValueAction, text -> text);
+    }
     public final void setValue(String value) throws Exception {
         doVIAction("Set Value '" + value + "'", () -> setValueAction(value));
     }
