@@ -17,7 +17,8 @@ public class Text extends HaveValue implements IText {
     public Text(String name, WebElement webElement) throws Exception { super(name, webElement);}
     public Text(WebElement webElement) throws Exception  { super(webElement);}
 
-    protected String getTextAction() throws Exception { return getUniqueWebElement().getText(); }
+    protected String getTextAction() throws Exception {
+        return getUniqueWebElement().getText(); }
     @Override
     protected String getValueAction() throws Exception { return getTextAction(); }
 

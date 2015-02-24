@@ -3,6 +3,7 @@ package ru.viqa.ui_testing.elements.baseClasses;
 import ru.viqa.ui_testing.common.utils.PrintUtils;
 import ru.viqa.ui_testing.elements.interfaces.*;
 import org.openqa.selenium.*;
+import ru.viqa.ui_testing.page_objects.VISite;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 import static ru.viqa.ui_testing.common.utils.ReflectionUtils.isClass;
 import static ru.viqa.ui_testing.common.utils.LinqUtils.*;
+import static ru.viqa.ui_testing.page_objects.VISite.Alerting;
 
 /**
  * Created by roman.i on 03.10.2014.
@@ -48,7 +50,7 @@ public class Selector<T extends IClickable, T1 extends Enum> extends HaveValue i
         if (isClass(cl.getClass(), IText.class))
             return ((IText) getElement(name)).getText();
         else
-            throw new Exception(getFullName() + "is not a text. Please override getElementTextAction or correct locator");
+            throw Alerting.throwError(getFullName() + "is not a text. Please override getElementTextAction or correct locator");
     }
     protected String isSelectedAction() throws Exception {
         return first(getAllElements(), cl -> cl.getWebElement().isSelected()).getName();
@@ -85,7 +87,7 @@ public class Selector<T extends IClickable, T1 extends Enum> extends HaveValue i
         Field field;
         try { field = enumWithValue.getClass().getField("value");
             if (field.getType() != String.class)
-                throw new Exception("Can't get Value from enum");
+                throw Alerting.throwError("Can't get Value from enum");
         } catch (Exception ex) { return enumWithValue.toString(); }
         return (String) field.get(enumWithValue);
     }

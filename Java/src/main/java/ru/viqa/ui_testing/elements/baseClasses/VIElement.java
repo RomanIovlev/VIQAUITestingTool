@@ -13,6 +13,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.*;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -103,11 +104,10 @@ public class VIElement extends Named implements IVIElement {
         throw Alerting.throwError(getDefaultLogMessage("LocatorAttribute cannot be null"));
     }
 
-    protected Timer getTimer() {
+    protected Timer getTimer() throws Exception {
         return new Timer(getWaitTimeoutInSec() * 1000, getSite().siteSettings.timeouts.RetryActionInMSec);
     }
-    private Timer getTimer(long timeoutInSec, long retryTimeoutInMSec)
-    {
+    private Timer getTimer(long timeoutInSec, long retryTimeoutInMSec) throws Exception {
         if (timeoutInSec < 0)
             return getTimer();
         return new Timer(timeoutInSec, ((retryTimeoutInMSec >= 0) ? retryTimeoutInMSec : 100));
@@ -154,8 +154,12 @@ public class VIElement extends Named implements IVIElement {
     private WebElement getUniqueWebElement(List<WebElement> webElements) throws Exception {
         if (webElements.size() == 1)
             return webElements.get(0);
-        if (webElements.size() > 0)
+        if (webElements.size() > 0) {
+            webElements = (List<WebElement>)where(webElements, WebElement::isDisplayed);
+            if (webElements.size() == 1)
+                return webElements.get(0);
             throw Alerting.throwError(getLotOfFindElementsMessage(webElements));
+        }
         throw Alerting.throwError(getCantFindElementMessage());
     }
     private String getLotOfFindElementsMessage(List<WebElement> webElements) throws Exception {

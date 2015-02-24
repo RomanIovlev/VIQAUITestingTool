@@ -25,6 +25,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import static java.lang.Integer.parseInt;
+import static java.lang.System.setProperty;
 import static org.openqa.selenium.remote.DesiredCapabilities.*;
 import static ru.viqa.ui_testing.common.utils.StringUtils.LineBreak;
 import static ru.viqa.ui_testing.page_objects.BrowserType.FIREFOX;
@@ -51,16 +52,16 @@ public class VISite extends VIElement {
     }
 
 
-    public static String RunId;
-
-    public Navigation navigate;
-    public void openPage(String uri) throws Exception {
-        new VIPage("Page with url " + VIPage.getUrlValue(uri, this), uri, "", this).open();
+    private static String runId;
+    public static String getRunId() {
+        if (runId == null || runId.equals(""))
+            runId = nowTime("yyyy-MM-dd_HH-mm-ss");
+        return runId;
     }
 
-    private String Domain = "/";
-    public String getDomain() { return Domain; }
-    public void setDomain(String value) { Domain = value.replaceAll("/*$", "");  }
+    public Navigation navigate;
+
+    public String Domain = "/";
 
     private String locatorVersion;
     public String getLocatorVersion() { return locatorVersion; }
@@ -110,7 +111,7 @@ public class VISite extends VIElement {
                     DesiredCapabilities capabilities = chrome();
                     String path = new File(".").getCanonicalPath() + "\\drivers\\chromedriver.exe";
                     //String path = new File(".").getCanonicalPath() + "/drivers/chromedriver"; //for mac
-                    System.setProperty("webdriver.chrome.driver", path);
+                    setProperty("webdriver.chrome.driver", path);
                     if (desiredCapabilities != null)
                         desiredCapabilities.invoke(capabilities);
                     return new ChromeDriver(capabilities);
@@ -121,7 +122,7 @@ public class VISite extends VIElement {
                     String path = new File(".").getCanonicalPath() + "\\drivers\\IEDriverServer.exe";
                     capabilities.setCapability(
                             InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
-                    System.setProperty("webdriver.ie.driver", path);
+                    setProperty("webdriver.ie.driver", path);
                     if (desiredCapabilities != null)
                         desiredCapabilities.invoke(capabilities);
                     return new InternetExplorerDriver(capabilities);
@@ -175,10 +176,8 @@ public class VISite extends VIElement {
     private void initSite(String locatorVersion) throws Exception {
         try {
             setName(getElementName(this));
-            if (RunId == null)
-                RunId = nowTime("yyyy-MM-dd_HH-mm-ss");
             if (Logger == null)
-                Logger = new DefaultLogger(RunId);
+                Logger = new DefaultLogger();
             interfaceTypeMapInit();
             navigate = new Navigation(this);
             fillSiteSettings();
@@ -186,7 +185,7 @@ public class VISite extends VIElement {
                 Alerting = new DefaultAlerting();
             this.locatorVersion = locatorVersion;
             setSite(this);
-        } catch (Exception ex) { throw new Exception("Init site failed: " + ex.getMessage()); }
+        } catch (Exception ex) { throw Alerting.throwError("Init site failed: " + ex.getMessage()); }
     }
 
     private void fillSiteSettings() throws Exception {
@@ -209,7 +208,7 @@ public class VISite extends VIElement {
                     fillSettingsFromProperties(properties);
                 } catch (Exception ex) { Logger.event("Can't load Site properties from file: " + siteParams.settingsFromPropertyFile());}
 
-        } catch (Exception ex) { throw new Exception("Error in Fill Site params from Settings" + LineBreak + ex.getMessage()); }
+        } catch (Exception ex) { throw Alerting.throwError("Error in Fill Site params from Settings" + LineBreak + ex.getMessage()); }
     }
 
     public void fillSettingsFromProperties(PropertyLoader props) throws Exception {
@@ -242,7 +241,6 @@ public class VISite extends VIElement {
     public void open() throws Exception {
         getHomePage().open();
     }
-
     public void takeScreenshot() throws Exception {
         takeScreenshot(null, null);
     }

@@ -8,4 +8,5 @@ import java.util.List;
 public interface ITextList extends IVIElement {
     List<String> waitText(String str) throws Exception;
     List<String> getText() throws Exception;
+    String getLastText() throws Exception;
 }

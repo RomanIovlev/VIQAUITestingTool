@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import static java.lang.String.format;
+import static ru.viqa.ui_testing.page_objects.VISite.Alerting;
 
 /**
  * Created by Алиса on 22.11.2014.
@@ -38,7 +39,7 @@ public class PropertyLoader {
         if (lastLoadedProps != null)
             return getProp(name, lastLoadedProps);
         else
-            throw new Exception(format("Can't get property '%s'. Properties not loaded", name));
+            throw Alerting.throwError(format("Can't get property '%s'. Properties not loaded", name));
     }
 
     public void fillAction(ActionT<String> action, String propName) throws Exception {

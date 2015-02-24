@@ -17,6 +17,7 @@ import static ru.viqa.ui_testing.common.utils.LinqUtils.*;
 import static ru.viqa.ui_testing.common.utils.ReflectionUtils.*;
 import static ru.viqa.ui_testing.common.utils.StringUtils.LineBreak;
 import static ru.viqa.ui_testing.annotations.AnnotationsUtil.*;
+import static ru.viqa.ui_testing.page_objects.VISite.Alerting;
 
 /**
  * Created by roman.i on 10.12.2014.
@@ -40,7 +41,7 @@ public class PageObjectsInit {
                 page.set(site, instance);
             });
         } catch (Exception ex) {
-            throw new Exception("Error in Pages Cascade Initialization:" + LineBreak + ex.getMessage()); }
+            throw Alerting.throwError("Error in Pages Cascade Initialization:" + LineBreak + ex.getMessage()); }
     }
 
     public static void initSubElements(VIElement root) throws Exception {
@@ -49,7 +50,7 @@ public class PageObjectsInit {
 
     private static void setVIElement(Field viElement, VIElement root) throws Exception {
         try {
-            if (isClass(viElement, VISite.class) || viElement.getAnnotation(NotPageObject.class) != null) return;
+            if (isClass(viElement, VISite.class) || viElement.getAnnotation(NotPageObject.class) != null || viElement.getName().contains("$0") ) return;
             Class<?> type = viElement.getType();
             VIElement instance = createInstance(viElement, root);
             instance.setName(getElementName(viElement));
@@ -59,7 +60,7 @@ public class PageObjectsInit {
             viElement.set(root, instance);
             initSubElements(instance);
         } catch (Exception ex) {
-            throw new Exception(format("Error in setVIElement for field '%s'", viElement.getName()) + LineBreak + ex.getMessage()); }
+            throw Alerting.throwError(format("Error in setVIElement for field '%s'", viElement.getName()) + LineBreak + ex.getMessage()); }
     }
 
     private static VIElement createInstance(Field viElement, VIElement root) throws Exception {
@@ -70,7 +71,7 @@ public class PageObjectsInit {
             instance.setSite(root.getSite());
             return instance;
         } catch (Exception ex) {
-            throw new Exception(format("Error in createInstance for field '%s'", viElement.getName()) + LineBreak + ex.getMessage()); }
+            throw Alerting.throwError(format("Error in createInstance for field '%s'", viElement.getName()) + LineBreak + ex.getMessage()); }
     }
 
     private static VIElement getVIElementInstance(Class type) throws Exception {
@@ -80,10 +81,10 @@ public class PageObjectsInit {
             Class viType = first(map, el -> el == type);
             if (viType != null)
                 return (VIElement) viType.newInstance();
-            throw  VISite.Alerting.throwError("Unknown interface: " + type +
+            throw  Alerting.throwError("Unknown interface: " + type +
                     "Add relation interface -> class in VIElement.InterfaceTypeMap");
         } catch (Exception ex) {
-            throw new Exception(format("Error in getVIElementInstance for type '%s'", type.getName()) +
+            throw Alerting.throwError(format("Error in getVIElementInstance for type '%s'", type.getName()) +
                     LineBreak + ex.getMessage()); }
     }
 
@@ -108,7 +109,7 @@ public class PageObjectsInit {
             if (root.getPrivateLocator() != null)
                 instance.Context.add(ContextType.Locator, root.getPrivateLocator());
         } catch (Exception ex) {
-            throw new Exception(format("Error in createContext for type '%s'", viElement.getName()) +
+            throw Alerting.throwError(format("Error in createContext for type '%s'", viElement.getName()) +
                     LineBreak + ex.getMessage()); }
     }
 
@@ -122,7 +123,7 @@ public class PageObjectsInit {
             if (openPageAnnotation != null)
                 ((Clickable) instance).clickOpensPage = openPageAnnotation.pageName();
         } catch (Exception ex) {
-            throw new Exception(format("Error in setClickableElementData for type '%s'", viElement.getName()) +
+            throw Alerting.throwError(format("Error in setClickableElementData for type '%s'", viElement.getName()) +
                     LineBreak + ex.getMessage()); }
     }
     public static Map<Class, Class> map;
@@ -145,7 +146,7 @@ public class PageObjectsInit {
             map.put(ICheckList.class,   Checklist.class);
             map.put(ITextList.class,   TextList.class);
         } catch (Exception ex) {
-            throw new Exception("Error in getInterfaceTypeMap" +
+            throw Alerting.throwError("Error in getInterfaceTypeMap" +
                     LineBreak + ex.getMessage()); }
     }
 }

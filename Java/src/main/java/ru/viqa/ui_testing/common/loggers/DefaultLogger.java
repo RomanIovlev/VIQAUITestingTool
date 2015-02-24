@@ -1,12 +1,14 @@
 package ru.viqa.ui_testing.common.loggers;
 
 import ru.viqa.ui_testing.common.interfaces.ILogger;
+import ru.viqa.ui_testing.page_objects.VISite;
 
 import java.io.*;
 
 import static ru.viqa.ui_testing.common.utils.StringUtils.LineBreak;
 import static ru.viqa.ui_testing.common.utils.TimeUtils.nowTime;
 import static java.lang.String.format;
+import static ru.viqa.ui_testing.page_objects.VISite.getRunId;
 
 /**
  * Created by roman.i on 25.09.2014.
@@ -26,10 +28,7 @@ public class DefaultLogger implements ILogger {
     public void setLogFileName(String logFileName) { this.logFileName = logFileName; }
 
     public DefaultLogger() {
-        runId = nowTime("yyyy-MM-dd_HH-mm-ss");
-    }
-    public DefaultLogger(String runId) {
-        this.runId = runId;
+        runId = getRunId();
     }
 
     public static String getValidUrl(String logPath)

@@ -18,10 +18,10 @@ public class VIPage extends VIElement {
     public static String getUrlValue(String url, VISite site)
     {
         return (url == null || url.equals(""))
-            ? site.getDomain()
+            ? site.Domain
             : (url.contains("http://") || url.contains("file:///"))
                 ? url
-                : site.getDomain().replaceAll("/*$", "") + "/"+ url.replaceAll("^/*", "");
+                : site.Domain.replaceAll("/*$", "") + "/"+ url.replaceAll("^/*", "");
     }
 
     public String title;
