@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using OpenQA.Selenium;
 using VIQA.Common;
 using VIQA.HAttributes;
@@ -96,7 +97,6 @@ namespace VIQA.SiteClasses
             if (!string.IsNullOrEmpty(title))
                 Title = title;
         }
-
         public void Open()
         {
             Site.Navigate.OpenPage(this);
@@ -108,31 +108,44 @@ namespace VIQA.SiteClasses
             return CheckUrl(UrlCheckType, throwError) && CheckTitle(TitleCheckType, throwError);
         }
 
-        public bool CheckUrl(PageCheckType checkType, bool throwError = false)
+        public bool VerifyPage(bool throwError, int timeOutSecs)
         {
-            return CheckPageAttribute(checkType, throwError, "url", 
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < timeOutSecs &&
+                (!CheckUrl(UrlCheckType, false, false) || !CheckTitle(TitleCheckType, false, false)))
+            {
+                Thread.Sleep(1000);
+            }
+
+            return CheckUrl(UrlCheckType, throwError) && CheckTitle(TitleCheckType, throwError);
+        }
+
+        public bool CheckUrl(PageCheckType checkType, bool throwError = false, bool doLog = true)
+        {
+            return CheckPageAttribute(checkType, throwError, "url",
                 WebDriver.Url.ToLower().TrimEnd('/'), Url.ToLower().TrimEnd('/'));
         }
-        
-        public bool CheckTitle(PageCheckType checkType, bool throwError = false)
+
+        public bool CheckTitle(PageCheckType checkType, bool throwError = false, bool doLog = true)
         {
-            return CheckPageAttribute(checkType, throwError, "title", 
+            return CheckPageAttribute(checkType, throwError, "title",
                 WebDriver.Title, Title);
         }
-        private bool CheckPageAttribute(PageCheckType checkType, bool throwError, string checkWhat, string actual, string expected)
+        private bool CheckPageAttribute(PageCheckType checkType, bool throwError,
+            string checkWhat, string actual, string expected, bool doLog = true)
         {
             if (checkType == PageCheckType.NoCheck) return true;
             if (string.IsNullOrEmpty(expected))
             {
-                VISite.Alerting.ThrowError(string.Format("Page '{0}' {1} is empty. Please set {1} for this page", 
+                VISite.Alerting.ThrowError(string.Format("Page '{0}' {1} is empty. Please set {1} for this page",
                     Name, checkWhat));
                 return false;
             }
-            VISite.Logger.Event(string.Format("Check page '{0}' {1} {2} '{3}'", 
-                Name, checkWhat, checkType == PageCheckType.Equal ? "equal to " : "contains", expected));
+            if (doLog) VISite.Logger.Event(string.Format("Check page '{0}' {1} {2} '{3}'",
+                 Name, checkWhat, checkType == PageCheckType.Equal ? "equal to " : "contains", expected));
             var result =
-                    (checkType == PageCheckType.Equal) 
-                    ? actual == expected 
+                    (checkType == PageCheckType.Equal)
+                    ? actual == expected
                     : actual.Contains(expected);
 
             if (result) return true;
@@ -142,7 +155,7 @@ namespace VIQA.SiteClasses
                 "CheckType: '{4}'", checkWhat, Name, actual, expected, checkType);
             if (throwError)
                 throw VISite.Alerting.ThrowError(errorMsg);
-            VISite.Logger.Error(errorMsg);
+            if (doLog) VISite.Logger.Error(errorMsg);
             return false;
         }
         
